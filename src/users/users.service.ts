@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -17,15 +17,21 @@ export class UsersService {
 
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await BcryptHelper.hashPassword(createUserDto.password);
+    try {
+      await this.validateUser(createUserDto.email, { shouldNotExist: true });
 
-    const user = this.userRepository.create({
-      ...createUserDto,
-      password: hashedPassword,
-      role: UserRole.USER,
-    });
+      const hashedPassword = await BcryptHelper.hashPassword(createUserDto.password);
 
-    return this.userRepository.save(user);
+      const user = this.userRepository.create({
+        ...createUserDto,
+        password: hashedPassword,
+        role: UserRole.USER,
+      });
+
+      return await this.userRepository.save(user);
+    } catch (error) {
+      throw new InternalServerErrorException('Error creating user.');
+    }
   }
 
 
@@ -48,4 +54,19 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  private async validateUser(email: string, options?: { shouldExist?: boolean, shouldNotExist?: boolean }): Promise<User | null> {
+    const user = await this.userRepository.findOne({ where: { email } });
+
+    if (options?.shouldExist && !user) {
+      throw new NotFoundException(`User with email ${email} not found.`);
+    }
+
+    if (options?.shouldNotExist && user) {
+      throw new ConflictException(`User with email ${email} already exists.`);
+    }
+
+    return user;
+  }
+
 }

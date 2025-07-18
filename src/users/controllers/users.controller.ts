@@ -18,7 +18,7 @@ export class UsersController {
   
   
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN,UserRole.VETERINARIO)
   @Get()
   findAll() {
     return this.usersService.findAll();
