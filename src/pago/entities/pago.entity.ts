@@ -1,3 +1,4 @@
+import { RolePagos } from 'src/enums/rolePagos.enum';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -14,7 +15,7 @@ export class Pago {
   @Column('decimal')
   monto_pago: number;
 
-  @Column('enum', { enum: ['Efectivo', 'Tarjeta', 'Transferencia'] })
+  @Column('enum', { enum: RolePagos })
   metodo_pago: string;
 
   @Column('enum', { enum: ['Pendiente', 'Completado', 'Cancelado'] })

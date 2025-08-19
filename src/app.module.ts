@@ -11,6 +11,9 @@ import { InventarioModule } from './inventario/inventario.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { ClienteModule } from './cliente/cliente.module';
 import { EmpleadoModule } from './empleado/empleado.module';
+import { MensajeModule } from './mensaje/mensaje.module';
+import { TurnoModule } from './turno/turno.module';
+import { NotificacionesModule } from './notificaciones/notificaciones.module';
 
 @Module({
   imports: [
@@ -32,7 +35,6 @@ import { EmpleadoModule } from './empleado/empleado.module';
         synchronize: true, // ¡no usar en producción!
       }),
     }),
-
     VentasModule,
     PagoModule,
     DetalleVentaModule,
@@ -48,6 +50,9 @@ import { EmpleadoModule } from './empleado/empleado.module';
     DetalleVentaModule,
     ProductosModule,
     InventarioModule,
+    MensajeModule,
+    TurnoModule,
+    NotificacionesModule,
   ],
   controllers: [],
   providers: [],

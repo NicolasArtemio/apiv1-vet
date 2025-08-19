@@ -1,6 +1,7 @@
 import { IsDate, IsInt, IsPositive } from 'class-validator';
+import { Type } from 'class-transformer';
 
-export class createventadto {
+export class CreateVentaDto {
   @IsPositive()
   @IsInt()
   id_cliente: number;
