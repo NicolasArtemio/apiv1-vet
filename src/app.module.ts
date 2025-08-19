@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsuarioModule } from './usuario/usuario.module';
+import { ClienteModule } from './cliente/cliente.module';
+import { EmpleadoModule } from './empleado/empleado.module';
 
 @Module({
   imports: [
@@ -22,6 +25,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: true, // ¡no usar en producción!
       }),
     }),
+    UsuarioModule,
+    ClienteModule,
+    EmpleadoModule,
   ],
   controllers: [],
   providers: [],
