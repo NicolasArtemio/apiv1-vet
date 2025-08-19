@@ -19,7 +19,7 @@ export class Producto {
 
   @Column()
   stock: number;
-  @Column('enum')
+  @Column('enum', { enum: ['balanceado', 'limpieza'] })
   categoria: string;
 
   @Column()
