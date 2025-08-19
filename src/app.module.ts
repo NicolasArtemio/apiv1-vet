@@ -6,6 +6,9 @@ import { PagoModule } from './pago/pago.module';
 import { DetalleVentaModule } from './detalle_venta/detalle_venta.module';
 import { ProductosModule } from './productos/productos.module';
 import { InventarioModule } from './inventario/inventario.module';
+import { UsuarioModule } from './usuario/usuario.module';
+import { ClienteModule } from './cliente/cliente.module';
+import { EmpleadoModule } from './empleado/empleado.module';
 
 @Module({
   imports: [
@@ -32,6 +35,9 @@ import { InventarioModule } from './inventario/inventario.module';
     DetalleVentaModule,
     ProductosModule,
     InventarioModule,
+    UsuarioModule,
+    ClienteModule,
+    EmpleadoModule,
   ],
   controllers: [],
   providers: [],
