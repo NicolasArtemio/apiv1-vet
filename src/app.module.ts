@@ -1,17 +1,22 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-<<<<<<< HEAD
-import { UsuarioModule } from './usuario/usuario.module';
-import { ClienteModule } from './cliente/cliente.module';
-import { EmpleadoModule } from './empleado/empleado.module';
-=======
+
 import { VentasModule } from './ventas/ventas.module';
 import { PagoModule } from './pago/pago.module';
 import { DetalleVentaModule } from './detalle_venta/detalle_venta.module';
 import { ProductosModule } from './productos/productos.module';
 import { InventarioModule } from './inventario/inventario.module';
->>>>>>> origin/nicolas
+
+import { UsuarioModule } from './usuario/usuario.module';
+import { ClienteModule } from './cliente/cliente.module';
+import { EmpleadoModule } from './empleado/empleado.module';
+
+import { VentasModule } from './ventas/ventas.module';
+import { PagoModule } from './pago/pago.module';
+import { DetalleVentaModule } from './detalle_venta/detalle_venta.module';
+import { ProductosModule } from './productos/productos.module';
+import { InventarioModule } from './inventario/inventario.module';
 
 @Module({
   imports: [
@@ -33,17 +38,23 @@ import { InventarioModule } from './inventario/inventario.module';
         synchronize: true, // ¡no usar en producción!
       }),
     }),
-<<<<<<< HEAD
-    UsuarioModule,
-    ClienteModule,
-    EmpleadoModule,
-=======
+
     VentasModule,
     PagoModule,
     DetalleVentaModule,
     ProductosModule,
     InventarioModule,
->>>>>>> origin/nicolas
+
+    UsuarioModule,
+    ClienteModule,
+    EmpleadoModule,
+
+    VentasModule,
+    PagoModule,
+    DetalleVentaModule,
+    ProductosModule,
+    InventarioModule,
+
   ],
   controllers: [],
   providers: [],
