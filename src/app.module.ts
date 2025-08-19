@@ -12,12 +12,6 @@ import { UsuarioModule } from './usuario/usuario.module';
 import { ClienteModule } from './cliente/cliente.module';
 import { EmpleadoModule } from './empleado/empleado.module';
 
-import { VentasModule } from './ventas/ventas.module';
-import { PagoModule } from './pago/pago.module';
-import { DetalleVentaModule } from './detalle_venta/detalle_venta.module';
-import { ProductosModule } from './productos/productos.module';
-import { InventarioModule } from './inventario/inventario.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -54,7 +48,6 @@ import { InventarioModule } from './inventario/inventario.module';
     DetalleVentaModule,
     ProductosModule,
     InventarioModule,
-
   ],
   controllers: [],
   providers: [],
