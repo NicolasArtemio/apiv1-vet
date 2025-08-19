@@ -1,6 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { VentasModule } from './ventas/ventas.module';
+import { PagoModule } from './pago/pago.module';
+import { DetalleVentaModule } from './detalle_venta/detalle_venta.module';
+import { ProductosModule } from './productos/productos.module';
+import { InventarioModule } from './inventario/inventario.module';
 
 @Module({
   imports: [
@@ -22,6 +27,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         synchronize: true, // ¡no usar en producción!
       }),
     }),
+    VentasModule,
+    PagoModule,
+    DetalleVentaModule,
+    ProductosModule,
+    InventarioModule,
   ],
   controllers: [],
   providers: [],
