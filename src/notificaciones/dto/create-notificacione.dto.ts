@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsNotEmpty, IsString, } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
 import { EstadoLectura, TipoNotificacion } from 'src/enums/rolePagos.enum';
 export class CreateNotificacioneDto {
 
@@ -16,15 +16,15 @@ export class CreateNotificacioneDto {
 
 
     @IsEnum(EstadoLectura)
-    @IsNotEmpty()
-    leido: EstadoLectura;
+      @IsOptional()
+    leido?: EstadoLectura;
 
     @IsDate()
-    @IsNotEmpty()
-    fecha_creacion: Date;
+     @IsOptional()
+    fecha_creacion?: Date;
 
     @IsDate()
-    @IsNotEmpty()
-    fecha_lectura: Date;
+    @IsOptional()
+    fecha_lectura?: Date;
 
 }

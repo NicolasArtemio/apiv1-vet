@@ -22,9 +22,9 @@ export class Usuario {
     @Column('varchar', { length: 255 })
     estado:string;
 
-    @OneToMany(() => Mensaje, mensaje => mensaje.usuario)
+    @OneToMany(() => Mensaje, mensaje => mensaje.usuarios)
     mensaje: Mensaje[];
     
-    @OneToMany(() => Notificacion, notificacion => notificacion.usuario)
+    @OneToMany(() => Notificacion, notificacion => notificacion.usuarios)
    notificacione: Notificacion[];
 }
