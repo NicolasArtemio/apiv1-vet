@@ -1,16 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
-
-export enum TipoNotificacion {
-  INFO = 'info',
-  ALERTA = 'alerta',
-  RECORDATORIO = 'recordatorio',
-}
-
-export enum EstadoLectura {
-  NO_LEIDO = 'no_leido',
-  LEIDO = 'leido',
-}
-
+import { TipoNotificacion, EstadoLectura } from 'src/enums/rolePagos.enum';
 
 @Entity()
 export class Notificacion {
