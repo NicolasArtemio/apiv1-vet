@@ -1,6 +1,6 @@
 
 import { Usuario } from 'src/usuario/entities/usuario.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
 
 @Entity()
 export class Mensaje {
@@ -18,5 +18,6 @@ export class Mensaje {
     leido: boolean;
     
 @ManyToOne(() => Usuario, usuario => usuario.notificacione)
- usuario: Usuario;
+    @JoinColumn({ name:'usuario_id' }) 
+ usuarios: Usuario;
 }
