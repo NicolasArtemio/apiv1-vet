@@ -13,7 +13,7 @@ export enum EstadoLectura {
 
 
 @Entity()
-export class Notificacione {
+export class Notificacion {
  @PrimaryGeneratedColumn()
     id:number;
 
