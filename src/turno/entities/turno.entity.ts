@@ -1,10 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { EstadoTurno } from "src/enums/rolePagos.enum";
 
-export enum EstadoTurno {
-  PENDIENTE = 'pendiente',
-  COMPLETADO = 'completado',
-  CANCELADO = 'cancelado',
-}
 @Entity()
 export class Turno {
  @PrimaryGeneratedColumn()
