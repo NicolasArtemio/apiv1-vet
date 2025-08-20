@@ -14,6 +14,9 @@ import { EmpleadoModule } from './empleado/empleado.module';
 import { MensajeModule } from './mensaje/mensaje.module';
 import { TurnoModule } from './turno/turno.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
+import { MascotasModule } from './mascotas/mascotas.module';
+import { VacunacionModule } from './vacunacion/vacunacion.module';
+
 
 @Module({
   imports: [
@@ -53,6 +56,9 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module';
     MensajeModule,
     TurnoModule,
     NotificacionesModule,
+    MascotasModule,
+    VacunacionModule,
+ 
   ],
   controllers: [],
   providers: [],

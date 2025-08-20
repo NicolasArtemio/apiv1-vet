@@ -25,3 +25,4 @@ export class CreateProductoDto {
   typo_uso: string;
   fecha_vencimiento: Date;
 }
+
