@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
 import { EstadoTurno } from "src/enums/rolePagos.enum";
+import { Mascota } from 'src/mascotas/entities/mascota.entity';
 
 @Entity()
 export class Turno {
@@ -20,4 +21,7 @@ export class Turno {
     
     @Column({ type: 'timestamp' })
    actualizaciones_turno: Date;
+
+   @ManyToOne(() => Mascota, mascota => mascota.turno)
+   mascota: Mascota;
    }
