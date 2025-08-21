@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Producto } from 'src/productos/entities/producto.entity';
+import { Venta } from 'src/ventas/entities/venta.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class DetalleVenta {
@@ -13,4 +21,12 @@ export class DetalleVenta {
 
   @Column()
   cantidad: number;
+
+  @ManyToOne(() => Venta, (venta) => venta.detallesVenta)
+  @JoinColumn({ name: 'id_venta' })
+  venta: Venta;
+
+  @ManyToOne(() => Producto, (producto) => producto.detallesVenta)
+  @JoinColumn({ name: 'id_producto' })
+  producto: Producto;
 }

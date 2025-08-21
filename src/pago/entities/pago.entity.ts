@@ -1,5 +1,8 @@
-import { RolePagos } from 'src/enums/rolePagos.enum';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { EstadoPagos } from 'src/enums/EstadoPagos.enum';
+import { TipoPagos } from 'src/enums/TipoPagos.enum';
+import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
+import { Venta } from 'src/ventas/entities/venta.entity';
 
 @Entity()
 export class Pago {
@@ -15,9 +18,13 @@ export class Pago {
   @Column('decimal')
   monto_pago: number;
 
-  @Column('enum', { enum: RolePagos })
+  @Column('enum', { enum: TipoPagos })
   metodo_pago: string;
 
-  @Column('enum', { enum: ['Pendiente', 'Completado', 'Cancelado'] })
+  @Column('enum', { enum: EstadoPagos })
   estado_pago: boolean;
+
+  @OneToOne(() => Venta, (venta) => venta.pago)
+  @JoinColumn({ name: 'id_venta' })
+  venta: Venta;
 }

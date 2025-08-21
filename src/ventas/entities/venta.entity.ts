@@ -1,5 +1,7 @@
-import { Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Entity } from 'typeorm/decorator/entity/Entity';
+import { Pago } from 'src/pago/entities/pago.entity';
+import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
 
 @Entity()
 export class Venta {
@@ -17,4 +19,10 @@ export class Venta {
 
   @Column('timestamp')
   fecha: Date;
+
+  @OneToOne(() => Pago, (pago) => pago.venta)
+  pago: Pago;
+
+  @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.venta)
+  detallesVenta: DetalleVenta[];
 }

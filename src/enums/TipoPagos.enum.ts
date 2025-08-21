@@ -1,4 +1,4 @@
-export enum RolePagos {
+export enum TipoPagos {
   EFECTIVO = 'Efectivo',
   TRANSFERENCIA = 'Transferencia',
   TARJETA_CREDITO = 'Tarjeta de Crédito',
