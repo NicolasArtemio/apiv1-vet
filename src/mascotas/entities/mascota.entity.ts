@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Turno } from "src/turno/entities/turno.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Url } from "url";
 
 @Entity()
@@ -36,4 +37,7 @@ export class Mascota {
     
     @Column({type: 'string'})
     observaciones: string;
+    
+    @OneToMany(() => Turno,turno => turno.mascotas)
+    turno:Turno[];
 }
