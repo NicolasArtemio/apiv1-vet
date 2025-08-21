@@ -1,28 +1,29 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
-import { EstadoTurno } from "src/enums/rolePagos.enum";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { EstadoTurno } from 'src/enums/estado-turno.enum';
 import { Mascota } from 'src/mascotas/entities/mascota.entity';
 
 @Entity()
 export class Turno {
- @PrimaryGeneratedColumn()
-    id:number;
+   @PrimaryGeneratedColumn()
+   id: number;
 
-    @Column({ type: 'timestamp' })
-    fecha_turno: Date;
+   @Column({ type: 'timestamp' })
+   fecha_turno: Date;
 
-    @Column({ type: 'enum', enum: EstadoTurno, default: EstadoTurno.PENDIENTE })
-  estado: EstadoTurno;
+   @Column({ type: 'enum', enum: EstadoTurno, default: EstadoTurno.PENDIENTE })
+   estado: EstadoTurno;
 
-     @Column()
-     observaciones:string;
+   @Column()
+   observaciones: string;
 
-    @Column({ type: 'timestamp' })
-    fecha_registro: Date;
-    
-    @Column({ type: 'timestamp' })
+   @Column({ type: 'timestamp' })
+   fecha_registro: Date;
+
+   @Column({ type: 'timestamp' })
    actualizaciones_turno: Date;
 
-   @ManyToOne(() => Mascota, mascota => mascota.turno)
-    @JoinColumn({ name:'mascota_id' }) 
-   mascotas: Mascota;
-   }
+   @ManyToOne(() => Mascota, mascota => mascota.turnos)
+   @JoinColumn({ name: 'mascota_id' })
+   mascota: Mascota;
+
+}
