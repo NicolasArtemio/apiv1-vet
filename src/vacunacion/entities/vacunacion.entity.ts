@@ -2,24 +2,24 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
    
 @Entity() 
 export class Vacunacion {
- @PrimaryGeneratedColumn({type: 'number'})
+ @PrimaryGeneratedColumn()
  id:number;
 
  @Column({type: 'timestamp'})
  fecha: Date;
 
- @Column({type: 'string'})
+ @Column()
  nombre_vacuna: string;
 
- @Column({type: 'number'})
+ @Column()
  nro_serie: number;
 
  @Column({type: 'timestamp'})
  prox_dosis: Date;
 
- @Column({type: 'string'})
+ @Column()
  nombre_veterinario: string;
 
- @Column({type: 'string'})
+ @Column()
  firma_sello: string;
 }

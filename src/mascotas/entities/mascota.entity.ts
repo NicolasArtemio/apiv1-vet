@@ -1,21 +1,20 @@
 import { Turno } from "src/turno/entities/turno.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Url } from "url";
 
 @Entity()
 export class Mascota {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({type: 'string'})
+    @Column()
     nombre: string;
     
     
-    @Column({type: 'string'})
+    @Column()
     especie: string;
 
     
-    @Column({type: 'string'})
+    @Column()
     raza: string;
 
     
@@ -23,19 +22,19 @@ export class Mascota {
     peso:number;
 
     
-    @Column({type: 'number'})
+    @Column()
     edad: number;
 
     
-    @Column({type: 'boolean'})
+    @Column()
     esterilizado: boolean;
 
     
-    @Column({type: 'string'})
-    foto: Url;
+    @Column()
+    foto: string;
 
     
-    @Column({type: 'string'})
+    @Column()
     observaciones: string;
     
     @OneToMany(() => Turno,turno => turno.mascotas)
