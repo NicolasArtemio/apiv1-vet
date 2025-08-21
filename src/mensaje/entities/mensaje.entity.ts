@@ -13,11 +13,11 @@ export class Mensaje {
 
     @Column({ type: 'timestamp' })
     fecha_envio: Date;
-    
+
     @Column()
     leido: boolean;
-    
-@ManyToOne(() => Usuario, usuario => usuario.notificacione)
-    @JoinColumn({ name:'usuario_id' }) 
- usuarios: Usuario;
+
+    @ManyToOne(() => Usuario, usuario => usuario.mensajes)
+    @JoinColumn({ name: 'usuario_id' })
+    usuario: Usuario;
 }
