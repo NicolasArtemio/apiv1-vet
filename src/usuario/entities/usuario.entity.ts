@@ -1,4 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Mensaje } from "src/mensaje/entities/mensaje.entity";
+import { Notificacion } from "src/notificaciones/entities/notificacione.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Usuario {
@@ -19,4 +21,10 @@ export class Usuario {
 
     @Column('varchar', { length: 255 })
     estado:string;
+
+    @OneToMany(() => Mensaje, mensaje => mensaje.usuarios)
+    mensaje: Mensaje[];
+    
+    @OneToMany(() => Notificacion, notificacion => notificacion.usuarios)
+   notificacione: Notificacion[];
 }

@@ -1,16 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
-
-export enum TipoNotificacion {
-  INFO = 'info',
-  ALERTA = 'alerta',
-  RECORDATORIO = 'recordatorio',
-}
-
-export enum EstadoLectura {
-  NO_LEIDO = 'no_leido',
-  LEIDO = 'leido',
-}
-
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { TipoNotificacion, EstadoLectura } from 'src/enums/rolePagos.enum';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Entity()
 export class Notificacion {
@@ -33,4 +23,8 @@ export class Notificacion {
 
      @Column({ type: 'timestamp' })
     fecha_lectura: Date;
+    
+     @ManyToOne(() => Usuario, usuario => usuario.notificacione)
+      @JoinColumn({ name:'usuario_id' }) 
+     usuarios: Usuario;
 }
