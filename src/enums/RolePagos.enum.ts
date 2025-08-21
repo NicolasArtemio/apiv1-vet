@@ -2,6 +2,7 @@ export enum RolePagos {
   EFECTIVO = 'Efectivo',
   TRANSFERENCIA = 'Transferencia',
   TARJETA_CREDITO = 'Tarjeta de Crédito',
+  TARJETA_DEBITO = 'Tarjeta de Débito',
 }
 export enum TipoNotificacion {
   INFO = 'info',
