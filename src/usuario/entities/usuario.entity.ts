@@ -1,3 +1,4 @@
+import { Rol } from "src/enums/rol.enum";
 import { Mensaje } from "src/mensaje/entities/mensaje.entity";
 import { Notificacion } from "src/notificaciones/entities/notificacione.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
@@ -13,8 +14,8 @@ export class Usuario {
    @Column('varchar', { length: 255 })
    contrasena: string;
 
-   @Column('enum', { enum: ['admin', 'user', 'empleado'] })
-   rol: string;
+   @Column('enum', { enum: Rol })
+   rol: Rol;
 
    @Column('timestamp')
    fecha_registro: Date;
