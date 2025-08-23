@@ -1,5 +1,6 @@
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
-import { EstadoLectura, TipoNotificacion } from 'src/enums/rolePagos.enum';
+import { EstadoLectura } from 'src/enums/estadoLectura.enum';
+import { TipoNotificacion } from "src/enums/tipoNotificacion.enum";
 export class CreateNotificacioneDto {
 
     @IsString()

@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
-import { EstadoTurno } from 'src/enums/estado-turno.enum';
+import { EstadoTurno } from 'src/enums/estadoTurno.enum';
 import { Mascota } from 'src/mascotas/entities/mascota.entity';
 
 @Entity()

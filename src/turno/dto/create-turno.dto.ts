@@ -1,5 +1,5 @@
 import { IsDate, IsEnum, IsNotEmpty, IsString, } from "class-validator";
-import { EstadoTurno } from "src/enums/rolePagos.enum";
+import { EstadoTurno } from "src/enums/estadoTurno.enum";
 export class CreateTurnoDto {
 
 

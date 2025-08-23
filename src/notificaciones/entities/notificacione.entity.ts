@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
-import { TipoNotificacion} from 'src/enums/tipo-notificacion.enum';
-import { EstadoLectura } from 'src/enums/estado-lectura.enum';
+import { TipoNotificacion} from 'src/enums/tipoNotificacion.enum';
+import { EstadoLectura } from 'src/enums/estadoLectura.enum';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Entity()
