@@ -28,7 +28,7 @@ export class Inventario {
   @JoinColumn({ name: 'id_producto' })
   producto: Producto;
 
-  @ManyToOne(() => Empleado, (empleado) => empleado.inventarios)
-  @JoinColumn({ name: 'id_empleado' })
-  empleado: Empleado;
+  //   @ManyToOne(() => Empleado, (empleado) => empleado.inventarios)
+  //   @JoinColumn({ name: 'id_empleado' })
+  //   empleado: Empleado;
 }

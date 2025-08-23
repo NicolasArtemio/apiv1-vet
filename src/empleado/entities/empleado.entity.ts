@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Venta } from 'src/ventas/entities/venta.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Empleado {
@@ -13,7 +14,7 @@ export class Empleado {
 
   @Column('timestamp')
   fecha_nacimiento: Date;
-  
+
   @Column('int')
   dni: number;
 
@@ -28,4 +29,7 @@ export class Empleado {
 
   @Column('varchar', { length: 255 })
   especialidad: string;
+
+  @OneToMany(() => Venta, (venta) => venta.empleado)
+  ventas: Venta[];
 }
