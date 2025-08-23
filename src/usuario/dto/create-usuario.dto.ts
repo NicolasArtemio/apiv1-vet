@@ -1,4 +1,5 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { Rol } from "src/enums/Rol.enum";
 
 export class CreateUsuarioDto {
     @IsString()
@@ -11,7 +12,10 @@ export class CreateUsuarioDto {
 
     @IsString()
     @IsNotEmpty()
-    rol: 'admin' | 'user' | 'empleado';
+    @IsEnum( Rol, {
+        message: 'El rol debe ser uno de los siguientes: admin, user, empleado',
+    })
+    rol: Rol;
 
     @IsDate()
     @IsNotEmpty()
