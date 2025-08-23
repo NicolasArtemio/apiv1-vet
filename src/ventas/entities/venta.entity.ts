@@ -1,7 +1,8 @@
-import { Column, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, OneToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Entity } from 'typeorm/decorator/entity/Entity';
 import { Pago } from 'src/pago/entities/pago.entity';
 import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
+import { Empleado } from 'src/empleado/entities/empleado.entity';
 
 @Entity()
 export class Venta {
@@ -25,4 +26,7 @@ export class Venta {
 
   @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.venta)
   detallesVenta: DetalleVenta[];
+
+  @OneToMany(() => Empleado, (empleado) => empleado.ventas)
+  empleado: Empleado;
 }

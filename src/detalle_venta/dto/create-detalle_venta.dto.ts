@@ -3,11 +3,6 @@ export class CreateDetalleVentaDto {
   @IsPositive()
   @IsInt()
   @IsNotEmpty()
-  id_venta: number;
-
-  @IsPositive()
-  @IsInt()
-  @IsNotEmpty()
   id_producto: number;
 
   @IsPositive()
