@@ -24,4 +24,5 @@ export class CreateUsuarioDto {
     @IsString()
     @IsNotEmpty()
     estado: string;
+    mensaje: any;
 }

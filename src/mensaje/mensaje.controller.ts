@@ -18,17 +18,17 @@ export class MensajeController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: number) {
     return this.mensajeService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMensajeDto: UpdateMensajeDto) {
+  update(@Param('id') id: number, @Body() updateMensajeDto: UpdateMensajeDto) {
     return this.mensajeService.update(+id, updateMensajeDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id') id: number) {
     return this.mensajeService.remove(+id);
   }
 }

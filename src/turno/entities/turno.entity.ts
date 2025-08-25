@@ -22,7 +22,7 @@ export class Turno {
    @Column({ type: 'timestamp' })
    actualizaciones_turno: Date;
 
-   @ManyToOne(() => Mascota, mascota => mascota.turnos)
+   @ManyToOne(() => Mascota, mascota => mascota.turnos,{ eager: true })
    @JoinColumn({ name: 'mascota_id' })
    mascota: Mascota;
 

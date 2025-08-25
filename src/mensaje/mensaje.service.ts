@@ -1,26 +1,51 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMensajeDto } from './dto/create-mensaje.dto';
 import { UpdateMensajeDto } from './dto/update-mensaje.dto';
+import { Mensaje } from './entities/mensaje.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+
+
 
 @Injectable()
 export class MensajeService {
-  create(createMensajeDto: CreateMensajeDto) {
-    return 'This action adds a new mensaje';
+
+  constructor(  
+  @InjectRepository(Mensaje)
+    private readonly mensajeRepository: Repository<Mensaje>,
+  )
+  {}
+  async create(createMensajeDto: CreateMensajeDto) {
+      return await this.mensajeRepository.save(createMensajeDto);
+   
   }
 
-  findAll() {
-    return `This action returns all mensaje`;
+  async findAll() {
+
+    return await this.mensajeRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} mensaje`;
+  async findOne(id: number) {
+   const mensaje= await this.mensajeRepository.findOneBy({id});
+ if (!mensaje) {
+    throw new NotFoundException(`mensaje con id ${id} no encontrada`);
+  }
+  return mensaje;
   }
 
-  update(id: number, updateMensajeDto: UpdateMensajeDto) {
-    return `This action updates a #${id} mensaje`;
+  async update(id: number, updateMensajeDto: UpdateMensajeDto) {
+  return await this.mensajeRepository.update(id, updateMensajeDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} mensaje`;
+   async remove(id: number) {
+    const mensaje= await this.mensajeRepository.softDelete({id});
+     if (!mensaje) {
+    throw new NotFoundException(`mensaje con id ${id} no encontrada`);
+  }
+
+  return await this.mensajeRepository.softDelete({ id });
+
   }
 }
+
+

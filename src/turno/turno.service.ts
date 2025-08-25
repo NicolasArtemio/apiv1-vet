@@ -1,26 +1,47 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Turno } from './entities/turno.entity';
+import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
 
 @Injectable()
 export class TurnoService {
-  create(createTurnoDto: CreateTurnoDto) {
-    return 'This action adds a new turno';
+ 
+  constructor(
+     @InjectRepository(Turno)
+    private readonly turnoRepository: Repository<Turno>,
+
+  ){}
+  async create(createTurnoDto: CreateTurnoDto) {
+    return await this.turnoRepository.save(createTurnoDto)
   }
 
-  findAll() {
-    return `This action returns all turno`;
+ async findAll() {
+    return await this.turnoRepository.find();
+  
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} turno`;
+  async findOne(id: number) {
+    const turno= await this.turnoRepository.findOneBy({id});
+      if (!turno) {
+         throw new NotFoundException(`turno con id ${id} no encontrada`);
+       }
+       return turno;;
   }
 
-  update(id: number, updateTurnoDto: UpdateTurnoDto) {
-    return `This action updates a #${id} turno`;
+  async update(id: number, updateTurnoDto: UpdateTurnoDto) {
+    return await this.turnoRepository.update(id, updateTurnoDto);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} turno`;
+  async remove(id: number) {
+    const turno=await this.turnoRepository.softDelete({id});
+     if (!turno) {
+    throw new NotFoundException(`turno con id ${id} no encontrada`);
+  }
+
+  return await this.turnoRepository.softDelete({ id });
+
   }
 }
