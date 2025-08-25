@@ -6,18 +6,19 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestam
 export class Mensaje {
 
     @PrimaryGeneratedColumn()
-    id_mensaje: number;
+    id: number;
 
     @Column()
     contenido: string;
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     fecha_envio: Date;
 
     @Column()
     leido: boolean;
 
-    @ManyToOne(() => Usuario, usuario => usuario.mensajes)
+    @ManyToOne(() => Usuario, usuario => usuario.mensajes, { eager: true })
     @JoinColumn({ name: 'usuario_id' })
     usuario: Usuario;
 }
+

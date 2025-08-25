@@ -26,7 +26,7 @@ export class Notificacion {
    @Column({ type: 'timestamp' })
    fecha_lectura: Date;
 
-   @ManyToOne(() => Usuario, usuario => usuario.notificaciones)
+   @ManyToOne(() => Usuario, usuario => usuario.notificaciones,{ eager: true })
    @JoinColumn({ name: 'usuario_id' })
    usuario: Usuario;
 }
