@@ -39,7 +39,7 @@ export class Mascota {
     @Column()
     observaciones: string;
     
-    @OneToMany(() => Turno,turno => turno.mascotas)
+    @OneToMany(() => Turno,turno => turno.mascota)
     turno:Turno[];
 
     @ManyToOne(() => Cliente, cliente => cliente.mascota)
