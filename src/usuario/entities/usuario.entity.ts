@@ -1,7 +1,7 @@
-import { Rol } from "src/enums/rol.enum";
+import { Cliente } from "src/cliente/entities/cliente.entity";
 import { Mensaje } from "src/mensaje/entities/mensaje.entity";
 import { Notificacion } from "src/notificaciones/entities/notificacione.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, OneToOne} from "typeorm";
 
 @Entity()
 export class Usuario {
@@ -26,7 +26,14 @@ export class Usuario {
    @OneToMany(() => Mensaje, mensaje => mensaje.usuario)
    mensajes: Mensaje[];
 
-   @OneToMany(() => Notificacion, notificacion => notificacion.usuario)
-   notificaciones: Notificacion[];
+    @OneToMany(() => Mensaje, mensaje => mensaje.usuarios)
+    mensaje: Mensaje[];
+    
+    @OneToMany(() => Notificacion, notificacion => notificacion.usuarios)
+   notificacione: Notificacion[];
 
+   @OneToOne(() => Cliente, cliente => cliente.usuario)
+   cliente: Cliente;
+
+   
 }
