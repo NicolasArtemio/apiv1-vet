@@ -6,10 +6,10 @@ export class Empleado {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   nombre: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   apellido: string;
 
   @Column('timestamp')
@@ -18,16 +18,16 @@ export class Empleado {
   @Column('int')
   dni: number;
 
-  @Column('varchar', { length: 15 })
+  @Column()
   telefono: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   ciudad: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   direccion: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   especialidad: string;
 
   @OneToMany(() => Venta, (venta) => venta.empleado)

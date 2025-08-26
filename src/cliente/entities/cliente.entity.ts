@@ -7,13 +7,13 @@ export class Cliente {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   foto_perfil: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   nombre: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   apellido: string;
 
   @Column('timestamp')
@@ -22,13 +22,13 @@ export class Cliente {
   @Column('int')
   dni: number;
 
-  @Column({ type: 'varchar', length: 15 })
+  @Column()
   telefono: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   ciudad: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   direccion: string;
 
   @OneToOne(() => Usuario, usuario => usuario.cliente )

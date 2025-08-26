@@ -1,4 +1,5 @@
 import { Cliente } from "src/cliente/entities/cliente.entity";
+import { Rol } from "src/enums/Rol.enum";
 import { Mensaje } from "src/mensaje/entities/mensaje.entity";
 import { Notificacion } from "src/notificaciones/entities/notificacione.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, OneToOne} from "typeorm";
@@ -8,10 +9,10 @@ export class Usuario {
    @PrimaryGeneratedColumn()
    id: number;
 
-   @Column('varchar', { length: 255 })
+   @Column()
    email: string;
 
-   @Column('varchar', { length: 255 })
+   @Column()
    contrasena: string;
 
    @Column('enum', { enum: Rol })
@@ -20,7 +21,7 @@ export class Usuario {
    @Column('timestamp')
    fecha_registro: Date;
 
-   @Column('varchar', { length: 255 })
+   @Column()
    estado: string;
 
    @OneToMany(() => Mensaje, mensaje => mensaje.usuario)
