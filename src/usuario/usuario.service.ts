@@ -10,21 +10,7 @@ import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
 
 @Injectable()
 export class UsuarioService {
-<<<<<<< HEAD
-  create(CreateUsuarioDto: CreateUsuarioDto) {
-=======
-  constructor( 
-      @InjectRepository(Usuario)
-        private readonly usuarioRepository: Repository<Usuario>,
-     //   @InjectRepository(Mensaje)
-     //   private readonly mensajeRepository: Repository<Mensaje>,
-       // @InjectRepository(Notificacion)
-        //private readonly notificacionesRepository: Repository<Notificacion>,
-      ){
-      
-  }
   create(createUsuarioDto: CreateUsuarioDto) {
->>>>>>> marina
     return 'This action adds a new usuario';
   }
 

@@ -19,10 +19,10 @@ export class Pago {
   monto_pago: number;
 
   @Column('enum', { enum: TipoPagos })
-  metodo_pago: string;
+  metodo_pago: TipoPagos;
 
   @Column('enum', { enum: EstadoPagos })
-  estado_pago: boolean;
+  estado_pago: EstadoPagos;
 
   @OneToOne(() => Venta, (venta) => venta.pago)
   @JoinColumn({ name: 'id_venta' })
