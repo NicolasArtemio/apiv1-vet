@@ -17,14 +17,14 @@ export class CreatePagoDto {
   monto_pago: number;
 
   @IsNotEmpty()
-  @IsEnum(() => TipoPagos, {
+  @IsEnum(TipoPagos, {
     message:
       'El método de pago debe ser uno de los tipos definidos en TipoPagos enum',
   })
   metodo_pago: TipoPagos;
 
   @IsNotEmpty()
-  @IsEnum(() => EstadoPagos, {
+  @IsEnum(EstadoPagos, {
     message:
       'El estado del pago debe ser uno de los tipos definidos en EstadoPagos enum',
   })
