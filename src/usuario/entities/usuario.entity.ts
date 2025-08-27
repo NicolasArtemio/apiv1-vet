@@ -1,4 +1,5 @@
 import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
 import { Rol } from 'src/enums/Rol.enum';
 import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
 import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
@@ -27,8 +28,8 @@ export class Usuario {
   @Column('timestamp')
   fecha_registro: Date;
 
-   @Column()
-   estado: string;
+   @Column( 'enum', { enum: EstadoUsuario })
+   estado: EstadoUsuario;
 
   @OneToMany(() => Mensaje, (mensaje) => mensaje.usuario)
   mensajes: Mensaje[];

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Repository } from 'typeorm';
@@ -10,23 +10,71 @@ import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
 
 @Injectable()
 export class UsuarioService {
-  create(createUsuarioDto: CreateUsuarioDto) {
-    return 'This action adds a new usuario';
+
+  constructor(
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
+  ){}
+
+    /**
+   * Crea un nuevo usuario en la base de datos.
+   * @param createUsuarioDto - Datos necesarios para crear el usuario.
+   * @returns El usuario creado.
+   * @throws BadRequestException si ocurre un error al crear el usuario.
+   */
+
+  async create(createUsuarioDto: CreateUsuarioDto) {
+    try{
+      const usuario = this.usuarioRepository.create(createUsuarioDto);
+      return await this.usuarioRepository.save(usuario);
+    } catch (error) {
+      console.error('Error al crear el usuario:', error);
+      throw new BadRequestException('Error al crear el usuario');
+    }
   }
 
-  findAll() {
-    return `This action returns all usuario`;
+  async findAll(): Promise<Usuario[]> {
+    return await this.usuarioRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usuario`;
+  async findOne(id: number): Promise<Usuario | null> {
+    try{
+      const usuario = await this.usuarioRepository.findOneBy({ id });
+      if (!usuario) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+      return usuario;
+    } catch (error) {
+      console.error('Error al buscar el usuario:', error);
+      throw new BadRequestException('Error al buscar el usuario');
+    }
   }
 
-  update(id: number, UpdateUsuarioDto: UpdateUsuarioDto) {
-    return `This action updates a #${id} usuario`;
+  async update(id: number, UpdateUsuarioDto: UpdateUsuarioDto): Promise<Usuario | null> {
+    try{
+      const usuario = await this.usuarioRepository.findOneBy({ id });
+      if (!usuario) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+      this.usuarioRepository.merge(usuario, UpdateUsuarioDto);
+      return await this.usuarioRepository.save(usuario);
+    } catch (error) {
+      console.error('Error al actualizar el usuario:', error);
+      throw new BadRequestException('Error al actualizar el usuario');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usuario`;
+  async remove(id: number): Promise<Usuario | null> {
+    try {
+      const usuario = await this.usuarioRepository.findOneBy({ id });
+      if (!usuario) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+      await this.usuarioRepository.remove(usuario);
+      return usuario;
+    } catch (error) {
+      console.error('Error al eliminar el usuario:', error);
+      throw new BadRequestException('Error al eliminar el usuario');
+    }
   }
 }
