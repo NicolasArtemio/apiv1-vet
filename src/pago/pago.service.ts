@@ -33,6 +33,12 @@ export class PagoService {
     return await this.pagoRepository.find();
   }
 
+  /**
+   * Busca un pago por su ID.
+   * @param id - ID del pago a buscar.
+   * @returns El pago encontrado o null si no existe.
+   * @throws BadRequestException si ocurre un error al buscar el pago.
+   */
   async findOne(id: number): Promise<Pago | null> {
     try {
       const pago = await this.pagoRepository.findOneBy({ id });
@@ -47,6 +53,13 @@ export class PagoService {
     }
   }
 
+  /**
+   * Actualiza un pago existente.
+   * @param id - ID del pago a actualizar.
+   * @param updatePagoDto - Datos para actualizar el pago.
+   * @returns El pago actualizado.
+   * @throws BadRequestException si el pago no existe o si ocurre un error al actualizar.
+   */
   async update(id: number, updatePagoDto: UpdatePagoDto): Promise<Pago> {
     const pago = await this.pagoRepository.findOneBy({ id });
     if (!pago) {
@@ -57,6 +70,12 @@ export class PagoService {
     return await this.pagoRepository.save(updatedPago);
   }
 
+  /**
+   * Elimina un pago por su ID.
+   * @param id - ID del pago a eliminar.
+   * @returns El pago eliminado.
+   * @throws BadRequestException si el pago no existe o si ocurre un error al eliminar.
+   */
   async remove(id: number): Promise<Pago> {
     const pago = await this.findOne(id);
     if (!pago) {

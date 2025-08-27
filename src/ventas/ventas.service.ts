@@ -18,6 +18,12 @@ export class VentasService {
     private ventaRepository: Repository<Venta>,
   ) {}
 
+  /**
+   * Crea una nueva venta en la base de datos.
+   * @param createVentaDto - Datos necesarios para crear la venta.
+   * @returns La venta creada.
+   * @throws BadRequestException si ocurre un error al crear la venta.
+   */
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
       const venta = this.ventaRepository.create(createVentaDto);
@@ -32,6 +38,13 @@ export class VentasService {
     return this.ventaRepository.find();
   }
 
+  /**
+   * Busca una venta por su ID.
+   * @param id - ID de la venta a buscar.
+   * @returns La venta encontrada o null si no existe.
+   * @throws NotFoundException si la venta no es encontrada.
+   * @throws ForbiddenException si ocurre un error al buscar la venta.
+   */
   async findOne(id: number): Promise<Venta | null> {
     try {
       const venta = await this.ventaRepository.findOneBy({ id_compra: id });
@@ -48,6 +61,14 @@ export class VentasService {
     }
   }
 
+  /**
+   * Actualiza una venta existente.
+   * @param id - ID de la venta a actualizar.
+   * @param updateVentaDto - Datos para actualizar la venta.
+   * @returns La venta actualizada.
+   * @throws NotFoundException si la venta no es encontrada.
+   * @throws ForbiddenException si ocurre un error al actualizar la venta.
+   */
   async update(id: number, updateVentaDto: UpdateVentaDto): Promise<Venta> {
     try {
       const venta = await this.ventaRepository.findOneBy({ id_compra: id });
@@ -62,6 +83,13 @@ export class VentasService {
     }
   }
 
+  /**
+   * Elimina una venta por su ID.
+   * @param id - ID de la venta a eliminar.
+   * @returns La venta eliminada.
+   * @throws NotFoundException si la venta no es encontrada.
+   * @throws ForbiddenException si ocurre un error al eliminar la venta.
+   */
   async remove(id: number): Promise<Venta | null> {
     try {
       const venta = await this.ventaRepository.findOneBy({ id_compra: id });
