@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+} from '@nestjs/common';
 import { PagoService } from './pago.service';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
@@ -7,11 +17,14 @@ import { UpdatePagoDto } from './dto/update-pago.dto';
 export class PagoController {
   constructor(private readonly pagoService: PagoService) {}
 
+  @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createPagoDto: CreatePagoDto) {
+    console.log('Creating pago with data:', createPagoDto);
     return this.pagoService.create(createPagoDto);
   }
 
+  @HttpCode(HttpStatus.OK)
   @Get()
   findAll() {
     return this.pagoService.findAll();

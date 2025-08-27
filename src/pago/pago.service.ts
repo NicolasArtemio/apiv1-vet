@@ -30,18 +30,38 @@ export class PagoService {
   }
 
   async findAll(): Promise<Pago[]> {
-    return this.pagoRepository.find();
+    return await this.pagoRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pago`;
+  async findOne(id: number): Promise<Pago | null> {
+    try {
+      const pago = await this.pagoRepository.findOneBy({ id });
+      if (!Pago) {
+        throw new BadRequestException('Pago no encontrado');
+      } else {
+        return pago;
+      }
+    } catch (error) {
+      console.error('Error al buscar el pago:', error);
+      throw new BadRequestException('Error al buscar el pago');
+    }
   }
 
-  update(id: number, updatePagoDto: UpdatePagoDto) {
-    return `This action updates a #${id} pago`;
+  async update(id: number, updatePagoDto: UpdatePagoDto): Promise<Pago> {
+    const pago = await this.pagoRepository.findOneBy({ id });
+    if (!pago) {
+      throw new BadRequestException('Pago no encontrado');
+    }
+    const updatedPago = Object.assign({}, pago, updatePagoDto);
+
+    return await this.pagoRepository.save(updatedPago);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pago`;
+  async remove(id: number): Promise<Pago> {
+    const pago = await this.findOne(id);
+    if (!pago) {
+      throw new BadRequestException('Pago no encontrado');
+    }
+    return await this.pagoRepository.remove(pago);
   }
 }
