@@ -1,19 +1,17 @@
-import { IsDate, IsNotEmpty, IsString, IsBoolean, MinLength } from "class-validator";
+import { IsDate, IsNotEmpty, IsString, IsBoolean, MinLength, IsDateString, IsOptional } from "class-validator";
 
 export class CreateMensajeDto {
-    @IsString()
-    @IsNotEmpty()
-    @MinLength(5)
-    contenido: string;
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(5)
+  contenido: string;
 
+  @IsDateString()
+  @IsOptional() 
+  fecha_envio?: Date;
 
-    @IsDate()
-    @IsNotEmpty()
-    fecha_envio: Date;
-
-
-    @IsBoolean()
-    @IsNotEmpty()
-    leido?: boolean;
+  @IsBoolean()
+  @IsOptional() 
+  leido?: boolean;
 
 }

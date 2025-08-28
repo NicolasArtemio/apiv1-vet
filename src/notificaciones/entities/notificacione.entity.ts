@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -30,10 +31,10 @@ export class Notificacion {
   })
   leido: EstadoLectura;
 
-  @Column({ type: 'timestamp' })
-  fecha_creacion: Date;
+ @CreateDateColumn({ type: 'timestamp' })
+fecha_creacion: Date;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', nullable: true })
   fecha_lectura: Date;
 
   @ManyToOne(() => Usuario, (usuario) => usuario.notificaciones, {

@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { EstadoTurno } from 'src/enums/estadoTurno.enum';
 import { Mascota } from 'src/mascotas/entities/mascota.entity';
@@ -22,10 +24,10 @@ export class Turno {
   @Column()
   observaciones: string;
 
-  @Column({ type: 'timestamp' })
+ @CreateDateColumn({ type: 'timestamp' })
   fecha_registro: Date;
 
-  @Column({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamp' })
   actualizaciones_turno: Date;
 
   @ManyToOne(() => Mascota, (mascota) => mascota.turno, { eager: true })
