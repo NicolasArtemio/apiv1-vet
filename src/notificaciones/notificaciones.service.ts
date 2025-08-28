@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateNotificacioneDto } from './dto/create-notificacione.dto';
 import { UpdateNotificacioneDto } from './dto/update-notificacione.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Notificacion } from './entities/notificacione.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class NotificacionesService {
-  create(createNotificacioneDto: CreateNotificacioneDto) {
-    return 'This action adds a new notificacione';
+  constructor(
+  @InjectRepository(Notificacion)
+  private readonly notificacionesRepository: Repository<Notificacion>,
+)
+  {}
+   async create(createNotificacioneDto: CreateNotificacioneDto) {
+    return await this.notificacionesRepository.save(createNotificacioneDto);
   }
 
-  findAll() {
-    return `This action returns all notificaciones`;
+  async findAll() {
+    return await this.notificacionesRepository.find();
+    
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} notificacione`;
+  async findOne(id: number) {
+    const notificacion = await this.notificacionesRepository.findOneBy({ id });
+  if (!notificacion) {
+    throw new NotFoundException(`Notificación con id ${id} no encontrada`);
   }
-
-  update(id: number, updateNotificacioneDto: UpdateNotificacioneDto) {
-    return `This action updates a #${id} notificacione`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} notificacione`;
-  }
+  return notificacion;
 }
+  
+
+  async update(id: number, updateNotificacioneDto: UpdateNotificacioneDto) {
+    return await this.notificacionesRepository.update(id, updateNotificacioneDto);
+  }
+
+  async remove(id: number) {
+    const notificacion=await this.notificacionesRepository.softDelete({id});
+     if (!notificacion) {
+    throw new NotFoundException(`Notificación con id ${id} no encontrada`);
+  }
+
+  return await this.notificacionesRepository.softDelete({ id });
+}
+  }
+

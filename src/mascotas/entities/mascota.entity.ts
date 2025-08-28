@@ -1,5 +1,7 @@
+import { Cliente } from "src/cliente/entities/cliente.entity";
 import { Turno } from "src/turno/entities/turno.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Vacunacion } from "src/vacunacion/entities/vacunacion.entity";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Mascota {
@@ -37,6 +39,16 @@ export class Mascota {
     @Column()
     observaciones: string;
     
-    @OneToMany(() => Turno, turno => turno.mascota)
-    turnos: Turno[];
+    @OneToMany(() => Turno,turno => turno.mascota)
+    turno:Turno[];
+
+    @ManyToOne(() => Cliente, cliente => cliente.mascota)
+    @JoinColumn({name: "cliente_id"})
+    cliente:Cliente;
+
+    @OneToMany(() => Vacunacion, vacunacion => vacunacion.mascota)
+    @JoinColumn({name: "cliente_id"})
+    vacunacion: Vacunacion;
+
+
 }

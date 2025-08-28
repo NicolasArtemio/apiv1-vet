@@ -1,17 +1,19 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Mascota } from "src/mascotas/entities/mascota.entity";
+import { Usuario } from "src/usuario/entities/usuario.entity";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Cliente {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   foto_perfil: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   nombre: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   apellido: string;
 
   @Column('timestamp')
@@ -20,12 +22,23 @@ export class Cliente {
   @Column('int')
   dni: number;
 
-  @Column({ type: 'varchar', length: 15 })
+  @Column()
   telefono: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   ciudad: string;
 
-  @Column('varchar', { length: 255 })
+  @Column()
   direccion: string;
+
+  @OneToOne(() => Usuario, usuario => usuario.cliente )
+  
+  @JoinColumn({name: "usuario_id"  })
+  usuario : Usuario;
+
+  @OneToMany(() => Mascota, mascota => mascota.cliente )
+  mascota: Mascota; 
+  
+
+
 }

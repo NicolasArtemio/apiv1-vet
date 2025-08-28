@@ -1,4 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
+import { CategoriaProducto } from 'src/enums/CategoriaProducto.enum';
+import { TipoUso } from 'src/enums/TipoUso.enum';
+import { Inventario } from 'src/inventario/entities/inventario.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Producto {
@@ -19,11 +23,19 @@ export class Producto {
 
   @Column()
   stock: number;
-  @Column('enum', { enum: ['balanceado', 'limpieza'] })
-  categoria: string;
 
-  @Column()
-  typo_uso: string;
+  @Column('enum', { enum: CategoriaProducto })
+  categoria: CategoriaProducto;
+
+  @Column('enum', { enum: TipoUso })
+  typo_uso: TipoUso;
+
   @Column('date')
   fecha_vencimiento: Date;
+
+  @OneToMany(() => Inventario, (inventario) => inventario.producto)
+  inventarios: Inventario[];
+
+  @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.producto)
+  detallesVenta: DetalleVenta[];
 }

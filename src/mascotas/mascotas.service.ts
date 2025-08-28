@@ -1,10 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { CreateMascotasDto } from './dto/create-mascotas.dto';
 import { UpdateMascotasDto } from './dto/update-mascotas.dto';
+import { Mascota } from './entities/mascota.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Turno } from 'src/turno/entities/turno.entity';
 
 @Injectable()
 export class MascotasService {
-  create(createMascotasDto: CreateMascotasDto) {
+  constructor(
+    @InjectRepository(Mascota)
+    private readonly mascotaRepository: Repository<Mascota>,
+    @InjectRepository(Turno)
+     private readonly turnoRepository: Repository<Turno>,
+
+
+  ){}
+  create(createMascotaDto: CreateMascotasDto) {
     return 'This action adds a new mascota';
   }
 
@@ -16,7 +28,7 @@ export class MascotasService {
     return `This action returns a #${id} mascota`;
   }
 
-  update(id: number, updateMascotasDto: UpdateMascotasDto) {
+  update(id: number, updateMascotaDto: UpdateMascotasDto) {
     return `This action updates a #${id} mascota`;
   }
 

@@ -1,3 +1,4 @@
+import { Type } from "class-transformer";
 import { IsDate, IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class CreateClienteDto {
@@ -15,6 +16,7 @@ export class CreateClienteDto {
     apellido: string;
     
     @IsDate()
+    @Type(() => Date)
     @IsNotEmpty()
     fecha_nacimiento: Date;
 

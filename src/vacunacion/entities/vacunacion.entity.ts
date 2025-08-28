@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Mascota } from "src/mascotas/entities/mascota.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
    
 @Entity() 
 export class Vacunacion {
@@ -22,4 +23,9 @@ export class Vacunacion {
 
  @Column()
  firma_sello: string;
+
+ @ManyToOne(() => Mascota, mascota => mascota.vacunacion)
+ @JoinColumn({name: "mascota_id"})
+ mascota: Mascota;
+ 
 }

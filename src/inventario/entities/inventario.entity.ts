@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Producto } from 'src/productos/entities/producto.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity()
 export class Inventario {
@@ -16,4 +23,12 @@ export class Inventario {
 
   @Column({ type: 'timestamp', nullable: true })
   fecha_devolucion: Date;
+
+  @ManyToOne(() => Producto, (producto) => producto.inventarios)
+  @JoinColumn({ name: 'id_producto' })
+  producto: Producto;
+
+  //   @ManyToOne(() => Empleado, (empleado) => empleado.inventarios)
+  //   @JoinColumn({ name: 'id_empleado' })
+  //   empleado: Empleado;
 }

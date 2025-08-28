@@ -1,26 +1,18 @@
-import { IsDate, IsEnum, IsNotEmpty, IsString, } from "class-validator";
+import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
 import { EstadoTurno } from "src/enums/estadoTurno.enum";
+
 export class CreateTurnoDto {
 
-
-    @IsDate()
+    @IsDateString()
     @IsNotEmpty()
     fecha_turno: Date;
 
+    @IsOptional() // porque en la entidad ya tiene default
     @IsEnum(EstadoTurno)
-    @IsNotEmpty()
-    estado: EstadoTurno;
+    estado?: EstadoTurno;
 
     @IsString()
     @IsNotEmpty()
     observaciones: string;
-
-    @IsDate()
-    @IsNotEmpty()
-    fecha_registro: Date;
-
-    @IsDate()
-    @IsNotEmpty()
-    actualizaciones_turno: Date;
 
 }

@@ -1,31 +1,45 @@
-import { Mensaje } from "src/mensaje/entities/mensaje.entity";
-import { Notificacion } from "src/notificaciones/entities/notificacione.entity";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
+import { Rol } from 'src/enums/Rol.enum';
+import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
+import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  OneToOne,
+} from 'typeorm';
 
 @Entity()
 export class Usuario {
-   @PrimaryGeneratedColumn()
-   id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-   @Column('varchar', { length: 255 })
+   @Column()
    email: string;
 
-   @Column('varchar', { length: 255 })
+   @Column()
    contrasena: string;
 
-   @Column('enum', { enum: ['admin', 'user', 'empleado'] })
-   rol: string;
+  @Column('enum', { enum: Rol })
+  rol: Rol;
 
-   @Column('timestamp')
-   fecha_registro: Date;
+  @Column('timestamp')
+  fecha_registro: Date;
 
-   @Column('varchar', { length: 255 })
-   estado: string;
+   @Column( 'enum', { enum: EstadoUsuario })
+   estado: EstadoUsuario;
 
-   @OneToMany(() => Mensaje, mensaje => mensaje.usuario)
-   mensajes: Mensaje[];
+  @OneToMany(() => Mensaje, (mensaje) => mensaje.usuario)
+  mensajes: Mensaje[];
 
-   @OneToMany(() => Notificacion, notificacion => notificacion.usuario)
-   notificaciones: Notificacion[];
+  @OneToMany(() => Mensaje, (mensaje) => mensaje.usuario)
+  mensaje: Mensaje[];
 
+  @OneToMany(() => Notificacion, (notificacion) => notificacion.usuario)
+  notificaciones: Notificacion[];
+
+  @OneToOne(() => Cliente, (cliente) => cliente.usuario)
+  cliente: Cliente;
 }

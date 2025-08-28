@@ -1,4 +1,7 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { EstadoUsuario } from "src/enums/EstadoUsuario.enum";
+import { Rol } from "src/enums/Rol.enum";
 
 export class CreateUsuarioDto {
     @IsString()
@@ -11,13 +14,20 @@ export class CreateUsuarioDto {
 
     @IsString()
     @IsNotEmpty()
-    rol: 'admin' | 'user' | 'empleado';
+    @IsEnum( Rol, {
+        message: 'El rol debe ser uno de los siguientes: admin, user, empleado',
+    })
+    rol: Rol;
 
     @IsDate()
+    @Type(() => Date)
     @IsNotEmpty()
     fecha_registro: Date;
 
     @IsString()
     @IsNotEmpty()
-    estado: string;
+    @IsEnum(EstadoUsuario, {
+        message: 'El estado debe ser uno de los siguientes: activo, inactivo, suspendido',
+    })
+    estado: EstadoUsuario;
 }
