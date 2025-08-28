@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,22 +19,41 @@ export class PagoService {
   ) {}
 
   /**
-   * Crea un nuevo pago en la base de datos.
-   * @param createPagoDto - Datos necesarios para crear el pago.
+   * Crea un nuevo pago.
+   * @param createPagoDto - Datos para crear el pago.
    * @returns El pago creado.
-   * @throws BadRequestException si ocurre un error al crear el pago.
+   * @throws ConflictException si ya existe un pago con datos duplicados.
+   * @throws BadRequestException si los datos referenciados no existen.
+   * @throws InternalServerErrorException si ocurre un error interno al crear el pago.
    */
-
   async create(createPagoDto: CreatePagoDto): Promise<Pago> {
     try {
       const pago = this.pagoRepository.create(createPagoDto);
       return await this.pagoRepository.save(pago);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error al crear el pago:', error);
-      throw new BadRequestException('Error al crear el pago');
+
+      // Type guard para asegurar que el error tiene las propiedades necesarias
+      if (typeof error === 'object' && error !== null) {
+        const err = error as { code?: string; errno?: number };
+
+        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+          throw new ConflictException('Ya existe un pago con datos duplicados');
+        }
+
+        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+          throw new BadRequestException('Datos referenciados no existen');
+        }
+      }
+
+      throw new InternalServerErrorException('Error interno al crear el pago');
     }
   }
 
+  /**
+   * Busca y devuelve todos los pagos.
+   * @returns Lista de todos los pagos.
+   */
   async findAll(): Promise<Pago[]> {
     return await this.pagoRepository.find();
   }
@@ -37,19 +62,26 @@ export class PagoService {
    * Busca un pago por su ID.
    * @param id - ID del pago a buscar.
    * @returns El pago encontrado o null si no existe.
-   * @throws BadRequestException si ocurre un error al buscar el pago.
+   * @throws NotFoundException si el pago no existe.
+   * @throws InternalServerErrorException si ocurre un error al buscar el pago.
    */
   async findOne(id: number): Promise<Pago | null> {
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
+    }
+
     try {
       const pago = await this.pagoRepository.findOneBy({ id });
-      if (!Pago) {
-        throw new BadRequestException('Pago no encontrado');
-      } else {
-        return pago;
+      if (!pago) {
+        throw new NotFoundException(`Pago con ID ${id} no encontrado`);
       }
+      return pago;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
       console.error('Error al buscar el pago:', error);
-      throw new BadRequestException('Error al buscar el pago');
+      throw new InternalServerErrorException('Error interno al buscar el pago');
     }
   }
 
@@ -58,29 +90,52 @@ export class PagoService {
    * @param id - ID del pago a actualizar.
    * @param updatePagoDto - Datos para actualizar el pago.
    * @returns El pago actualizado.
-   * @throws BadRequestException si el pago no existe o si ocurre un error al actualizar.
+   * @throws NotFoundException si el pago no existe.
+   * @throws InternalServerErrorException si ocurre un error al actualizar el pago.
    */
   async update(id: number, updatePagoDto: UpdatePagoDto): Promise<Pago> {
-    const pago = await this.pagoRepository.findOneBy({ id });
-    if (!pago) {
-      throw new BadRequestException('Pago no encontrado');
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
     }
-    const updatedPago = Object.assign({}, pago, updatePagoDto);
+    try {
+      const pago = await this.pagoRepository.findOneBy({ id });
+      if (!pago) {
+        throw new NotFoundException(`Pago con ID ${id} no encontrado`);
+      }
+      const updatedPago = Object.assign({}, pago, updatePagoDto);
 
-    return await this.pagoRepository.save(updatedPago);
+      return await this.pagoRepository.save(updatedPago);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Error al actualizar el pago');
+    }
   }
 
   /**
    * Elimina un pago por su ID.
    * @param id - ID del pago a eliminar.
    * @returns El pago eliminado.
-   * @throws BadRequestException si el pago no existe o si ocurre un error al eliminar.
+   * @throws NotFoundException si el pago no existe.
+   * @throws InternalServerErrorException si ocurre un error al eliminar el pago.
    */
   async remove(id: number): Promise<Pago> {
-    const pago = await this.findOne(id);
-    if (!pago) {
-      throw new BadRequestException('Pago no encontrado');
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
     }
-    return await this.pagoRepository.remove(pago);
+    const pago = await this.pagoRepository.findOneBy({ id });
+
+    if (!pago) {
+      throw new NotFoundException(`Pago con ID ${id} no encontrado`);
+    }
+
+    try {
+      await this.pagoRepository.remove(pago);
+      return pago;
+    } catch (error) {
+      console.error('Error al eliminar el pago:', error);
+      throw new InternalServerErrorException('Error al eliminar el pago');
+    }
   }
 }
