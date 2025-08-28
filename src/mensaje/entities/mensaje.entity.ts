@@ -1,6 +1,6 @@
 
 import { Usuario } from 'src/usuario/entities/usuario.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, } from 'typeorm';
 
 @Entity()
 export class Mensaje {
@@ -14,8 +14,8 @@ export class Mensaje {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     fecha_envio: Date;
 
-    @Column()
-    leido: boolean;
+  @Column({ default: false })
+  leido: boolean;
 
     @ManyToOne(() => Usuario, usuario => usuario.mensajes, { eager: true })
     @JoinColumn({ name: 'usuario_id' })
