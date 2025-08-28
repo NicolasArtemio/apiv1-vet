@@ -1,7 +1,8 @@
 import {
   BadRequestException,
-  ForbiddenException,
+  ConflictException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateVentaDto } from './dto/create-venta.dto';
@@ -19,45 +20,73 @@ export class VentasService {
   ) {}
 
   /**
-   * Crea una nueva venta en la base de datos.
-   * @param createVentaDto - Datos necesarios para crear la venta.
+   * Crea una nueva venta.
+   * @param createVentaDto - Datos para crear la venta.
    * @returns La venta creada.
-   * @throws BadRequestException si ocurre un error al crear la venta.
+   * @throws ConflictException si ya existe una venta con datos duplicados.
+   * @throws BadRequestException si los datos referenciados no existen.
+   * @throws InternalServerErrorException si ocurre un error interno al crear la venta.
    */
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
       const venta = this.ventaRepository.create(createVentaDto);
       return await this.ventaRepository.save(venta);
-    } catch (error) {
-      console.error('Error al crear laventa:', error);
-      throw new BadRequestException('Error al crear la venta');
+    } catch (error: unknown) {
+      console.error('Error al crear la venta:', error);
+
+      // Type guard para asegurar que el error tiene las propiedades necesarias
+      if (typeof error === 'object' && error !== null) {
+        const err = error as { code?: string; errno?: number };
+
+        // Entrada duplicada (clave única)
+        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+          throw new ConflictException(
+            'Ya existe una venta con datos duplicados',
+          );
+        }
+
+        // Clave foránea inválida
+        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+          throw new BadRequestException('Datos referenciados no existen');
+        }
+      }
+
+      throw new InternalServerErrorException('Error interno al crear la venta');
     }
   }
 
+  /**
+   * Busca y devuelve todas las ventas.
+   * @returns Lista de todas las ventas.
+   */
   async findAll(): Promise<Venta[]> {
     return this.ventaRepository.find();
   }
 
   /**
-   * Busca una venta por su ID.
+   * Busca y devuelve una venta por su ID.
    * @param id - ID de la venta a buscar.
-   * @returns La venta encontrada o null si no existe.
+   * @returns La venta encontrada.
    * @throws NotFoundException si la venta no es encontrada.
-   * @throws ForbiddenException si ocurre un error al buscar la venta.
+   * @throws InternalServerErrorException si ocurre un error interno al buscar la venta.
    */
-  async findOne(id: number): Promise<Venta | null> {
+  async findOne(id: number): Promise<Venta> {
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
+    }
     try {
       const venta = await this.ventaRepository.findOneBy({ id_compra: id });
-      {
-        if (!venta) {
-          throw new NotFoundException('Venta no encontrada');
-        } else {
-          return venta;
-        }
+
+      if (!venta) {
+        throw new NotFoundException(`Venta con ID ${id} no encontrada`);
       }
+
+      return venta;
     } catch (error) {
       console.error('Error al buscar la venta:', error);
-      throw new ForbiddenException('Error al buscar la venta');
+      throw new InternalServerErrorException(
+        'Error interno al buscar la venta',
+      );
     }
   }
 
@@ -67,19 +96,26 @@ export class VentasService {
    * @param updateVentaDto - Datos para actualizar la venta.
    * @returns La venta actualizada.
    * @throws NotFoundException si la venta no es encontrada.
-   * @throws ForbiddenException si ocurre un error al actualizar la venta.
+   * @throws InternalServerErrorException si ocurre un error interno al actualizar la venta.
    */
   async update(id: number, updateVentaDto: UpdateVentaDto): Promise<Venta> {
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
+    }
     try {
       const venta = await this.ventaRepository.findOneBy({ id_compra: id });
+
       if (!venta) {
-        throw new NotFoundException('Venta no encontrada');
+        throw new NotFoundException(`Venta con ID ${id} no encontrada`);
       }
+
       Object.assign(venta, updateVentaDto);
       return await this.ventaRepository.save(venta);
     } catch (error) {
       console.error('Error al actualizar la venta:', error);
-      throw new ForbiddenException('Error al actualizar la venta');
+      throw new InternalServerErrorException(
+        'Error interno al actualizar la venta',
+      );
     }
   }
 
@@ -87,20 +123,29 @@ export class VentasService {
    * Elimina una venta por su ID.
    * @param id - ID de la venta a eliminar.
    * @returns La venta eliminada.
+   * @throws BadRequestException si el ID no es un número positivo.
    * @throws NotFoundException si la venta no es encontrada.
-   * @throws ForbiddenException si ocurre un error al eliminar la venta.
+   * @throws InternalServerErrorException si ocurre un error interno al eliminar la venta.
    */
-  async remove(id: number): Promise<Venta | null> {
+  async remove(id: number): Promise<Venta> {
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
+    }
+
     try {
       const venta = await this.ventaRepository.findOneBy({ id_compra: id });
+
       if (!venta) {
-        throw new NotFoundException('Venta no encontrada');
+        throw new NotFoundException(`Venta con ID ${id} no encontrada`);
       }
+
       await this.ventaRepository.remove(venta);
       return venta;
     } catch (error) {
       console.error('Error al eliminar la venta:', error);
-      throw new ForbiddenException('Error al eliminar la venta');
+      throw new InternalServerErrorException(
+        'Error interno al eliminar la venta',
+      );
     }
   }
 }
