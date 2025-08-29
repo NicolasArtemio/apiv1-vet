@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Empleado {
@@ -29,6 +31,10 @@ export class Empleado {
 
   @Column()
   especialidad: string;
+
+  @OneToOne(() => Usuario, (usuario) => usuario.empleado, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'usuario_id' })
+  usuario: Usuario;
 
   @OneToMany(() => Venta, (venta) => venta.empleado)
   ventas: Venta[];

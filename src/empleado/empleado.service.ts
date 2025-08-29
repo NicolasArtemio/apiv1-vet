@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
+  HttpException,
+  HttpStatus,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
@@ -9,12 +14,15 @@ import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 import { Empleado } from './entities/empleado.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Injectable()
 export class EmpleadoService {
   constructor(
     @InjectRepository(Empleado)
     private empleadoRepository: Repository<Empleado>,
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
   ) {}
 
   /**
@@ -26,10 +34,38 @@ export class EmpleadoService {
 
   async create(createEmpleadoDto: CreateEmpleadoDto): Promise<Empleado> {
     try {
-      const empleado = this.empleadoRepository.create(createEmpleadoDto);
-      return await this.empleadoRepository.save(empleado);
+      const usuario = await this.usuarioRepository.findOneBy({
+        id: createEmpleadoDto.usuario_id,
+      });
+
+      if (!usuario) {
+        throw new NotFoundException('Usuario no encontrado');
+      }
+
+      const { usuario_id, ...restoDatos } = createEmpleadoDto;
+
+      const nuevoEmpleado = this.empleadoRepository.create({
+        ...restoDatos,
+        usuario,
+      });
+      return await this.empleadoRepository.save(nuevoEmpleado);
     } catch (error) {
       console.error('Error al crear el empleado:', error);
+
+      if (typeof error === 'object' && error !== null) {
+        const err = error as { code?: string; errno?: number };
+
+        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+          throw new ConflictException(
+            'Ya existe un empleado con datos duplicados',
+          );
+        }
+
+        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+          throw new BadRequestException('Datos referenciados no existen');
+        }
+      }
+
       throw new BadRequestException('Error al crear el empleado');
     }
   }
@@ -39,43 +75,61 @@ export class EmpleadoService {
   }
 
   async findOne(id: number): Promise<Empleado | null> {
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
+    }
     try {
       const empleado = await this.empleadoRepository.findOneBy({ id });
       if (!empleado) {
-        throw new NotFoundException('Empleado no encontrado');
+        throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
       }
       return empleado;
     } catch (error) {
       console.error('Error al buscar el empleado:', error);
-      throw new ForbiddenException('Error al buscar el empleado');
+      throw new InternalServerErrorException(
+              `No se encontro el empleado con el id ${id}`,
+            );
     }
   }
 
   async update(id: number, updateEmpleadoDto: UpdateEmpleadoDto) {
+    if (id <= 0) {
+    throw new BadRequestException('El ID debe ser un número positivo');
+    }
+
     try {
-      await this.empleadoRepository.update(id, updateEmpleadoDto);
-      const updateEmpleado = await this.empleadoRepository.findOneBy({ id });
-      if (!updateEmpleado) {
-        throw new NotFoundException('Empleado no encontrado');
+      const empleado = await this.empleadoRepository.findOneBy({ id });
+      if (!empleado) {
+        throw new HttpException(
+          'Cliente no encontrado',
+          HttpStatus.BAD_REQUEST,
+        );
       }
-      return updateEmpleado;
+      const updateEmpleado = Object.assign(empleado, updateEmpleadoDto);
+      return await this.empleadoRepository.save(updateEmpleado);
     } catch (error) {
       console.error('Error al actualizar el empleado:', error);
-      throw new ForbiddenException('Error al actualizar el empleado');
+      throw new InternalServerErrorException(
+        `No se encontro el cliente con el id ${id}`,
+      );
     }
   }
 
   async remove(id: number): Promise<Empleado | null> {
+    if (id <= 0) {
+    throw new BadRequestException('El ID debe ser un número positivo');
+    }
     try {
       const empleado = await this.empleadoRepository.findOneBy({ id });
       if (!empleado) {
-        throw new NotFoundException('Empleado no encontrado');
+        throw new HttpException('Cliente no encontrado', HttpStatus.BAD_REQUEST);
       }
-      await this.empleadoRepository.remove(empleado);
-      return empleado;
+      return this.empleadoRepository.remove(empleado);
     } catch (error) {
       console.error('Error al eliminar el empleado:', error);
-      throw new ForbiddenException('Error al eliminar el empleado');
+      throw new InternalServerErrorException(
+        `No se encontro el cliente con el id ${id}`,
+      );
     }
   }
 }

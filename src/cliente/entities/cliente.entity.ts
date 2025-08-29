@@ -1,3 +1,4 @@
+import { Rol } from "src/enums/Rol.enum";
 import { Mascota } from "src/mascotas/entities/mascota.entity";
 import { Usuario } from "src/usuario/entities/usuario.entity";
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -31,14 +32,15 @@ export class Cliente {
   @Column()
   direccion: string;
 
-  @OneToOne(() => Usuario, usuario => usuario.cliente )
-  
+  @Column({ type: 'enum', enum: Rol, default: Rol.USER })
+  rol: Rol;
+
+  @OneToOne(() => Usuario, usuario => usuario.cliente, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({name: "usuario_id"  })
   usuario : Usuario;
 
   @OneToMany(() => Mascota, mascota => mascota.cliente )
   mascota: Mascota; 
-  
-
-
 }

@@ -42,4 +42,5 @@ export class Usuario {
 
   @OneToOne(() => Cliente, (cliente) => cliente.usuario)
   cliente: Cliente;
+  empleado: any;
 }
