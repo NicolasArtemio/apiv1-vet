@@ -8,11 +8,13 @@ import { TurnoService } from 'src/turno/turno.service';
 import { ClienteModule } from 'src/cliente/cliente.module';
 import { ClienteService } from 'src/cliente/cliente.service';
 import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { UsuarioModule } from 'src/usuario/usuario.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Mascota, Turno, Cliente]),
     forwardRef(() => ClienteModule),
+    UsuarioModule,
   ],
   controllers: [MascotasController],
   providers: [MascotasService, TurnoService, ClienteService],
