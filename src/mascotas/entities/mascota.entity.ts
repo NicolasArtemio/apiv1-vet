@@ -1,54 +1,52 @@
-import { Cliente } from "src/cliente/entities/cliente.entity";
-import { Turno } from "src/turno/entities/turno.entity";
-import { Vacunacion } from "src/vacunacion/entities/vacunacion.entity";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { Turno } from 'src/turno/entities/turno.entity';
+import { Vacunacion } from 'src/vacunacion/entities/vacunacion.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Mascota {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    nombre: string;
-    
-    
-    @Column()
-    especie: string;
+  @Column()
+  nombre: string;
 
-    
-    @Column()
-    raza: string;
+  @Column()
+  especie: string;
 
-    
-    @Column({type: 'decimal'})
-    peso:number;
+  @Column()
+  raza: string;
 
-    
-    @Column()
-    edad: number;
+  @Column({ type: 'decimal' })
+  peso: number;
 
-    
-    @Column()
-    esterilizado: boolean;
+  @Column()
+  edad: number;
 
-    
-    @Column()
-    foto: string;
+  @Column()
+  esterilizado: boolean;
 
-    
-    @Column()
-    observaciones: string;
-    
-    @OneToMany(() => Turno,turno => turno.mascota)
-    turno:Turno[];
+  @Column()
+  foto: string;
 
-    @ManyToOne(() => Cliente, cliente => cliente.mascota)
-    @JoinColumn({name: "cliente_id"})
-    cliente:Cliente;
+  @Column()
+  observaciones: string;
 
-    @OneToMany(() => Vacunacion, vacunacion => vacunacion.mascota)
-    @JoinColumn({name: "cliente_id"})
-    vacunacion: Vacunacion;
+  @OneToMany(() => Turno, (turno) => turno.mascota)
+  turno: Turno[];
 
+  @ManyToOne(() => Cliente, (cliente) => cliente.mascota, { eager: false })
+  @JoinColumn({ name: 'cliente_id' })
+  cliente: Cliente;
 
+  @OneToMany(() => Vacunacion, (vacunacion) => vacunacion.mascota)
+  @JoinColumn({ name: 'cliente_id' })
+  vacunacion: Vacunacion;
 }
