@@ -21,12 +21,10 @@ export class CreateMascotasDto {
     @IsNotEmpty()
     edad: number;
 
-    @IsString()
     @IsBoolean()
     esterilizado: boolean;   
 
     @IsString()
-    @IsUrl()
     foto: string
 
     @IsString()
