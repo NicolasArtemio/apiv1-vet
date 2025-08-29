@@ -9,6 +9,7 @@ export class MascotasController {
 
   @Post()
   create(@Body() createMascotaDto: CreateMascotasDto) {
+    console.log("wEG", createMascotaDto)
     return this.mascotasService.create(createMascotaDto);
   }
 
