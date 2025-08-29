@@ -1,0 +1,16 @@
+### Agregar una nueva mascota
+
+POST http://localhost:3000/api/v1/mascotas HTTP/1.1
+Content-Type: application/json
+
+{
+   "nombre": "Firulais",
+   "cliente_id":1,
+   "especie": "Perro",
+   "raza": "Labrador",
+   "edad": 3,
+   "peso": 20,
+   "esterilizado": true,
+   "foto": "http://example.com/firulais.jpg",
+   "observaciones": "Muy amigable"
+}

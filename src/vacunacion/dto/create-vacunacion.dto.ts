@@ -1,28 +1,32 @@
-import {IsNotEmpty, IsNumber, IsString} from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateVacunacionDto {
-    @IsString()
-    @IsNotEmpty()
-    fecha: Date
+  @IsNumber()
+  @IsNotEmpty()
+  mascota_id: number;
 
-     @IsString()
-    @IsNotEmpty()
-    nombre_vacuna: string;
+  @IsString()
+  @IsNotEmpty()
+  fecha: Date;
 
-    @IsNumber()
-    @IsNotEmpty()
-    nro_serie: number;
+  @IsString()
+  @IsNotEmpty()
+  nombre_vacuna: string;
 
-    @IsString()
-    @IsNotEmpty()
-    prox_dosis: Date;   
+  @IsNumber()
+  @IsNotEmpty()
+  nro_serie: number;
 
-    @IsString()
-     @IsNotEmpty()
-    nombre_veterinario: string
+  @IsString()
+  @IsNotEmpty()
+  prox_dosis: Date;
 
-    @IsString()
-    @IsNotEmpty()
-    firma_sello: string;
+  @IsString()
+  @IsNotEmpty()
+  nombre_veterinario: string;
 
+  @IsString()
+  @IsNotEmpty()
+  firma_sello: string;
 }
+

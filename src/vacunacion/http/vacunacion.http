@@ -1,0 +1,22 @@
+### Creaa una vacunacion
+
+
+### 
+
+POST http://localhost:3000/api/v1/vacunacion HTTP/1.1
+Content-Type: application/json
+
+{
+   "mascota_id": 1,
+   "fecha":"2024-01-23T10:00:00",
+   "nombre_vacuna": "Rabia",
+   "nro_serie": 12345,
+   "prox_dosis": "2025-01-23T10:00:00",
+   "nombre_veterinario": "Dr. Juan Perez",
+   "firma_sello": "http://example.com/sello.jpg"
+}
+
+
+### Obtener las vacunaciones
+
+GET http://localhost:3000/api/v1/vacunacion HTTP/1.1

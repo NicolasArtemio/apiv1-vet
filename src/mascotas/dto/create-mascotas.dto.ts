@@ -1,34 +1,44 @@
-import {IsBoolean, IsNotEmpty, IsNumber, IsString, IsUrl, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Min,
+} from 'class-validator';
 
 export class CreateMascotasDto {
-    @IsString()
-    @IsNotEmpty()
-    nombre: string;
+  @IsString()
+  @IsNotEmpty()
+  nombre: string;
 
-     @IsString()
-    @IsNotEmpty()
-    especie: string;
+  @IsNumber()
+  @IsNotEmpty()
+  cliente_id: number;
 
-     @IsString()
-    @IsNotEmpty()
-    raza: string;
+  @IsString()
+  @IsNotEmpty()
+  especie: string;
 
-    @IsNumber({ maxDecimalPlaces: 2 },)
-    @Min(0.1)
-    pesoKG: number;
+  @IsString()
+  @IsNotEmpty()
+  raza: string;
 
-    @IsNumber()
-    @IsNotEmpty()
-    edad: number;
+  @IsInt()
+  @Min(1)
+  peso: number;
 
-    @IsBoolean()
-    esterilizado: boolean;   
+  @IsNumber()
+  @IsNotEmpty()
+  edad: number;
 
-    @IsString()
-    foto: string
+  @IsBoolean()
+  esterilizado: boolean;
 
-    @IsString()
-    @IsNotEmpty()
-    observaciones: string;
+  @IsString()
+  foto: string;
 
+  @IsString()
+  @IsNotEmpty()
+  observaciones: string;
 }
