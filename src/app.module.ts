@@ -17,7 +17,6 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { MascotasModule } from './mascotas/mascotas.module';
 import { VacunacionModule } from './vacunacion/vacunacion.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -36,6 +35,7 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
         synchronize: true, // ¡no usar en producción!
+        dropSchema: true, // no usar en produccion!
       }),
     }),
     VentasModule,
@@ -58,7 +58,6 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
     NotificacionesModule,
     MascotasModule,
     VacunacionModule,
- 
   ],
   controllers: [],
   providers: [],

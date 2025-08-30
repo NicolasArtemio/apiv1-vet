@@ -16,16 +16,14 @@ import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cliente } from './entities/cliente.entity';
 import { Repository } from 'typeorm';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { Rol } from 'src/enums/Rol.enum';
+import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
 
 @Injectable()
 export class ClienteService {
   constructor(
     @InjectRepository(Cliente)
     private clienteRepository: Repository<Cliente>,
-    @InjectRepository(Usuario)
-    private usuarioRepository: Repository<Usuario>,
   ) {}
 
   /**
@@ -34,44 +32,34 @@ export class ClienteService {
    * @returns El cliente creado.
    * @throws BadRequestException si ocurre un error al crear el cliente.
    */
-
   async create(createClienteDto: CreateClienteDto): Promise<Cliente> {
     try {
-      const usuario = await this.usuarioRepository.findOneBy({
-        id: createClienteDto.usuario_id,
-      });
-
-      if (!usuario) {
-        throw new NotFoundException('Usuario no encontrado');
-      }
-      const { usuario_id, ...restoDatos } = createClienteDto;
-
       const nuevoCliente = this.clienteRepository.create({
-        ...restoDatos,
+        ...createClienteDto,
         rol: Rol.USER,
-
-        usuario, // asigna el objeto usuario aquí
+        fecha_registro: new Date(),
+        estado: EstadoUsuario.ACTIVO,
       });
+
       return await this.clienteRepository.save(nuevoCliente);
     } catch (error) {
       console.error('Error al crear el cliente:', error);
-      if (typeof error === 'object' && error !== null) {
-        const err = error as { code?: string; errno?: number };
 
-        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException(
-            'Ya existe un cliente con datos duplicados',
-          );
-        }
+      const err = error as { code?: string; errno?: number };
 
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
-        }
+      if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+        throw new ConflictException(
+          'Ya existe un cliente con datos duplicados',
+        );
       }
+
+      if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+        throw new BadRequestException('Datos referenciados no existen');
+      }
+
       throw new InternalServerErrorException('Error al crear cliente');
     }
   }
-
   async findAll(): Promise<Cliente[]> {
     return this.clienteRepository.find();
   }
@@ -126,7 +114,10 @@ export class ClienteService {
     try {
       const cliente = await this.clienteRepository.findOneBy({ id });
       if (!cliente) {
-        throw new HttpException('Cliente no encontrado', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Cliente no encontrado',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       return this.clienteRepository.remove(cliente);
     } catch (error) {

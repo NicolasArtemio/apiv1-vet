@@ -42,7 +42,7 @@ export class Mascota {
   @OneToMany(() => Turno, (turno) => turno.mascota)
   turno: Turno[];
 
-  @ManyToOne(() => Cliente, (cliente) => cliente.mascota, { eager: false })
+  @ManyToOne(() => Cliente, (cliente) => cliente.mascotas, { eager: false })
   @JoinColumn({ name: 'cliente_id' })
   cliente: Cliente;
 

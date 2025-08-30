@@ -1,13 +1,9 @@
-import { Rol } from "src/enums/Rol.enum";
-import { Mascota } from "src/mascotas/entities/mascota.entity";
-import { Usuario } from "src/usuario/entities/usuario.entity";
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ChildEntity, Column, OneToMany } from 'typeorm';
+import { Usuario } from '../../usuario/entities/usuario.entity';
+import { Mascota } from '../../mascotas/entities/mascota.entity';
 
-@Entity()
-export class Cliente {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+@ChildEntity()
+export class Cliente extends Usuario {
   @Column()
   foto_perfil: string;
 
@@ -32,15 +28,6 @@ export class Cliente {
   @Column()
   direccion: string;
 
-  @Column({ type: 'enum', enum: Rol, default: Rol.USER })
-  rol: Rol;
-
-  @OneToOne(() => Usuario, usuario => usuario.cliente, {
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({name: "usuario_id"  })
-  usuario : Usuario;
-
-  @OneToMany(() => Mascota, mascota => mascota.cliente )
-  mascota: Mascota; 
+  @OneToMany(() => Mascota, (mascota) => mascota.cliente)
+  mascotas: Mascota[];
 }

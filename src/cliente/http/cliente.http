@@ -1,0 +1,17 @@
+### crear un nuevo cliente
+
+POST http://localhost:3000/api/v1/cliente HTTP/1.1
+Content-Type: application/json
+
+{
+  "email": "cliente@example.com",
+  "contrasena": "password123",
+  "foto_perfil": "https://example.com/imagenes/cliente123.jpg",
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "fecha_nacimiento":  "2024-01-23T10:00:00",
+  "dni": 12345678,
+  "telefono": "+5491123456789",
+  "ciudad": "Buenos Aires",
+  "direccion": "Calle Falsa 123"
+}
