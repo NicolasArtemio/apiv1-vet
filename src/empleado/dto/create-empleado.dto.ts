@@ -1,7 +1,21 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsEmail,
+} from 'class-validator';
 
 export class CreateEmpleadoDto {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  contrasena: string;
+
   @IsString()
   @IsNotEmpty()
   nombre: string;
@@ -34,8 +48,4 @@ export class CreateEmpleadoDto {
   @IsString()
   @IsNotEmpty()
   especialidad: string;
-
-  @IsNumber()
-  @IsNotEmpty()
-  usuario_id: number;
 }

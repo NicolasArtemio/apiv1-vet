@@ -15,6 +15,8 @@ import { Empleado } from './entities/empleado.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
+import { Rol } from 'src/enums/Rol.enum';
 
 @Injectable()
 export class EmpleadoService {
@@ -34,20 +36,13 @@ export class EmpleadoService {
 
   async create(createEmpleadoDto: CreateEmpleadoDto): Promise<Empleado> {
     try {
-      const usuario = await this.usuarioRepository.findOneBy({
-        id: createEmpleadoDto.usuario_id,
-      });
-
-      if (!usuario) {
-        throw new NotFoundException('Usuario no encontrado');
-      }
-
-      const { usuario_id, ...restoDatos } = createEmpleadoDto;
-
       const nuevoEmpleado = this.empleadoRepository.create({
-        ...restoDatos,
-        usuario,
+        ...createEmpleadoDto,
+        rol: Rol.EMPLEADO,
+        fecha_registro: new Date(),
+        estado: EstadoUsuario.ACTIVO,
       });
+
       return await this.empleadoRepository.save(nuevoEmpleado);
     } catch (error) {
       console.error('Error al crear el empleado:', error);
@@ -87,14 +82,14 @@ export class EmpleadoService {
     } catch (error) {
       console.error('Error al buscar el empleado:', error);
       throw new InternalServerErrorException(
-              `No se encontro el empleado con el id ${id}`,
-            );
+        `No se encontro el empleado con el id ${id}`,
+      );
     }
   }
 
   async update(id: number, updateEmpleadoDto: UpdateEmpleadoDto) {
     if (id <= 0) {
-    throw new BadRequestException('El ID debe ser un número positivo');
+      throw new BadRequestException('El ID debe ser un número positivo');
     }
 
     try {
@@ -117,12 +112,15 @@ export class EmpleadoService {
 
   async remove(id: number): Promise<Empleado | null> {
     if (id <= 0) {
-    throw new BadRequestException('El ID debe ser un número positivo');
+      throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
       const empleado = await this.empleadoRepository.findOneBy({ id });
       if (!empleado) {
-        throw new HttpException('Cliente no encontrado', HttpStatus.BAD_REQUEST);
+        throw new HttpException(
+          'Cliente no encontrado',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       return this.empleadoRepository.remove(empleado);
     } catch (error) {

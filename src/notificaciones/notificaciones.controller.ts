@@ -9,7 +9,7 @@ export class NotificacionesController {
 
   @Post()
   create(@Body() createNotificacioneDto: CreateNotificacioneDto) {
-    return this.notificacionesService.create(createNotificacioneDto);
+    return this.notificacionesService.createNotificacion(createNotificacioneDto);
   }
 
   @Get()
