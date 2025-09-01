@@ -1,6 +1,7 @@
 import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
 import { EstadoTurno } from "src/enums/estadoTurno.enum";
 
+
 export class CreateTurnoDto {
 
     @IsDateString()
@@ -14,5 +15,7 @@ export class CreateTurnoDto {
     @IsString()
     @IsNotEmpty()
     observaciones: string;
+    
+   
 
 }

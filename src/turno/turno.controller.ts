@@ -30,5 +30,5 @@ export class TurnoController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.turnoService.remove(+id);
-  }
+  } 
 }
