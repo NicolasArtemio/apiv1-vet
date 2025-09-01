@@ -9,7 +9,7 @@ export class TurnoController {
 
   @Post()
   create(@Body() createTurnoDto: CreateTurnoDto) {
-    return this.turnoService.create(createTurnoDto);
+    return this.turnoService.createTurno(createTurnoDto);
   }
 
   @Get()
