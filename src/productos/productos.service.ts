@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
@@ -13,7 +12,7 @@ export class ProductosService {
     private readonly productosRepository: Repository<Producto>
   ) { }
 
-  async create(createProductoDto: CreateProductoDto) {
+  async create(createProductoDto: CreateProductoDto): Promise<Producto> {
     try {
       const producto = this.productosRepository.create(createProductoDto)
 
