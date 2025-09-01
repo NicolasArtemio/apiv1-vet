@@ -1,4 +1,5 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -38,19 +39,48 @@ export class ProductosService {
   }
 
 
-  findAll() {
-    return `This action returns all productos`;
+  findAll(): Promise<Producto[]> {
+    return this.productosRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} producto`;
+  async findOne(id: number): Promise<Producto> {
+       try{
+         const producto = await this.productosRepository.findOneBy({ id });
+         if (!producto) {
+           throw new NotFoundException('producto no encontrado');
+         }
+         return producto;
+       } catch (error) {
+         console.error('Error al buscar el producto:', error);
+         throw new BadRequestException('Error al buscar el producto');
+       }
   }
 
-  update(id: number, updateProductoDto: UpdateProductoDto) {
-    return `This action updates a #${id} producto`;
+  async update(id: number, updateProductoDto: UpdateProductoDto) {
+      try{
+      const producto = await this.productosRepository.findOneBy({ id });
+      if (!producto) {
+        throw new NotFoundException('producto no encontrado');
+      }
+      this.productosRepository.merge(producto, updateProductoDto);
+      return await this.productosRepository.save(producto);
+    } catch (error) {
+      console.error('Error al actualizar el producto:', error);
+      throw new BadRequestException('Error al actualizar el producto');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} producto`;
+  async remove(id: number) {
+        try {
+      const producto = await this.productosRepository.findOneBy({ id });
+      if (!producto) {
+        throw new NotFoundException('producto no encontrado');
+      }
+      await this.productosRepository.remove(producto);
+      return producto;
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+      throw new BadRequestException('Error al eliminar el producto');
+    }
   }
 }
