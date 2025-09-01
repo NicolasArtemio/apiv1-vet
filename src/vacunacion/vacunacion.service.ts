@@ -14,8 +14,26 @@ export class VacunacionService {
 
   async create(createVacunacionDto: CreateVacunacionDto): Promise<Vacunacion> {
     try {
-      const nuevaVacunacion = this.vacunacionRepository.create(createVacunacionDto);
-      return await this.vacunacionRepository.save(nuevaVacunacion);
+      // Convertir mascota_id en objeto para que TypeORM lo entienda
+      const nuevaVacunacion = this.vacunacionRepository.create({
+        ...createVacunacionDto,
+        mascota: { id: createVacunacionDto.mascota_id },
+      });
+
+      const vacunacionGuardada = await this.vacunacionRepository.save(nuevaVacunacion);
+
+      // Devolver la vacunación junto con la relación cargada
+      const vacunacionConMascota = await this.vacunacionRepository.findOne({
+        where: { id: vacunacionGuardada.id },
+        relations: ['mascota'],
+      });
+
+      if (!vacunacionConMascota) {
+        throw new InternalServerErrorException('Error al recuperar la vacunación recién creada');
+      }
+
+      return vacunacionConMascota;
+
 
     } catch (error) {
       console.error("Error mientras se crea la Vacunacion", error);
@@ -23,41 +41,40 @@ export class VacunacionService {
         const err = error as { code?: string; errno?: number };
 
         if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException('Ya existe una mascota con datos duplicados');
+          throw new ConflictException('Ya existe una vacunación con datos duplicados');
         }
 
         if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
+          throw new BadRequestException('Mascota referenciada no existe');
         }
       }
-      throw new InternalServerErrorException("Error al crear mascota");
-
-
+      throw new InternalServerErrorException("Error al crear la vacunación");
     }
   }
+
 
   async findAll(): Promise<Vacunacion[]> {
     return await this.vacunacionRepository.find();
   }
-  
-async findOne(id: number): Promise <Vacunacion | null> {
-  if (id<= 0){
-    throw new BadRequestException ("El id debe ser un numero positivo")
-  }
-try {
-  const vacunacion= await this.vacunacionRepository.findOneBy({ id });
-  if (!vacunacion){
-    throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST)
-  }
-  return vacunacion;
-} catch (error) {
-  console.error("Error al buscar la vacunacion", HttpStatus.BAD_REQUEST)
-  throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST);
-}
+
+  async findOne(id: number): Promise<Vacunacion | null> {
+    if (id <= 0) {
+      throw new BadRequestException("El id debe ser un numero positivo")
+    }
+    try {
+      const vacunacion = await this.vacunacionRepository.findOneBy({ id });
+      if (!vacunacion) {
+        throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST)
+      }
+      return vacunacion;
+    } catch (error) {
+      console.error("Error al buscar la vacunacion", HttpStatus.BAD_REQUEST)
+      throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST);
+    }
 
   }
 
-async update(id: number, updateVacunacionDto: UpdateVacunacionDto): Promise<Vacunacion| null> {
+  async update(id: number, updateVacunacionDto: UpdateVacunacionDto): Promise<Vacunacion | null> {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
