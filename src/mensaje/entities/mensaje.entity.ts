@@ -6,7 +6,7 @@ import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, } from '
 export class Mensaje {
 
     @PrimaryGeneratedColumn()
-    id: number;
+    id_mensaje: number;
 
     @Column()
     contenido: string;
