@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,9 +19,24 @@ export class TurnoService {
       const turno = this.turnoRepository.create(createTurnoDto)
       return await this.turnoRepository.save(turno);
     } catch (error) {
-      throw new Error(`Error al crear turno: ${error.message}`);
-    }
-  }
+        
+              console.error('Error mientras se crea el turno', error);
+              if (typeof error === 'object' && error !== null) {
+                const err = error as { code?: string; errno?: number };
+        
+                if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+                  throw new ConflictException(
+                    'Ya existe el turno con datos duplicados',
+                  );
+                }
+                if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+                  throw new BadRequestException('Datos referenciados no existen');
+                }
+              }
+              throw new InternalServerErrorException('Error al crear turno');
+            }
+        
+          }
 
   async findAll(): Promise<Turno[]> {
     return await this.turnoRepository.find();
@@ -43,13 +58,25 @@ export class TurnoService {
     }
   }
 
-  async update(id: number, updateTurnoDto: UpdateTurnoDto) {
-    const result = await this.turnoRepository.update(id, updateTurnoDto);
-    if (result.affected === 0) {
-      throw new NotFoundException(`El turno con id ${id} no encontrado`);
+async update(id: number,UpdateTurnoDto: UpdateTurnoDto,): Promise<Turno> {
+      if (id <= 0) {
+      throw new BadRequestException('El ID debe ser un número positivo');
+      }
+      try {
+        const turno = await this.turnoRepository.findOneBy({ id });
+        if (!turno) {
+          throw new HttpException( 'turno no fue encontrado', HttpStatus.BAD_REQUEST, );
+        }
+        const updateTurno = Object.assign(turno, UpdateTurnoDto);
+        return this.turnoRepository.save(updateTurno);
+      } catch (error) {
+        console.error('Error al buscar el mensaje', error);
+        throw new InternalServerErrorException(
+          `No se encontro el turno con el id ${id}`,
+        );
+      }
     }
-    return { message: `El turno con id ${id}  fue actualizado correctamente` };
-  }
+  
 
   async remove(id: number): Promise<Turno | null> {
     if (id <= 0) {
