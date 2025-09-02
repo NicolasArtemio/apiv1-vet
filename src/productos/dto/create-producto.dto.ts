@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsPositive, IsString, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsPositive, IsString, IsEnum, IsDate } from 'class-validator';
 import { CategoriaProducto } from 'src/enums/CategoriaProducto.enum';
 import { TipoUso } from 'src/enums/TipoUso.enum';
 
@@ -23,11 +23,11 @@ export class CreateProductoDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsEnum(() => CategoriaProducto, {
-    message:
-      'La categoría debe ser uno de los tipos definidos en CategoriaProducto enum',
-  })
+  @IsEnum(CategoriaProducto)
   categoria: CategoriaProducto;
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum (TipoUso)
   typo_uso: TipoUso;
-  fecha_vencimiento: Date;
+  
 }

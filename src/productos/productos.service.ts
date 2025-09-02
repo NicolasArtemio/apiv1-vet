@@ -4,6 +4,7 @@ import { UpdateProductoDto } from './dto/update-producto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Producto } from './entities/producto.entity';
 import { Repository } from 'typeorm';
+import { CategoriaProducto } from 'src/enums/CategoriaProducto.enum';
 
 @Injectable()
 export class ProductosService {
@@ -14,9 +15,13 @@ export class ProductosService {
 
   async create(createProductoDto: CreateProductoDto): Promise<Producto> {
     try {
-      const producto = this.productosRepository.create(createProductoDto)
 
-      return await this.productosRepository.save(producto);
+       const nuevoProducto= this.productosRepository.create({
+              ...createProductoDto ,
+              fecha_vencimiento: new Date(),
+            });
+
+      return await this.productosRepository.save(nuevoProducto);
     } catch (error) {
 
       console.error('Error mientras se crea el producto', error);
