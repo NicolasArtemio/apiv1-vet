@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateNotificacioneDto } from './dto/create-notificacione.dto';
 import { UpdateNotificacioneDto } from './dto/update-notificacione.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,10 +16,25 @@ export class NotificacionesService {
     try {
       const notificacion = this.notificacionesRepository.create(createNotificacioneDto)
       return await this.notificacionesRepository.save(notificacion);
-    } catch (error) {
-      throw new Error(`Error al crear notificacion: ${error.message}`);
-    }
-  }
+    }   catch (error) {
+    
+          console.error('Error mientras se crea la notificacion', error);
+          if (typeof error === 'object' && error !== null) {
+            const err = error as { code?: string; errno?: number };
+    
+            if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+              throw new ConflictException(
+                'Ya existe un notificacion con datos duplicados',
+              );
+            }
+            if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+              throw new BadRequestException('Datos referenciados no existen');
+            }
+          }
+          throw new InternalServerErrorException('Error al crear notificaciones');
+        }
+    
+      }
 
   async findAll(): Promise<Notificacion[]> {
     return await this.notificacionesRepository.find();
@@ -42,13 +57,24 @@ export class NotificacionesService {
   }
 
 
-  async update(id: number, updateNotificacioneDto: UpdateNotificacioneDto) {
-    const result = await this.notificacionesRepository.update(id, updateNotificacioneDto);
-    if (result.affected === 0) {
-      throw new NotFoundException(`la notificacion con id ${id} no encontrado`);
-    }
-    return { message: `La notificacion con id ${id}  fue actualizado correctamente` };
-  }
+  async update(id: number,UpdateMensajeDto: UpdateNotificacioneDto,): Promise<Notificacion> {
+        if (id <= 0) {
+          throw new BadRequestException('El ID debe ser un número positivo');
+        }
+        try {
+          const notificacion= await this.notificacionesRepository.findOneBy({ id });
+          if (!notificacion) {
+            throw new HttpException( 'notificacion no fue encontrado', HttpStatus.BAD_REQUEST, );
+          }
+          const updateNotificacion = Object.assign(notificacion, UpdateNotificacioneDto);
+          return this.notificacionesRepository.save(updateNotificacion);
+        } catch (error) {
+          console.error('Error al buscar el notificacion', error);
+          throw new InternalServerErrorException(
+            `No se encontro el notificacion con el id ${id}`,
+          );
+        }
+      }
 
   async remove(id: number): Promise<Notificacion | null> {
     if (id <= 0) {
