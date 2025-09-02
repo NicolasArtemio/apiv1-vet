@@ -25,9 +25,13 @@ export class CreateProductoDto {
   @IsString()
   @IsEnum(CategoriaProducto)
   categoria: CategoriaProducto;
+<<<<<<< HEAD
   @IsNotEmpty()
   @IsString()
   @IsEnum (TipoUso)
+=======
+  
+>>>>>>> 2d14aa927a6a180cb6f92773023ebe18baf8a901
   typo_uso: TipoUso;
   
 }
