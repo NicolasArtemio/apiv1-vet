@@ -10,6 +10,7 @@ import { Entity } from 'typeorm/decorator/entity/Entity';
 import { Pago } from 'src/pago/entities/pago.entity';
 import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
 import { Empleado } from 'src/empleado/entities/empleado.entity';
+import { Cliente } from 'src/cliente/entities/cliente.entity';
 
 @Entity()
 export class Venta {
@@ -18,6 +19,8 @@ export class Venta {
 
   @Column()
   id_cliente: number;
+
+  @Column()
   total: number;
 
   @Column('timestamp')
@@ -32,4 +35,8 @@ export class Venta {
   @ManyToOne(() => Empleado, (empleado) => empleado.venta)
   @JoinColumn({ name: 'id_empleado' })
   empleado: Empleado;
+
+  @ManyToOne(() => Cliente, (cliente) => cliente.venta)
+@JoinColumn({ name: 'id_cliente'})
+cliente: Cliente;
 }

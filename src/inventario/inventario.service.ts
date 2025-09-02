@@ -10,41 +10,43 @@ import { UpdateInventarioDto } from './dto/update-inventario.dto';
 import { Inventario } from './entities/inventario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 @Injectable()
 export class InventarioService {
   constructor(
     @InjectRepository(Inventario)
     private readonly inventarioRepository: Repository<Inventario>,
   ) {}
-  async create(createInventarioDto: CreateInventarioDto): Promise<Inventario> {
-    try {
-      const nuevoInventario =
-        this.inventarioRepository.create(createInventarioDto);
-      return await this.inventarioRepository.save(nuevoInventario);
-    } catch (error) {
-      console.error('Error al crear el inventario ', error);
+async create(createInventarioDto: CreateInventarioDto): Promise<Inventario> {
+  try {
+    const nuevoInventario = this.inventarioRepository.create({
+      ...createInventarioDto,
+      empleado: { id: createInventarioDto.id_empleado },
+    });
 
-      // Type guard para asegurar que el error tiene las propiedades necesarias
-      if (typeof error === 'object' && error !== null) {
-        const err = error as { code?: string; errno?: number };
+    return await this.inventarioRepository.save(nuevoInventario);
+  } catch (error) {
+    console.error('Error al crear el inventario ', error);
 
-        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException(
-            'Ya existe un inventario con datos duplicados',
-          );
-        }
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { code?: string; errno?: number };
 
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
-        }
+      if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+        throw new ConflictException(
+          'Ya existe un inventario con datos duplicados',
+        );
       }
 
-      throw new InternalServerErrorException(
-        'Error interno al crear el inventario',
-      );
+      if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+        throw new BadRequestException('Datos referenciados no existen');
+      }
     }
+
+    throw new InternalServerErrorException(
+      'Error interno al crear el inventario',
+    );
   }
+}
+
 
   async findAll(): Promise<Inventario[]> {
     return await this.inventarioRepository.find();
