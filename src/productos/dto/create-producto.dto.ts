@@ -28,6 +28,7 @@ export class CreateProductoDto {
       'La categoría debe ser uno de los tipos definidos en CategoriaProducto enum',
   })
   categoria: CategoriaProducto;
+  
   typo_uso: TipoUso;
   fecha_vencimiento: Date;
 }

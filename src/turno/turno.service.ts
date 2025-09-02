@@ -17,7 +17,7 @@ export class TurnoService {
   async createTurno(createTurnoDto: CreateTurnoDto): Promise<Turno> {
     try {
       const turno = this.turnoRepository.create(createTurnoDto)
-      return await this.turnoRepository.save(createTurnoDto);
+      return await this.turnoRepository.save(turno);
     } catch (error) {
       throw new Error(`Error al crear turno: ${error.message}`);
     }
