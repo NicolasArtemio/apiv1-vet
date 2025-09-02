@@ -43,27 +43,27 @@ export class TurnoService {
 
   }
 
-  async findOne(id: number): Promise<Turno> {
-   if (id <= 0) {
+  async findOne(id_turno: number): Promise<Turno> {
+   if (id_turno <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const turno = await this.turnoRepository.findOneBy({ id });
+      const turno = await this.turnoRepository.findOneBy({ id_turno});
       if (!turno) {
         throw new HttpException('el turno no fue encontrado', HttpStatus.NOT_FOUND);
       }
       return turno;
     } catch (error) {
-      throw new InternalServerErrorException(`No se encontro el turno con el id ${id}`,);
+      throw new InternalServerErrorException(`No se encontro el turno con el id ${id_turno}`,);
     }
   }
 
-async update(id: number,UpdateTurnoDto: UpdateTurnoDto,): Promise<Turno> {
-      if (id <= 0) {
+async update(id_turno: number,UpdateTurnoDto: UpdateTurnoDto,): Promise<Turno> {
+      if (id_turno <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
       }
       try {
-        const turno = await this.turnoRepository.findOneBy({ id });
+        const turno = await this.turnoRepository.findOneBy({ id_turno });
         if (!turno) {
           throw new HttpException( 'turno no fue encontrado', HttpStatus.BAD_REQUEST, );
         }
@@ -72,24 +72,24 @@ async update(id: number,UpdateTurnoDto: UpdateTurnoDto,): Promise<Turno> {
       } catch (error) {
         console.error('Error al buscar el mensaje', error);
         throw new InternalServerErrorException(
-          `No se encontro el turno con el id ${id}`,
+          `No se encontro el turno con el id ${id_turno}`,
         );
       }
     }
   
 
-  async remove(id: number): Promise<Turno | null> {
-    if (id <= 0) {
+  async remove(id_turno: number): Promise<Turno | null> {
+    if (id_turno <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const turno = await this.turnoRepository.findOneBy({ id });
+      const turno = await this.turnoRepository.findOneBy({ id_turno });
       if (!turno) {
         throw new HttpException('El turno no encontrado', HttpStatus.BAD_REQUEST,);
       }
       return this.turnoRepository.remove(turno);
     } catch (error) {
-      throw new InternalServerErrorException(`No se encontro el turno con el id ${id}`);
+      throw new InternalServerErrorException(`No se encontro el turno con el id ${id_turno}`);
     }
   }
 }

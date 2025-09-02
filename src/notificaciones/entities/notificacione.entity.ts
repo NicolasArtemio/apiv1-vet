@@ -13,7 +13,7 @@ import { Usuario } from 'src/usuario/entities/usuario.entity';
 @Entity()
 export class Notificacion {
   @PrimaryGeneratedColumn()
-  id: number;
+  id_notificaciones: number;
 
   @Column()
   titulo: string;

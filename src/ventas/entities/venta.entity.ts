@@ -29,7 +29,7 @@ export class Venta {
   @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.venta)
   detallesVenta: DetalleVenta[];
 
-  @ManyToOne(() => Empleado, (empleado) => empleado.ventas)
+  @ManyToOne(() => Empleado, (empleado) => empleado.venta)
   @JoinColumn({ name: 'id_empleado' })
   empleado: Empleado;
 }

@@ -13,7 +13,7 @@ import { Mascota } from 'src/mascotas/entities/mascota.entity';
 @Entity()
 export class Turno {
   @PrimaryGeneratedColumn()
-  id: number;
+  id_turno: number;
 
   @Column({ type: 'timestamp' })
   fecha_turno: Date;

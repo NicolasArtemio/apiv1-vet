@@ -41,28 +41,28 @@ export class NotificacionesService {
 
   }
 
-  async findOne(id: number): Promise<Notificacion> {
-   if (id <= 0) {
+  async findOne(id_notificaciones: number): Promise<Notificacion> {
+   if (id_notificaciones <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const notificacion = await this.notificacionesRepository.findOneBy({ id });
+      const notificacion = await this.notificacionesRepository.findOneBy({ id_notificaciones });
       if (!notificacion) {
         throw new HttpException('La notificacion no fue encontrado', HttpStatus.NOT_FOUND);
       }
       return notificacion;
     } catch (error) {
-      throw new InternalServerErrorException(`No se encontro el notificacion con el id ${id}`,);
+      throw new InternalServerErrorException(`No se encontro el notificacion con el id ${id_notificaciones}`,);
     }
   }
 
 
-  async update(id: number,UpdateMensajeDto: UpdateNotificacioneDto,): Promise<Notificacion> {
-        if (id <= 0) {
+  async update(id_notificaciones: number,UpdateMensajeDto: UpdateNotificacioneDto,): Promise<Notificacion> {
+        if (id_notificaciones <= 0) {
           throw new BadRequestException('El ID debe ser un número positivo');
         }
         try {
-          const notificacion= await this.notificacionesRepository.findOneBy({ id });
+          const notificacion= await this.notificacionesRepository.findOneBy({ id_notificaciones });
           if (!notificacion) {
             throw new HttpException( 'notificacion no fue encontrado', HttpStatus.BAD_REQUEST, );
           }
@@ -71,23 +71,23 @@ export class NotificacionesService {
         } catch (error) {
           console.error('Error al buscar el notificacion', error);
           throw new InternalServerErrorException(
-            `No se encontro el notificacion con el id ${id}`,
+            `No se encontro el notificacion con el id ${id_notificaciones}`,
           );
         }
       }
 
-  async remove(id: number): Promise<Notificacion | null> {
-    if (id <= 0) {
+  async remove(id_notificaciones: number): Promise<Notificacion | null> {
+    if (id_notificaciones<= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const notificacion = await this.notificacionesRepository.findOneBy({ id });
+      const notificacion = await this.notificacionesRepository.findOneBy({ id_notificaciones });
       if (!notificacion) {
         throw new HttpException('Cliente no encontrado', HttpStatus.BAD_REQUEST,);
       }
       return this.notificacionesRepository.remove(notificacion);
     } catch (error) {
-      throw new InternalServerErrorException(`No se encontro el cliente con el id ${id}`);
+      throw new InternalServerErrorException(`No se encontro el cliente con el id ${id_notificaciones}`);
     }
   }
 }

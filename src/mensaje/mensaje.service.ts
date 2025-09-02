@@ -45,26 +45,26 @@ export class MensajeService {
     return await this.mensajeRepository.find();
   }
 
-  async findOne(id: number): Promise<Mensaje> {
-   if (id <= 0) {
+  async findOne( id_mensaje: number): Promise<Mensaje> {
+   if ( id_mensaje<= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const mensaje= await this.mensajeRepository.findOneBy({ id });
+      const mensaje= await this.mensajeRepository.findOneBy({  id_mensaje });
       if (!mensaje) {
         throw new HttpException('El mensaje no fue encontrado', HttpStatus.NOT_FOUND);
       }
       return mensaje;
     } catch (error) {
-      throw new InternalServerErrorException(`No se encontro el mensaje con el id ${id}`,);
+      throw new InternalServerErrorException(`No se encontro el mensaje con el id ${ id_mensaje}`,);
     }
   }
-    async update(id: number,UpdateMensajeDto: UpdateMensajeDto,): Promise<Mensaje> {
-      if (id <= 0) {
+    async update( id_mensaje: number,UpdateMensajeDto: UpdateMensajeDto,): Promise<Mensaje> {
+      if ( id_mensaje <= 0) {
         throw new BadRequestException('El ID debe ser un número positivo');
       }
       try {
-        const mensaje = await this.mensajeRepository.findOneBy({ id });
+        const mensaje = await this.mensajeRepository.findOneBy({  id_mensaje });
         if (!mensaje) {
           throw new HttpException( 'mensaje no fue encontrado', HttpStatus.BAD_REQUEST, );
         }
@@ -73,7 +73,7 @@ export class MensajeService {
       } catch (error) {
         console.error('Error al buscar el mensaje', error);
         throw new InternalServerErrorException(
-          `No se encontro el mensaje con el id ${id}`,
+          `No se encontro el mensaje con el id ${ id_mensaje}`,
         );
       }
     }
@@ -81,18 +81,18 @@ export class MensajeService {
 
 
 
-  async remove(id: number): Promise<Mensaje | null> {
-    if (id <= 0) {
+  async remove( id_mensaje: number): Promise<Mensaje | null> {
+    if ( id_mensaje <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const mensaje = await this.mensajeRepository.findOneBy({ id });
+      const mensaje = await this.mensajeRepository.findOneBy({  id_mensaje});
       if (!mensaje) {
         throw new HttpException('El mensaje no encontrado', HttpStatus.BAD_REQUEST,);
       }
       return this.mensajeRepository.remove(mensaje);
     } catch (error) {
-      throw new InternalServerErrorException(`No se encontro el mensaje con el id ${id}`);
+      throw new InternalServerErrorException(`No se encontro el mensaje con el id ${ id_mensaje}`);
     }
   }
 }
