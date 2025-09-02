@@ -31,6 +31,7 @@ export class Empleado extends Usuario {
   especialidad: string;
 
   @OneToMany(() => Venta, (venta) => venta.empleado)
+  venta: Venta[];
   @OneToMany(() => Inventario, (inventario) => inventario.empleado)
   inventarios: Inventario[];
 }
