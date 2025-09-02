@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+import { Inventario } from 'src/inventario/entities/inventario.entity';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
 import { ChildEntity, Column, OneToMany } from 'typeorm';
@@ -30,5 +31,6 @@ export class Empleado extends Usuario {
   especialidad: string;
 
   @OneToMany(() => Venta, (venta) => venta.empleado)
-  ventas: Venta[];
+  @OneToMany(() => Inventario, (inventario) => inventario.empleado)
+  inventarios: Inventario[];
 }

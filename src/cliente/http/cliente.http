@@ -15,3 +15,28 @@ Content-Type: application/json
   "ciudad": "Buenos Aires",
   "direccion": "Calle Falsa 123"
 }
+
+
+### Obtener clientes
+
+GET http://localhost:3000/api/v1/cliente HTTP/1.1
+
+
+### OBTENER CLIENTE POR ID
+
+GET http://localhost:3000/api/v1/cliente/1 HTTP/1.1
+
+
+### ACTUALIZAR CLIENTE
+
+PATCH http://localhost:3000/api/v1/cliente/2 HTTP/1.1
+Content-Type: application/json
+
+{
+ "nombre": "pepe"
+}
+
+
+### ELIMINAR USUARIO
+
+DELETE http://localhost:3000/api/v1/cliente/1 HTTP/1.1

@@ -14,7 +14,6 @@ import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 import { Empleado } from './entities/empleado.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
 import { Rol } from 'src/enums/Rol.enum';
 
@@ -23,8 +22,6 @@ export class EmpleadoService {
   constructor(
     @InjectRepository(Empleado)
     private empleadoRepository: Repository<Empleado>,
-    @InjectRepository(Usuario)
-    private usuarioRepository: Repository<Usuario>,
   ) {}
 
   /**

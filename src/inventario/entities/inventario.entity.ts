@@ -1,3 +1,4 @@
+import { Empleado } from 'src/empleado/entities/empleado.entity';
 import { Producto } from 'src/productos/entities/producto.entity';
 import {
   Entity,
@@ -28,7 +29,7 @@ export class Inventario {
   @JoinColumn({ name: 'id_producto' })
   producto: Producto;
 
-  //   @ManyToOne(() => Empleado, (empleado) => empleado.inventarios)
-  //   @JoinColumn({ name: 'id_empleado' })
-  //   empleado: Empleado;
+  @ManyToOne(() => Empleado, (empleado) => empleado.inventarios)
+  @JoinColumn({ name: 'id_empleado' })
+  empleado: Empleado;
 }
