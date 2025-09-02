@@ -15,7 +15,7 @@ export class NotificacionesService {
   async createNotificacion(createNotificacioneDto: CreateNotificacioneDto): Promise<Notificacion> {
     try {
       const notificacion = this.notificacionesRepository.create(createNotificacioneDto)
-      return await this.notificacionesRepository.save(createNotificacioneDto);
+      return await this.notificacionesRepository.save(notificacion);
     } catch (error) {
       throw new Error(`Error al crear notificacion: ${error.message}`);
     }

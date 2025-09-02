@@ -6,6 +6,7 @@ export class Vacunacion {
  @PrimaryGeneratedColumn()
  id:number;
 
+
  @Column({type: 'timestamp'})
  fecha: Date;
 

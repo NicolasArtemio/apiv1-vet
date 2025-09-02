@@ -62,4 +62,4 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

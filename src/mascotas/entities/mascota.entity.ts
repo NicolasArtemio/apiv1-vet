@@ -47,6 +47,6 @@ export class Mascota {
   cliente: Cliente;
 
   @OneToMany(() => Vacunacion, (vacunacion) => vacunacion.mascota)
-  @JoinColumn({ name: 'cliente_id' })
+  @JoinColumn({ name: 'mascota_id' })
   vacunacion: Vacunacion;
 }
