@@ -11,12 +11,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Venta } from './entities/venta.entity';
 import { UpdateVentaDto } from './dto/update-venta.dto';
+import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { Empleado } from 'src/empleado/entities/empleado.entity';
 
 @Injectable()
 export class VentasService {
   constructor(
     @InjectRepository(Venta)
     private ventaRepository: Repository<Venta>,
+    @InjectRepository(Cliente)
+    private clienteRepository: Repository<Cliente>,
+    @InjectRepository(Empleado)
+    private empleadoRepository: Repository<Empleado>,
   ) {}
 
   /**
@@ -29,7 +35,30 @@ export class VentasService {
    */
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
-      const venta = this.ventaRepository.create(createVentaDto);
+      const cliente = await this.clienteRepository.findOneBy({
+        id: createVentaDto.id_cliente,
+      });
+
+      if (!cliente) {
+        throw new NotFoundException('cliente no encontrado');
+      }
+
+      const empleado = await this.empleadoRepository.findOneBy({
+        id: createVentaDto.id_empleado,
+      });
+
+      if (!empleado) {
+        throw new NotFoundException('empleado no encontrado');
+      }
+
+      const { id_cliente, id_empleado, ...resto } = createVentaDto;
+
+      const venta = this.ventaRepository.create({
+        ...resto,
+        id_cliente,
+        cliente,
+        empleado,
+      });
       return await this.ventaRepository.save(venta);
     } catch (error: unknown) {
       console.error('Error al crear la venta:', error);
@@ -74,8 +103,11 @@ export class VentasService {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
+
     try {
-      const venta = await this.ventaRepository.findOneBy({ id_compra: id });
+      const venta = await this.ventaRepository.findOne({
+        where: { id_compra: id },
+      });
 
       if (!venta) {
         throw new NotFoundException(`Venta con ID ${id} no encontrada`);

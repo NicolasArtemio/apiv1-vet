@@ -1,6 +1,7 @@
 import { ChildEntity, Column, OneToMany } from 'typeorm';
 import { Usuario } from '../../usuario/entities/usuario.entity';
 import { Mascota } from '../../mascotas/entities/mascota.entity';
+import { Venta } from 'src/ventas/entities/venta.entity';
 
 @ChildEntity()
 export class Cliente extends Usuario {
@@ -16,7 +17,7 @@ export class Cliente extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column({ unique: true })
+  @Column()
   dni: number;
 
   @Column()
@@ -30,4 +31,7 @@ export class Cliente extends Usuario {
 
   @OneToMany(() => Mascota, (mascota) => mascota.cliente)
   mascotas: Mascota[];
+
+  @OneToMany(() => Venta, (venta) => venta.cliente)
+  ventas: Venta[];
 }

@@ -69,7 +69,10 @@ export class MascotasService {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const mascota = await this.mascotaRepository.findOneBy({ id });
+      const mascota = await this.mascotaRepository.findOne({
+        where: { id },
+        relations: ['cliente'],
+      });
       if (!mascota) {
         throw new HttpException(
           'Mascota no encontrada',
@@ -87,28 +90,21 @@ export class MascotasService {
   async update(
     id: number,
     updateMascotaDto: UpdateMascotasDto,
-  ): Promise<Mascota | null> {
+  ): Promise<Mascota> {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
-    try {
-      const mascota = await this.mascotaRepository.findOneBy({ id });
-      if (!mascota) {
-        throw new HttpException(
-          'Mascota no encontrada',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const updateMascota = Object.assign(id, updateMascotaDto);
-      return this.mascotaRepository.save(updateMascota);
-    } catch (error) {
-      console.error('Error al buscar la mascota', error);
-      throw new InternalServerErrorException(
-        `No se encontro la mascota con el id ${id}`,
-      );
-    }
-  }
 
+    const mascota = await this.mascotaRepository.findOneBy({ id });
+
+    if (!mascota) {
+      throw new NotFoundException(`Mascota no encontrada con id ${id}`);
+    }
+
+    Object.assign(mascota, updateMascotaDto);
+
+    return this.mascotaRepository.save(mascota);
+  }
   async remove(id: number): Promise<Mascota | null> {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');

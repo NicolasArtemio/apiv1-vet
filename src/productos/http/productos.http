@@ -1,0 +1,40 @@
+### CREAR UN PRODUCTO
+
+POST http://localhost:3000/api/v1/productos HTTP/1.1
+Content-Type: application/json
+
+{
+  "nombre": "Shampoo",
+  "marca": "Canin",
+  "descripcion":"Shampo para perros y gatos",
+  "precio": 120,
+  "stock": 15,
+  "categoria":"Estetica e Higiene",
+  "tipo_uso":"Comercial"
+}
+
+
+### OBTENER PRODUCTO
+
+GET http://localhost:3000/api/v1/productos HTTP/1.1
+
+
+### OBTENER PRODUCTO POR ID
+
+GET http://localhost:3000/api/v1/productos/1 HTTP/1.1
+
+
+### ACTUALIZAR PRODUCTO
+
+PATCH http://localhost:3000/api/v1/productos/1 HTTP/1.1
+Content-Type: application/json
+
+{
+ "nombre": "Crema enguaje",
+ "tipo_uso":"Interno"
+}
+
+
+### ELIMINAR PRODUCTO
+
+DELETE http://localhost:3000/api/v1/productos/1 HTTP/1.1

@@ -35,7 +35,6 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
         synchronize: true, // ¡no usar en producción!
-        dropSchema: true, // no usar en produccion!
       }),
     }),
     VentasModule,
@@ -62,4 +61,4 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsPositive, IsString, IsEnum, IsDate } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsPositive,
+  IsString,
+  IsEnum,
+  IsDate,
+} from 'class-validator';
 import { CategoriaProducto } from 'src/enums/CategoriaProducto.enum';
 import { TipoUso } from 'src/enums/TipoUso.enum';
 
@@ -27,7 +33,6 @@ export class CreateProductoDto {
   categoria: CategoriaProducto;
   @IsNotEmpty()
   @IsString()
-  @IsEnum (TipoUso)
-  typo_uso: TipoUso;
-  
+  @IsEnum(TipoUso)
+  tipo_uso: TipoUso;
 }
