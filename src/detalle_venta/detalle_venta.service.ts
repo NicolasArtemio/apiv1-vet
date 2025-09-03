@@ -10,7 +10,6 @@ import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DetalleVenta } from './entities/detalle_venta.entity';
-import { promises } from 'dns';
 
 @Injectable()
 export class DetalleVentaService {
