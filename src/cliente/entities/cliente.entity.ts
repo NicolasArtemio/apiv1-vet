@@ -16,7 +16,7 @@ export class Cliente extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column('int')
+  @Column({ unique: true })
   dni: number;
 
   @Column()

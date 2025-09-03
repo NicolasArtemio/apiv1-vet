@@ -16,10 +16,10 @@ export abstract class Usuario {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   contrasena: string;
 
   @Column('enum', { enum: Rol })
@@ -28,7 +28,10 @@ export abstract class Usuario {
   @Column('timestamp')
   fecha_registro: Date;
 
-  @Column('enum', { enum: EstadoUsuario })
+  @Column('enum', {
+    enum: EstadoUsuario,
+    default: EstadoUsuario.ACTIVO,
+  })
   estado: EstadoUsuario;
 
   @OneToMany(() => Mensaje, (mensaje) => mensaje.usuario)
