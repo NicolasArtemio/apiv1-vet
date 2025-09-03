@@ -2,7 +2,8 @@ import {
   IsBoolean,
   IsInt,
   IsNotEmpty,
-  IsNumber,
+  IsOptional,
+  IsPositive,
   IsString,
   Min,
 } from 'class-validator';
@@ -12,7 +13,8 @@ export class CreateMascotasDto {
   @IsNotEmpty()
   nombre: string;
 
-  @IsNumber()
+  @IsInt()
+  @IsPositive()
   @IsNotEmpty()
   cliente_id: number;
 
@@ -25,18 +27,20 @@ export class CreateMascotasDto {
   raza: string;
 
   @IsInt()
-  @Min(1)
+  @Min(0)
   peso: number;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
+  @Min(0)
   edad: number;
 
   @IsBoolean()
   esterilizado: boolean;
 
   @IsString()
-  foto: string;
+  @IsOptional()
+  foto?: string;
 
   @IsString()
   @IsNotEmpty()

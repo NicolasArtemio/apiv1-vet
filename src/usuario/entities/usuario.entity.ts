@@ -16,7 +16,7 @@ export abstract class Usuario {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
   @Column({ select: false })

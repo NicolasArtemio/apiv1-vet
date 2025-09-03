@@ -29,11 +29,27 @@ export class PagoService {
   async create(createPagoDto: CreatePagoDto): Promise<Pago> {
     try {
       const pago = this.pagoRepository.create(createPagoDto);
-      return await this.pagoRepository.save(pago);
+      await this.pagoRepository.save(pago);
+
+      const pagoCompleto = await this.pagoRepository.findOne({
+        where: { id: pago.id },
+        relations: {
+          venta: {
+            empleado: true,
+            cliente: true,
+            detallesVenta: true,
+          },
+        },
+      });
+
+      if (!pagoCompleto) {
+        throw new NotFoundException('Pago no encontrado después de crear');
+      }
+
+      return pagoCompleto;
     } catch (error: unknown) {
       console.error('Error al crear el pago:', error);
 
-      // Type guard para asegurar que el error tiene las propiedades necesarias
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
 
@@ -49,7 +65,6 @@ export class PagoService {
       throw new InternalServerErrorException('Error interno al crear el pago');
     }
   }
-
   /**
    * Busca y devuelve todos los pagos.
    * @returns Lista de todos los pagos.

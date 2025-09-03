@@ -28,7 +28,7 @@ export class Producto {
   categoria: CategoriaProducto;
 
   @Column('enum', { enum: TipoUso })
-  typo_uso: TipoUso;
+  tipo_uso: TipoUso;
 
   @Column('date')
   fecha_vencimiento: Date;
