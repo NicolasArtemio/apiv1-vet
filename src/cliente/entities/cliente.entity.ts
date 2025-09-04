@@ -17,7 +17,7 @@ export class Cliente extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column({ unique: true })
+  @Column()
   dni: number;
 
   @Column()
@@ -29,11 +29,9 @@ export class Cliente extends Usuario {
   @Column()
   direccion: string;
 
-
   @OneToMany(() => Mascota, (mascota) => mascota.cliente)
   mascotas: Mascota[];
 
   @OneToMany(() => Venta, (venta) => venta.cliente)
-
   venta: Venta[];
 }

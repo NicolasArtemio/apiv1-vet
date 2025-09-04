@@ -14,7 +14,7 @@ export class Empleado extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column({ unique: true })
+  @Column()
   dni: number;
 
   @Column()
