@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Inventario } from 'src/inventario/entities/inventario.entity';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
@@ -15,7 +14,7 @@ export class Empleado extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column('int')
+  @Column()
   dni: number;
 
   @Column()
