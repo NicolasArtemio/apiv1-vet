@@ -4,6 +4,9 @@ import { EstadoUsuario } from "src/enums/EstadoUsuario.enum";
 import { Rol } from "src/enums/Rol.enum";
 
 export class CreateUsuarioDto {
+    @IsNotEmpty()
+    id_usuario?: number;
+
     @IsString()
     @IsNotEmpty()
     email: string;

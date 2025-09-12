@@ -1,10 +1,15 @@
-import { ChildEntity, Column, OneToMany } from 'typeorm';
-import { Usuario } from '../../usuario/entities/usuario.entity';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import { PrimaryGeneratedColumn,Column, Entity, OneToMany, OneToOne } from 'typeorm';
 import { Mascota } from '../../mascotas/entities/mascota.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
-@ChildEntity()
-export class Cliente extends Usuario {
+@Entity()
+export class Cliente{
+
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   foto_perfil: string;
 
@@ -34,4 +39,7 @@ export class Cliente extends Usuario {
 
   @OneToMany(() => Venta, (venta) => venta.cliente)
   venta: Venta[];
+
+  @OneToOne(() => Usuario, (usuario) => usuario.cliente)
+  usuario: Usuario;
 }
