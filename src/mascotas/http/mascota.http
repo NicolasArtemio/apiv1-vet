@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
    "nombre": "Firulais",
-   "cliente_id":3,
+   "cliente_id":1,
    "especie": "Perro",
    "raza": "Labrador",
    "edad": 3,

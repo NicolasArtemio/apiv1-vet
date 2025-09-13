@@ -4,8 +4,8 @@ POST http://localhost:3000/api/v1/ventas HTTP/1.1
 Content-Type: application/json
 
 {
-  "id_cliente":3,
-  "id_empleado":1,
+  "id_cliente":1,
+  "id_empleado":2,
   "total": 200,
   "fecha":"2024-01-23T10:00:00"
   }

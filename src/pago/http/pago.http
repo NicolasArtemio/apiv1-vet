@@ -4,7 +4,7 @@ POST http://localhost:3000/api/v1/pago HTTP/1.1
 Content-Type: application/json
 
 {
-   "id_venta": 6,
+   "id_venta": 1,
    "fecha_pago": "2024-01-23T10:00:00",
    "monto_pago": 1500,
    "metodo_pago": "Efectivo",
@@ -19,7 +19,7 @@ GET http://localhost:3000/api/v1/pago HTTP/1.1
 
 ### Obtener un pago por ID
 
-GET http://localhost:3000/api/v1/pago/2 HTTP/1.1
+GET http://localhost:3000/api/v1/pago/1 HTTP/1.1
 
 
 ### Actualizar un pago por ID
