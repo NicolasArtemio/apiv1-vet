@@ -9,5 +9,6 @@ import { UsuarioModule } from 'src/usuario/usuario.module';
   imports: [TypeOrmModule.forFeature([Empleado]), UsuarioModule],
   controllers: [EmpleadoController],
   providers: [EmpleadoService],
+  exports: [EmpleadoService],
 })
 export class EmpleadoModule {}

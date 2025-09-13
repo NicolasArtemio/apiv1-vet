@@ -1,18 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  TableInheritance,
   OneToMany,
+  OneToOne 
 } from 'typeorm';
 import { Rol } from 'src/enums/Rol.enum';
 import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
 import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
 import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
+import { Empleado } from 'src/empleado/entities/empleado.entity';
+import { Cliente } from 'src/cliente/entities/cliente.entity';
 
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'type' } })
-export abstract class Usuario {
+export class Usuario {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -39,4 +41,10 @@ export abstract class Usuario {
 
   @OneToMany(() => Notificacion, (notificacion) => notificacion.usuario)
   notificaciones: Notificacion[];
+
+  @OneToOne(() => Empleado, (empleado) => empleado.usuario)
+  empleado: Empleado;
+
+  @OneToOne(() => Cliente, (cliente) => cliente.usuario)
+  cliente: Cliente;
 }
