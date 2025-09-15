@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { MascotasService } from './mascotas.service';
 import { CreateMascotasDto } from './dto/create-mascotas.dto';
 import { UpdateMascotasDto } from './dto/update-mascotas.dto';
@@ -9,7 +17,6 @@ export class MascotasController {
 
   @Post()
   create(@Body() createMascotaDto: CreateMascotasDto) {
-    console.log("wEG", createMascotaDto)
     return this.mascotasService.create(createMascotaDto);
   }
 

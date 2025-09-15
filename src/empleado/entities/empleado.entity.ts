@@ -1,13 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Inventario } from 'src/inventario/entities/inventario.entity'
+import { Inventario } from 'src/inventario/entities/inventario.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Empleado {
-
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -41,5 +45,6 @@ export class Empleado {
   inventarios: Inventario[];
 
   @OneToOne(() => Usuario, (usuario) => usuario.empleado)
+  @JoinColumn()
   usuario: Usuario;
 }
