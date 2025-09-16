@@ -100,41 +100,46 @@ export class ClienteService {
   }
 
   async update(
-    id: number,
-    updateClienteDto: UpdateClienteDto,
-  ): Promise<Cliente> {
-    try {
-      const cliente = await this.clienteRepository.findOne({
-        where: { id },
-        relations: ['usuario'],
-      });
+  id: number,
+  updateClienteDto: UpdateClienteDto,
+): Promise<Cliente> {
+  try {
+    const cliente = await this.clienteRepository.findOne({
+      where: { id },
+      relations: ['usuario'],
+    });
 
-      if (!cliente) {
-        throw new NotFoundException('Cliente no encontrado');
-      }
-
-      Object.assign(cliente, updateClienteDto);
-
-      if (updateClienteDto.usuario) {
-        Object.assign(cliente.usuario, updateClienteDto.usuario);
-        await this.usuarioRepository.save(cliente.usuario);
-      }
-
-      return await this.clienteRepository.save(cliente);
-    } catch (error) {
-      console.error('Error al actualizar el cliente:', error);
-
-      const err = error as { code?: string; errno?: number };
-
-      if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-        throw new ConflictException('Datos duplicados: el email ya existe');
-      }
-
-      throw new InternalServerErrorException(
-        'Error interno al actualizar el cliente',
-      );
+    if (!cliente) {
+      throw new NotFoundException('Cliente no encontrado');
     }
+
+    // Actualizar campos del cliente
+    Object.assign(cliente, updateClienteDto);
+
+    // Actualizar datos del usuario relacionado (si vienen)
+    if (updateClienteDto.usuario && cliente.usuario) {
+      Object.assign(cliente.usuario, updateClienteDto.usuario);
+      await this.usuarioRepository.save(cliente.usuario);
+    }
+
+    return await this.clienteRepository.save(cliente);
+
+  } catch (error) {
+    console.error('Error al actualizar el cliente:', error);
+
+    const err = error as { code?: string; errno?: number };
+
+    if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+      throw new ConflictException('Datos duplicados: el email ya existe');
+    }
+
+    throw new InternalServerErrorException(
+      'Error interno al actualizar el cliente',
+    );
   }
+}
+
+  
   async remove(id: number): Promise<Cliente | null> {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
