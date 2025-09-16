@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   ConflictException,
@@ -8,14 +13,16 @@ import {
 import { CreateVentaDto } from './dto/create-venta.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { Venta } from './entities/venta.entity';
 import { UpdateVentaDto } from './dto/update-venta.dto';
-import { Cliente } from 'src/cliente/entities/cliente.entity';
-import { Empleado } from 'src/empleado/entities/empleado.entity';
+import { Cliente } from '../cliente/entities/cliente.entity';
+import { Empleado } from '../empleado/entities/empleado.entity';
+import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
 
 @Injectable()
 export class VentasService {
+  productoRepository: any;
   constructor(
     @InjectRepository(Venta)
     private ventaRepository: Repository<Venta>,
@@ -23,6 +30,8 @@ export class VentasService {
     private clienteRepository: Repository<Cliente>,
     @InjectRepository(Empleado)
     private empleadoRepository: Repository<Empleado>,
+    @InjectRepository(DetalleVenta)
+    private readonly detalleVentaRepository: Repository<DetalleVenta>,
   ) {}
 
   /**
@@ -33,48 +42,58 @@ export class VentasService {
    * @throws BadRequestException si los datos referenciados no existen.
    * @throws InternalServerErrorException si ocurre un error interno al crear la venta.
    */
+
+
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
-      const cliente = await this.clienteRepository.findOneBy({
-        id: createVentaDto.id_cliente,
-      });
+      // 1. Buscar cliente y empleado
+      const cliente = await this.clienteRepository.findOneBy({ id: createVentaDto.id_cliente });
+      if (!cliente) throw new NotFoundException('Cliente no encontrado');
 
-      if (!cliente) {
-        throw new NotFoundException('cliente no encontrado');
+      const empleado = await this.empleadoRepository.findOneBy({ id: createVentaDto.id_empleado });
+      if (!empleado) throw new NotFoundException('Empleado no encontrado');
+
+      // 2. Transformar fecha
+      const fecha = new Date(createVentaDto.fecha);
+
+      // 3. Crear detalles de venta y calcular subtotal
+      const detalles: DetalleVenta[] = [];
+      let total = 0;
+
+      for (const d of createVentaDto.detalles) {
+        const producto = await this.productoRepository.findOneBy({ id: d.id_producto });
+        if (!producto) throw new NotFoundException(`Producto con id ${d.id_producto} no encontrado`);
+
+        const detalle = new DetalleVenta();
+        detalle.producto = producto;
+        detalle.cantidad = d.cantidad;
+        detalle.precio = producto.precio;
+        detalle.subtotal = producto.precio * d.cantidad;
+
+        total += detalle.subtotal;
+        detalles.push(detalle);
       }
 
-      const empleado = await this.empleadoRepository.findOneBy({
-        id: createVentaDto.id_empleado,
-      });
-
-      if (!empleado) {
-        throw new NotFoundException('empleado no encontrado');
-      }
-
-      const { id_cliente, id_empleado, ...resto } = createVentaDto;
-
+      // 4. Crear la venta
       const venta = this.ventaRepository.create({
-        ...resto,
-        id_cliente,
         cliente,
         empleado,
+        fecha,
+        total,
+        detalles, // cascade: true en la entidad
       });
+
+      // 5. Guardar venta + detalles
       return await this.ventaRepository.save(venta);
+
     } catch (error: unknown) {
       console.error('Error al crear la venta:', error);
 
-      // Type guard para asegurar que el error tiene las propiedades necesarias
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
-
-        // Entrada duplicada (clave única)
         if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException(
-            'Ya existe una venta con datos duplicados',
-          );
+          throw new ConflictException('Ya existe una venta con datos duplicados');
         }
-
-        // Clave foránea inválida
         if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
           throw new BadRequestException('Datos referenciados no existen');
         }

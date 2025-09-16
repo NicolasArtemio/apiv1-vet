@@ -10,6 +10,7 @@ import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DetalleVenta } from './entities/detalle_venta.entity';
+import { Venta } from '../ventas/entities/venta.entity';
 
 @Injectable()
 export class DetalleVentaService {
@@ -18,32 +19,37 @@ export class DetalleVentaService {
     private readonly detalleVentaRepository: Repository<DetalleVenta>,
   ) {}
 
-  async create(
-    CreateDetalleVentaDto: CreateDetalleVentaDto,
-  ): Promise<DetalleVenta> {
-    try {
-      const nuevoDetalleVenta = this.detalleVentaRepository.create({
-        ...CreateDetalleVentaDto,
-      });
+ async create(
+  createDetalleVentaDto: CreateDetalleVentaDto,
+  venta: Venta, // asociar detalle a la venta
+): Promise<DetalleVenta> {
+  try {
+    const nuevoDetalle = this.detalleVentaRepository.create({
+      ...createDetalleVentaDto,
+      subtotal: createDetalleVentaDto.precio * createDetalleVentaDto.cantidad,
+      venta,
+    });
 
-      return await this.detalleVentaRepository.save(nuevoDetalleVenta);
-    } catch (error) {
-      console.error('Error mientras se crea el detalle de ventas', error);
-      if (typeof error === 'object' && error !== null) {
-        const err = error as { code?: string; errno?: number };
+    return await this.detalleVentaRepository.save(nuevoDetalle);
+  } catch (error) {
+    console.error('Error creando detalle de venta:', error);
 
-        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException(
-            'Ya existe un detalle de ventas con datos duplicados',
-          );
-        }
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
-        }
+    if (typeof error === 'object' && error !== null) {
+      const err = error as { code?: string; errno?: number };
+
+      if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+        throw new ConflictException(
+          'Ya existe un detalle de ventas con datos duplicados',
+        );
       }
-      throw new InternalServerErrorException('Error al creardetalle de ventas');
+      if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+        throw new BadRequestException('Datos referenciados no existen');
+      }
     }
+
+    throw new InternalServerErrorException('Error al crear detalle de venta');
   }
+}
 
   async findAll(): Promise<DetalleVenta[]> {
     return this.detalleVentaRepository.find();

@@ -8,10 +8,10 @@ export class CreateDetalleVentaDto {
   @IsPositive()
   @IsInt()
   @IsNotEmpty()
-  id_venta: number;
+  cantidad: number;
 
   @IsPositive()
   @IsInt()
   @IsNotEmpty()
-  cantidad: number;
+  precio: number;
 }

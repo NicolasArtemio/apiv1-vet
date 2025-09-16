@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { Producto } from '../../productos/entities/producto.entity';
 import { Venta } from '../../ventas/entities/venta.entity';
 import {
@@ -22,11 +23,14 @@ export class DetalleVenta {
   @Column()
   cantidad: number;
 
-  @ManyToOne(() => Venta, (venta) => venta.detallesVenta)
+  @ManyToOne(() => Venta, (venta) => venta.detalleVenta)
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 
   @ManyToOne(() => Producto, (producto) => producto.detallesVenta)
   @JoinColumn({ name: 'id_producto' })
   producto: Producto;
+  descripcion: string;
+  precio: number;
+  subtotal: number;
 }

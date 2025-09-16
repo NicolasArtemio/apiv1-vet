@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { DetalleVentaService } from './detalle_venta.service';
 import { CreateDetalleVentaDto } from './dto/create-detalle_venta.dto';
 import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';
+import { Venta } from 'src/ventas/entities/venta.entity';
 
 @Controller('detalle-venta')
 export class DetalleVentaController {
@@ -9,7 +10,7 @@ export class DetalleVentaController {
 
   @Post()
   create(@Body() createDetalleVentaDto: CreateDetalleVentaDto) {
-    return this.detalleVentaService.create(createDetalleVentaDto);
+    return this.detalleVentaService.create(createDetalleVentaDto, new Venta());
   }
 
   @Get()
