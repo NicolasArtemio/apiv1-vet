@@ -4,7 +4,8 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  OneToOne 
+  OneToOne, 
+  CreateDateColumn
 } from 'typeorm';
 import { Rol } from '../../enums/Rol.enum';
 import { EstadoUsuario } from '../../enums/EstadoUsuario.enum';
@@ -27,8 +28,8 @@ export class Usuario {
   @Column('enum', { enum: Rol })
   rol: Rol;
 
-  @Column('timestamp')
-  fecha_registro: Date;
+  @CreateDateColumn({ name: 'fecha_registro' })
+  fechaRegistro: Date;
 
   @Column('enum', {
     enum: EstadoUsuario,
