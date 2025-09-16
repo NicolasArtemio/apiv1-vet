@@ -1,6 +1,6 @@
-import { Inventario } from 'src/inventario/entities/inventario.entity';
-import { Venta } from 'src/ventas/entities/venta.entity';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { Inventario } from '../../inventario/entities/inventario.entity';
+import { Venta } from '../../ventas/entities/venta.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 import {
   Column,
   Entity,

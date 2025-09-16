@@ -8,8 +8,8 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Mascota } from '../../mascotas/entities/mascota.entity';
-import { Venta } from 'src/ventas/entities/venta.entity';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { Venta } from '../../ventas/entities/venta.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity()
 export class Cliente {

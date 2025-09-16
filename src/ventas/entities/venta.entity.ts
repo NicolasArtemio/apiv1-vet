@@ -7,10 +7,10 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { Entity } from 'typeorm/decorator/entity/Entity';
-import { Pago } from 'src/pago/entities/pago.entity';
-import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
-import { Empleado } from 'src/empleado/entities/empleado.entity';
-import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { Pago } from '../../pago/entities/pago.entity';
+import { DetalleVenta } from '../../detalle_venta/entities/detalle_venta.entity';
+import { Empleado } from '../../empleado/entities/empleado.entity';
+import { Cliente } from '../../cliente/entities/cliente.entity';
 
 @Entity()
 export class Venta {

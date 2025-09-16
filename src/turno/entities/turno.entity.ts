@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EstadoTurno } from 'src/enums/estadoTurno.enum';
-import { Mascota } from 'src/mascotas/entities/mascota.entity';
+import { EstadoTurno } from '../../enums/estadoTurno.enum';
+import { Mascota } from '../../mascotas/entities/mascota.entity';
 
 @Entity()
 export class Turno {
