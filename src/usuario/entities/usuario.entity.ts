@@ -6,12 +6,12 @@ import {
   OneToMany,
   OneToOne 
 } from 'typeorm';
-import { Rol } from 'src/enums/Rol.enum';
-import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
-import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
-import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
-import { Empleado } from 'src/empleado/entities/empleado.entity';
-import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { Rol } from '../../enums/Rol.enum';
+import { EstadoUsuario } from '../../enums/EstadoUsuario.enum';
+import { Mensaje } from '../../mensaje/entities/mensaje.entity';
+import { Notificacion } from '../../notificaciones/entities/notificacione.entity';
+import { Empleado } from '../../empleado/entities/empleado.entity';
+import { Cliente } from '../../cliente/entities/cliente.entity';
 
 @Entity()
 export class Usuario {

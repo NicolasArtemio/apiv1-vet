@@ -1,6 +1,6 @@
-import { Cliente } from 'src/cliente/entities/cliente.entity';
-import { Turno } from 'src/turno/entities/turno.entity';
-import { Vacunacion } from 'src/vacunacion/entities/vacunacion.entity';
+import { Cliente } from '../../cliente/entities/cliente.entity';
+import { Turno } from '../../turno/entities/turno.entity';
+import { Vacunacion } from '../../vacunacion/entities/vacunacion.entity';
 import {
   Column,
   Entity,

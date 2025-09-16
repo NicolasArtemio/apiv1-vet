@@ -1,5 +1,5 @@
-import { Empleado } from 'src/empleado/entities/empleado.entity';
-import { Producto } from 'src/productos/entities/producto.entity';
+import { Empleado } from '../../empleado/entities/empleado.entity';
+import { Producto } from '../../productos/entities/producto.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

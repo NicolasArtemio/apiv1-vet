@@ -1,8 +1,8 @@
-import { EstadoPagos } from 'src/enums/EstadoPagos.enum';
-import { TipoPagos } from 'src/enums/TipoPagos.enum';
+import { EstadoPagos } from '../../enums/EstadoPagos.enum';
+import { TipoPagos } from '../../enums/TipoPagos.enum';
 import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
-import { Venta } from 'src/ventas/entities/venta.entity';
+import { Venta } from '../../ventas/entities/venta.entity';
 
 @Entity()
 export class Pago {
