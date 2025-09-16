@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   BadRequestException,
   ConflictException,
-  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -16,12 +14,17 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
 import { Rol } from 'src/enums/Rol.enum';
+import { UsuarioService } from 'src/usuario/usuario.service';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Injectable()
 export class EmpleadoService {
   constructor(
     @InjectRepository(Empleado)
     private empleadoRepository: Repository<Empleado>,
+    @InjectRepository(Usuario)
+    private readonly usuarioRepository: Repository<Usuario>,
+    private usuarioService: UsuarioService,
   ) {}
 
   /**
@@ -33,32 +36,54 @@ export class EmpleadoService {
 
   async create(createEmpleadoDto: CreateEmpleadoDto): Promise<Empleado> {
     try {
-      const nuevoEmpleado = this.empleadoRepository.create({
-        ...createEmpleadoDto,
+      const dto = createEmpleadoDto;
+
+      if (!dto.email || !dto.contrasena) {
+        throw new BadRequestException('email y contraseña son obligatorios');
+      }
+
+      // Crear nuevo empleado con la información del DTO
+      const nuevoUsuario = await this.usuarioService.create({
+        email: dto.email,
+        contrasena: dto.contrasena,
         rol: Rol.EMPLEADO,
         fecha_registro: new Date(),
         estado: EstadoUsuario.ACTIVO,
       });
 
+      // 2. Crear y guardar el empleado con referencia al usuario
+      const nuevoEmpleado = this.empleadoRepository.create({
+        ...createEmpleadoDto,
+        usuario: nuevoUsuario,
+      });
+
+      // Guardar el nuevo empleado en la base de datos
       return await this.empleadoRepository.save(nuevoEmpleado);
     } catch (error) {
+      // Manejo de errores
       console.error('Error al crear el empleado:', error);
 
-      if (typeof error === 'object' && error !== null) {
+      // Verificar si el error tiene propiedades relacionadas con la base de datos
+      if (error && typeof error === 'object') {
         const err = error as { code?: string; errno?: number };
 
+        // Manejo de error por entrada duplicada (clave duplicada)
         if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
           throw new ConflictException(
             'Ya existe un empleado con datos duplicados',
           );
         }
 
+        // Manejo de error por referencia de datos inexistentes
         if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
           throw new BadRequestException('Datos referenciados no existen');
         }
       }
 
-      throw new BadRequestException('Error al crear el empleado');
+      // Lanza una excepción genérica si no se captura un error específico
+      throw new InternalServerErrorException(
+        'Error inesperado al crear el empleado',
+      );
     }
   }
 
@@ -90,15 +115,20 @@ export class EmpleadoService {
     }
 
     try {
-      const empleado = await this.empleadoRepository.findOneBy({ id });
+      const empleado = await this.empleadoRepository.findOne({
+        where: { id },
+        relations: ['usuario'],
+      });
       if (!empleado) {
-        throw new HttpException(
-          'Cliente no encontrado',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new NotFoundException('Empleado no encontrado');
       }
-      const updateEmpleado = Object.assign(empleado, updateEmpleadoDto);
-      return await this.empleadoRepository.save(updateEmpleado);
+      Object.assign(empleado, updateEmpleadoDto);
+
+      if (updateEmpleadoDto.usuario) {
+        Object.assign(empleado.usuario, updateEmpleadoDto.usuario);
+        await this.usuarioRepository.save(empleado.usuario);
+      }
+      return this.empleadoRepository.save(empleado);
     } catch (error) {
       console.error('Error al actualizar el empleado:', error);
       throw new InternalServerErrorException(

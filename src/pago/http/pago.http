@@ -19,7 +19,7 @@ GET http://localhost:3000/api/v1/pago HTTP/1.1
 
 ### Obtener un pago por ID
 
-GET http://localhost:3000/api/v1/pago/2 HTTP/1.1
+GET http://localhost:3000/api/v1/pago/1 HTTP/1.1
 
 
 ### Actualizar un pago por ID

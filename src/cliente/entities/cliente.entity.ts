@@ -1,10 +1,21 @@
-import { ChildEntity, Column, OneToMany } from 'typeorm';
-import { Usuario } from '../../usuario/entities/usuario.entity';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+import {
+  PrimaryGeneratedColumn,
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Mascota } from '../../mascotas/entities/mascota.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
-@ChildEntity()
-export class Cliente extends Usuario {
+@Entity()
+export class Cliente {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   foto_perfil: string;
 
@@ -17,7 +28,7 @@ export class Cliente extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column('int')
+  @Column()
   dni: number;
 
   @Column()
@@ -29,11 +40,13 @@ export class Cliente extends Usuario {
   @Column()
   direccion: string;
 
-
   @OneToMany(() => Mascota, (mascota) => mascota.cliente)
   mascotas: Mascota[];
 
   @OneToMany(() => Venta, (venta) => venta.cliente)
-
   venta: Venta[];
+
+  @OneToOne(() => Usuario, (usuario) => usuario.cliente)
+  @JoinColumn()
+  usuario: Usuario;
 }
