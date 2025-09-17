@@ -1,19 +1,24 @@
 <<<<<<< HEAD
 import {
-  BadRequestException,
-  ConflictException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  ConflictException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
+<<<<<<< HEAD
 =======
 
 import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 >>>>>>> 10824e497bd527dd0c8ab682cda9340915e06a3e
+=======
+import { InjectRepository } from '@nestjs/typeorm';
+import { Producto } from 'src/productos/entities/producto.entity';
+import { Venta } from 'src/ventas/entities/venta.entity';
+import { Repository } from 'typeorm';
+>>>>>>> 2ac244bdabf6bedb32c8e04ebfaff7db5238df69
 import { CreateDetalleVentaDto } from './dto/create-detalle_venta.dto';
 import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { DetalleVenta } from './entities/detalle_venta.entity';
 <<<<<<< HEAD
 
@@ -22,19 +27,40 @@ export class DetalleVentaService {
   constructor(
     @InjectRepository(DetalleVenta)
     private readonly detalleVentaRepository: Repository<DetalleVenta>,
+
+    @InjectRepository(Producto)
+    private readonly productoRepository: Repository<Producto>,
   ) {}
 
   async create(
-    CreateDetalleVentaDto: CreateDetalleVentaDto,
+    createDetalleVentaDto: CreateDetalleVentaDto,
+    venta: Venta,
   ): Promise<DetalleVenta> {
     try {
-      const nuevoDetalleVenta = this.detalleVentaRepository.create({
-        ...CreateDetalleVentaDto,
+      // Buscar producto
+      const producto = await this.productoRepository.findOneBy({
+        id: createDetalleVentaDto.id_producto,
+      });
+      if (!producto) {
+        throw new NotFoundException(
+          `Producto con id ${createDetalleVentaDto.id_producto} no encontrado`,
+        );
+      }
+
+      // Crear detalle
+      const nuevoDetalle = this.detalleVentaRepository.create({
+        producto,
+        cantidad: createDetalleVentaDto.cantidad,
+        precio: producto.precio, // toma el precio del producto
+        subtotal: producto.precio * createDetalleVentaDto.cantidad,
+        venta,
       });
 
-      return await this.detalleVentaRepository.save(nuevoDetalleVenta);
+      // Guardar
+      return await this.detalleVentaRepository.save(nuevoDetalle);
     } catch (error) {
-      console.error('Error mientras se crea el detalle de ventas', error);
+      console.error('Error creando detalle de venta:', error);
+
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
 
@@ -47,7 +73,8 @@ export class DetalleVentaService {
           throw new BadRequestException('Datos referenciados no existen');
         }
       }
-      throw new InternalServerErrorException('Error al creardetalle de ventas');
+
+      throw new InternalServerErrorException('Error al crear detalle de venta');
     }
   }
 
@@ -55,6 +82,7 @@ export class DetalleVentaService {
     return this.detalleVentaRepository.find();
   }
 
+<<<<<<< HEAD
   async findOne(id: number): Promise<DetalleVenta | null> {
     try {
       const DetalleVenta = await this.detalleVentaRepository.findOneBy({
@@ -108,6 +136,15 @@ export class DetalleVentaService {
 
  async findAll():Promise<DetalleVenta[]> {
   return this.detalleVentaRepository.find();
+=======
+  async findOne(id: number): Promise<DetalleVenta> {
+    const detalleVenta = await this.detalleVentaRepository.findOneBy({
+      id_detalle: id,
+    });
+    if (!detalleVenta)
+      throw new NotFoundException('Detalle Venta no encontrado');
+    return detalleVenta;
+>>>>>>> 2ac244bdabf6bedb32c8e04ebfaff7db5238df69
   }
 
 async findOne(id_detalle : number): Promise< DetalleVenta| null> {
@@ -143,36 +180,26 @@ async findOne(id_detalle : number): Promise< DetalleVenta| null> {
   async update(
     id: number,
     updateDetalleVentaDto: UpdateDetalleVentaDto,
-  ): Promise<DetalleVenta | null> {
-    try {
-      const detalleVenta = await this.detalleVentaRepository.findOneBy({
-        id_detalle: id,
-      });
-      if (!detalleVenta) {
-        throw new NotFoundException('detalles de ventas no fue encontrado');
-      }
-      this.detalleVentaRepository.merge(detalleVenta, updateDetalleVentaDto);
-      return await this.detalleVentaRepository.save(detalleVenta);
-    } catch (error) {
-      console.error('Error al actualizar el detalles de ventas:', error);
-      throw new BadRequestException('Error al actualizar el detalle de ventas');
-    }
+  ): Promise<DetalleVenta> {
+    const detalleVenta = await this.detalleVentaRepository.findOneBy({
+      id_detalle: id,
+    });
+    if (!detalleVenta)
+      throw new NotFoundException('Detalle de venta no encontrado');
+
+    this.detalleVentaRepository.merge(detalleVenta, updateDetalleVentaDto);
+    return await this.detalleVentaRepository.save(detalleVenta);
   }
 
-  async remove(id: number): Promise<DetalleVenta | null> {
-    try {
-      const detalleVenta = await this.detalleVentaRepository.findOneBy({
-        id_detalle: id,
-      });
-      if (!detalleVenta) {
-        throw new NotFoundException('detalle de venta no fue encontrado');
-      }
-      await this.detalleVentaRepository.remove(detalleVenta);
-      return detalleVenta;
-    } catch (error) {
-      console.error('Error al eliminar el detalle de ventas:', error);
-      throw new BadRequestException('Error al eliminar el detalle');
-    }
+  async remove(id: number): Promise<DetalleVenta> {
+    const detalleVenta = await this.detalleVentaRepository.findOneBy({
+      id_detalle: id,
+    });
+    if (!detalleVenta)
+      throw new NotFoundException('Detalle de venta no encontrado');
+
+    await this.detalleVentaRepository.remove(detalleVenta);
+    return detalleVenta;
   }
 }
 =======

@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsInt, IsPositive, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsInt,
+  IsPositive,
+  ValidateNested,
+} from 'class-validator';
 import { CreateDetalleVentaDto } from 'src/detalle_venta/dto/create-detalle_venta.dto';
 
 export class CreateVentaDto {
@@ -11,14 +17,13 @@ export class CreateVentaDto {
   @IsInt()
   id_empleado: number;
 
-  @IsPositive()
-  total: number;
-
   @IsDate()
   @Type(() => Date)
   fecha: Date;
 
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateDetalleVentaDto)
-  detalleVenta: CreateDetalleVentaDto[];
+  detalles: CreateDetalleVentaDto[];
 }
+

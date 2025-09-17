@@ -28,18 +28,20 @@ export class PagoService {
    */
   async create(createPagoDto: CreatePagoDto): Promise<Pago> {
     try {
+      // 1️⃣ Crear el pago
       const pago = this.pagoRepository.create(createPagoDto);
       await this.pagoRepository.save(pago);
 
+      // 2️⃣ Traer el pago completo con relaciones correctamente cargadas
       const pagoCompleto = await this.pagoRepository.findOne({
         where: { id: pago.id },
-        relations: {
-          venta: {
-            empleado: true,
-            cliente: true,
-            detallesVenta: true,
-          },
-        },
+        relations: [
+          'venta',
+          'venta.cliente',
+          'venta.empleado',
+          'venta.detalles',
+          'venta.detalles.producto',
+        ],
       });
 
       if (!pagoCompleto) {
@@ -65,6 +67,7 @@ export class PagoService {
       throw new InternalServerErrorException('Error interno al crear el pago');
     }
   }
+
   /**
    * Busca y devuelve todos los pagos.
    * @returns Lista de todos los pagos.
@@ -86,11 +89,22 @@ export class PagoService {
     }
 
     try {
-      const pago = await this.pagoRepository.findOneBy({ id });
-      if (!pago) {
+      const pagoCompleto = await this.pagoRepository.findOne({
+        where: { id }, // 👈 aquí usamos directamente el id que recibimos
+        relations: [
+          'venta', // la venta asociada
+          'venta.cliente', // cliente de la venta
+          'venta.empleado', // empleado de la venta
+          'venta.detalles', // detalles de la venta (propiedad correcta)
+          'venta.detalles.producto', // productos dentro de cada detalle
+        ],
+      });
+
+      if (!pagoCompleto) {
         throw new NotFoundException(`Pago con ID ${id} no encontrado`);
       }
-      return pago;
+
+      return pagoCompleto;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -99,7 +113,6 @@ export class PagoService {
       throw new InternalServerErrorException('Error interno al buscar el pago');
     }
   }
-
   /**
    * Actualiza un pago existente.
    * @param id - ID del pago a actualizar.

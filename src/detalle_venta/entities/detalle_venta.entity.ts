@@ -14,15 +14,15 @@ export class DetalleVenta {
   id_detalle: number;
 
   @Column()
-  id_venta: number;
-
-  @Column()
-  id_producto: number;
-
-  @Column()
   cantidad: number;
 
-  @ManyToOne(() => Venta, (venta) => venta.detallesVenta)
+  @Column('decimal')
+  precio: number;
+
+  @Column('decimal')
+  subtotal: number;
+
+  @ManyToOne(() => Venta, (venta) => venta.detalles)
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 
