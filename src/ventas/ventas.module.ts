@@ -6,9 +6,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Empleado } from '../empleado/entities/empleado.entity';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { DetalleVenta } from '../detalle_venta/entities/detalle_venta.entity';
+import { Producto } from 'src/productos/entities/producto.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Venta, Empleado, Cliente, DetalleVenta])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Venta,
+      Empleado,
+      Cliente,
+      DetalleVenta,
+      Producto,
+    ]),
+  ],
   controllers: [VentasController],
   providers: [VentasService],
   exports: [VentasService],

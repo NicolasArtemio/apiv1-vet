@@ -1,28 +1,22 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
-  ConflictException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateVentaDto } from './dto/create-venta.dto';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
 import { Venta } from './entities/venta.entity';
 import { UpdateVentaDto } from './dto/update-venta.dto';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { Empleado } from '../empleado/entities/empleado.entity';
 import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
+import { Repository } from 'typeorm';
+import { CreateVentaDto } from './dto/create-venta.dto';
+import { Producto } from 'src/productos/entities/producto.entity';
 
 @Injectable()
 export class VentasService {
-  productoRepository: any;
   constructor(
     @InjectRepository(Venta)
     private ventaRepository: Repository<Venta>,
@@ -30,8 +24,8 @@ export class VentasService {
     private clienteRepository: Repository<Cliente>,
     @InjectRepository(Empleado)
     private empleadoRepository: Repository<Empleado>,
-    @InjectRepository(DetalleVenta)
-    private readonly detalleVentaRepository: Repository<DetalleVenta>,
+    @InjectRepository(Producto)
+    private productoRepository: Repository<Producto>,
   ) {}
 
   /**
@@ -43,66 +37,84 @@ export class VentasService {
    * @throws InternalServerErrorException si ocurre un error interno al crear la venta.
    */
 
-
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
-      // 1. Buscar cliente y empleado
-      const cliente = await this.clienteRepository.findOneBy({ id: createVentaDto.id_cliente });
+      // 0️⃣ Validar que haya al menos un detalle
+      if (!createVentaDto.detalles || createVentaDto.detalles.length === 0) {
+        throw new BadRequestException(
+          'La venta debe tener al menos un detalle',
+        );
+      }
+
+      // 1️⃣ Buscar cliente y empleado
+      const cliente = await this.clienteRepository.findOneBy({
+        id: createVentaDto.id_cliente,
+      });
       if (!cliente) throw new NotFoundException('Cliente no encontrado');
 
-      const empleado = await this.empleadoRepository.findOneBy({ id: createVentaDto.id_empleado });
+      const empleado = await this.empleadoRepository.findOneBy({
+        id: createVentaDto.id_empleado,
+      });
       if (!empleado) throw new NotFoundException('Empleado no encontrado');
 
-      // 2. Transformar fecha
+      // 2️⃣ Transformar fecha
       const fecha = new Date(createVentaDto.fecha);
 
-      // 3. Crear detalles de venta y calcular subtotal
+      // 3️⃣ Crear detalles y calcular total
       const detalles: DetalleVenta[] = [];
       let total = 0;
 
       for (const d of createVentaDto.detalles) {
-        const producto = await this.productoRepository.findOneBy({ id: d.id_producto });
-        if (!producto) throw new NotFoundException(`Producto con id ${d.id_producto} no encontrado`);
+        const producto = await this.productoRepository.findOneBy({
+          id: d.id_producto,
+        });
+        if (!producto)
+          throw new NotFoundException(
+            `Producto con id ${d.id_producto} no encontrado`,
+          );
 
         const detalle = new DetalleVenta();
         detalle.producto = producto;
         detalle.cantidad = d.cantidad;
-        detalle.precio = producto.precio;
+        detalle.precio = producto.precio; // snapshot
         detalle.subtotal = producto.precio * d.cantidad;
 
         total += detalle.subtotal;
         detalles.push(detalle);
+
+        // 3️⃣a. Opcional: descontar stock
+        // producto.stock -= d.cantidad;
+        // await this.productoRepository.save(producto);
       }
 
-      // 4. Crear la venta
+      // 4️⃣ Crear la venta
       const venta = this.ventaRepository.create({
         cliente,
         empleado,
         fecha,
         total,
-        detalles, // cascade: true en la entidad
+        detalles,
       });
 
-      // 5. Guardar venta + detalles
-      return await this.ventaRepository.save(venta);
+      // 5️⃣ Guardar
+      const ventaGuardada = await this.ventaRepository.save(venta);
 
-    } catch (error: unknown) {
+      // 6️⃣ Opcional: crear un pago inicial
+      // const pago = this.pagoRepository.create({
+      //   venta: ventaGuardada,
+      //   fecha_pago: new Date(),
+      //   monto_pago: ventaGuardada.total,
+      //   metodo_pago: TipoPagos.EFECTIVO,
+      //   estado_pago: EstadoPagos.PAGADO,
+      // });
+      // await this.pagoRepository.save(pago);
+
+      return ventaGuardada;
+    } catch (error) {
       console.error('Error al crear la venta:', error);
-
-      if (typeof error === 'object' && error !== null) {
-        const err = error as { code?: string; errno?: number };
-        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException('Ya existe una venta con datos duplicados');
-        }
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
-        }
-      }
-
-      throw new InternalServerErrorException('Error interno al crear la venta');
+      throw error;
     }
   }
-
   /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.

@@ -40,7 +40,7 @@ export class Empleado {
   especialidad: string;
 
   @OneToMany(() => Venta, (venta) => venta.empleado)
-  venta: Venta[];
+  ventas: Venta[];
   @OneToMany(() => Inventario, (inventario) => inventario.empleado)
   inventarios: Inventario[];
 

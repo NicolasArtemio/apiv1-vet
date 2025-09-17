@@ -9,9 +9,4 @@ export class CreateDetalleVentaDto {
   @IsInt()
   @IsNotEmpty()
   cantidad: number;
-
-  @IsPositive()
-  @IsInt()
-  @IsNotEmpty()
-  precio: number;
 }

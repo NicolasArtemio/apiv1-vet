@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsInt, IsPositive, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsDate,
+  IsInt,
+  IsPositive,
+  ValidateNested,
+} from 'class-validator';
 import { CreateDetalleVentaDto } from 'src/detalle_venta/dto/create-detalle_venta.dto';
 
 export class CreateVentaDto {
@@ -15,9 +21,9 @@ export class CreateVentaDto {
   @Type(() => Date)
   fecha: Date;
 
-
-   @IsArray()
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateDetalleVentaDto)
   detalles: CreateDetalleVentaDto[];
 }
+

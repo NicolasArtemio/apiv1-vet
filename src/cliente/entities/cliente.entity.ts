@@ -44,7 +44,7 @@ export class Cliente {
   mascotas: Mascota[];
 
   @OneToMany(() => Venta, (venta) => venta.cliente)
-  venta: Venta[];
+  ventas: Venta[];
 
   @OneToOne(() => Usuario, (usuario) => usuario.cliente)
   @JoinColumn()
