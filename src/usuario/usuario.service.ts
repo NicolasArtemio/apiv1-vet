@@ -1,22 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Repository } from 'typeorm';
-import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
 import { Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
-
 @Injectable()
 export class UsuarioService {
-
   constructor(
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
-  ){}
+  ) {}
 
-    /**
+  /**
    * Crea un nuevo usuario en la base de datos.
    * @param createUsuarioDto - Datos necesarios para crear el usuario.
    * @returns El usuario creado.
@@ -24,7 +23,7 @@ export class UsuarioService {
    */
 
   async create(createUsuarioDto: CreateUsuarioDto) {
-    try{
+    try {
       const usuario = this.usuarioRepository.create(createUsuarioDto);
       return await this.usuarioRepository.save(usuario);
     } catch (error) {
@@ -38,7 +37,7 @@ export class UsuarioService {
   }
 
   async findOne(id: number): Promise<Usuario | null> {
-    try{
+    try {
       const usuario = await this.usuarioRepository.findOneBy({ id });
       if (!usuario) {
         throw new NotFoundException('Usuario no encontrado');
@@ -50,8 +49,11 @@ export class UsuarioService {
     }
   }
 
-  async update(id: number, UpdateUsuarioDto: UpdateUsuarioDto): Promise<Usuario | null> {
-    try{
+  async update(
+    id: number,
+    UpdateUsuarioDto: UpdateUsuarioDto,
+  ): Promise<Usuario | null> {
+    try {
       const usuario = await this.usuarioRepository.findOneBy({ id });
       if (!usuario) {
         throw new NotFoundException('Usuario no encontrado');

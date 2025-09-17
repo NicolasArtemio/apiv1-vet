@@ -1,11 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-import { Inventario } from 'src/inventario/entities/inventario.entity';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
-import { Venta } from 'src/ventas/entities/venta.entity';
-import { ChildEntity, Column, OneToMany } from 'typeorm';
+import { Inventario } from '../../inventario/entities/inventario.entity';
+import { Venta } from '../../ventas/entities/venta.entity';
+import { Usuario } from '../../usuario/entities/usuario.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@ChildEntity()
-export class Empleado extends Usuario {
+@Entity()
+export class Empleado {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   nombre: string;
 
@@ -15,7 +24,7 @@ export class Empleado extends Usuario {
   @Column('timestamp')
   fecha_nacimiento: Date;
 
-  @Column('int')
+  @Column()
   dni: number;
 
   @Column()
@@ -31,7 +40,11 @@ export class Empleado extends Usuario {
   especialidad: string;
 
   @OneToMany(() => Venta, (venta) => venta.empleado)
-  venta: Venta[];
+  ventas: Venta[];
   @OneToMany(() => Inventario, (inventario) => inventario.empleado)
   inventarios: Inventario[];
+
+  @OneToOne(() => Usuario, (usuario) => usuario.empleado)
+  @JoinColumn()
+  usuario: Usuario;
 }

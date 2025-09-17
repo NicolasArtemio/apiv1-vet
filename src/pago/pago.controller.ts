@@ -20,7 +20,6 @@ export class PagoController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   create(@Body() createPagoDto: CreatePagoDto) {
-    console.log('Creating pago with data:', createPagoDto);
     return this.pagoService.create(createPagoDto);
   }
 

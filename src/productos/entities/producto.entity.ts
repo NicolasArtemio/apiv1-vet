@@ -1,7 +1,7 @@
-import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
-import { CategoriaProducto } from 'src/enums/CategoriaProducto.enum';
-import { TipoUso } from 'src/enums/TipoUso.enum';
-import { Inventario } from 'src/inventario/entities/inventario.entity';
+import { DetalleVenta } from '../../detalle_venta/entities/detalle_venta.entity';
+import { CategoriaProducto } from '../../enums/CategoriaProducto.enum';
+import { TipoUso } from '../../enums/TipoUso.enum';
+import { Inventario } from '../../inventario/entities/inventario.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -28,7 +28,7 @@ export class Producto {
   categoria: CategoriaProducto;
 
   @Column('enum', { enum: TipoUso })
-  typo_uso: TipoUso;
+  tipo_uso: TipoUso;
 
   @Column('date')
   fecha_vencimiento: Date;

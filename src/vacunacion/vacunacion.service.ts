@@ -1,4 +1,12 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateVacunacionDto } from './dto/create-vacunacion.dto';
 import { UpdateVacunacionDto } from './dto/update-vacunacion.dto';
 import { Vacunacion } from './entities/vacunacion.entity';
@@ -9,8 +17,8 @@ import { Repository } from 'typeorm';
 export class VacunacionService {
   constructor(
     @InjectRepository(Vacunacion)
-    private readonly vacunacionRepository: Repository<Vacunacion>
-  ) { }
+    private readonly vacunacionRepository: Repository<Vacunacion>,
+  ) {}
 
   async create(createVacunacionDto: CreateVacunacionDto): Promise<Vacunacion> {
     try {
@@ -20,7 +28,8 @@ export class VacunacionService {
         mascota: { id: createVacunacionDto.mascota_id },
       });
 
-      const vacunacionGuardada = await this.vacunacionRepository.save(nuevaVacunacion);
+      const vacunacionGuardada =
+        await this.vacunacionRepository.save(nuevaVacunacion);
 
       // Devolver la vacunación junto con la relación cargada
       const vacunacionConMascota = await this.vacunacionRepository.findOne({
@@ -29,29 +38,30 @@ export class VacunacionService {
       });
 
       if (!vacunacionConMascota) {
-        throw new InternalServerErrorException('Error al recuperar la vacunación recién creada');
+        throw new InternalServerErrorException(
+          'Error al recuperar la vacunación recién creada',
+        );
       }
 
       return vacunacionConMascota;
-
-
     } catch (error) {
-      console.error("Error mientras se crea la Vacunacion", error);
+      console.error('Error mientras se crea la Vacunacion', error);
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
 
         if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException('Ya existe una vacunación con datos duplicados');
+          throw new ConflictException(
+            'Ya existe una vacunación con datos duplicados',
+          );
         }
 
         if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
           throw new BadRequestException('Mascota referenciada no existe');
         }
       }
-      throw new InternalServerErrorException("Error al crear la vacunación");
+      throw new InternalServerErrorException('Error al crear la vacunación');
     }
   }
-
 
   async findAll(): Promise<Vacunacion[]> {
     return await this.vacunacionRepository.find();
@@ -59,40 +69,55 @@ export class VacunacionService {
 
   async findOne(id: number): Promise<Vacunacion | null> {
     if (id <= 0) {
-      throw new BadRequestException("El id debe ser un numero positivo")
+      throw new BadRequestException('El id debe ser un numero positivo');
     }
     try {
-      const vacunacion = await this.vacunacionRepository.findOneBy({ id });
+      const vacunacion = await this.vacunacionRepository.findOne({
+        where: { id },
+        relations: ['mascota'],
+      });
+
       if (!vacunacion) {
-        throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST)
+        throw new HttpException(
+          'Vacunacion no encontrada',
+          HttpStatus.BAD_REQUEST,
+        );
       }
       return vacunacion;
     } catch (error) {
-      console.error("Error al buscar la vacunacion", HttpStatus.BAD_REQUEST)
-      throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST);
+      console.error('Error al buscar la vacunacion', HttpStatus.BAD_REQUEST);
+      throw new HttpException(
+        'Vacunacion no encontrada',
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
   }
 
-  async update(id: number, updateVacunacionDto: UpdateVacunacionDto): Promise<Vacunacion | null> {
+  async update(
+    id: number,
+    updateVacunacionDto: UpdateVacunacionDto,
+  ): Promise<Vacunacion | null> {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
       const vacunacion = await this.vacunacionRepository.findOneBy({ id });
+
       if (!vacunacion) {
-        throw new HttpException("Vacunacion no encontrada", HttpStatus.BAD_REQUEST)
+        throw new NotFoundException(`Vacunación no encontrada con id ${id}`);
       }
-      const updateVacunacion = Object.assign(id, updateVacunacionDto)
-      return this.vacunacionRepository.save(updateVacunacion);
 
+      // Aplicar los cambios sobre la entidad existente
+      Object.assign(vacunacion, updateVacunacionDto);
+
+      return await this.vacunacionRepository.save(vacunacion);
     } catch (error) {
-      console.error("Error al buscar la Vacunacion", error);
-      throw new InternalServerErrorException(`No se encontro la vacunacion con el id ${id}`);
+      console.error('Error al buscar la Vacunacion', error);
+      throw new InternalServerErrorException(
+        `No se encontro la vacunacion con el id ${id}`,
+      );
     }
-
   }
-
 
   async remove(id: number): Promise<Vacunacion | null> {
     if (id <= 0) {
@@ -102,15 +127,14 @@ export class VacunacionService {
     try {
       const mascota = await this.vacunacionRepository.findOneBy({ id });
       if (!mascota) {
-        throw new HttpException("Mascota eliminada", HttpStatus.BAD_REQUEST)
-      } return this.vacunacionRepository.remove(mascota);
-
+        throw new HttpException('Mascota eliminada', HttpStatus.BAD_REQUEST);
+      }
+      return this.vacunacionRepository.remove(mascota);
     } catch (error) {
-      console.error("Error al buscar la vacunacion", error);
-      throw new InternalServerErrorException(`No se encontro la vacunacion con el id ${id}`);
+      console.error('Error al buscar la vacunacion', error);
+      throw new InternalServerErrorException(
+        `No se encontro la vacunacion con el id ${id}`,
+      );
     }
-
   }
-
-
 }

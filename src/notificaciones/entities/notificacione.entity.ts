@@ -6,9 +6,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { TipoNotificacion } from 'src/enums/tipoNotificacion.enum';
-import { EstadoLectura } from 'src/enums/estadoLectura.enum';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { TipoNotificacion } from '../../enums/tipoNotificacion.enum';
+import { EstadoLectura } from '../../enums/estadoLectura.enum';
+import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity()
 export class Notificacion {

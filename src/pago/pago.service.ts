@@ -28,12 +28,30 @@ export class PagoService {
    */
   async create(createPagoDto: CreatePagoDto): Promise<Pago> {
     try {
+      // 1️⃣ Crear el pago
       const pago = this.pagoRepository.create(createPagoDto);
-      return await this.pagoRepository.save(pago);
+      await this.pagoRepository.save(pago);
+
+      // 2️⃣ Traer el pago completo con relaciones correctamente cargadas
+      const pagoCompleto = await this.pagoRepository.findOne({
+        where: { id: pago.id },
+        relations: [
+          'venta',
+          'venta.cliente',
+          'venta.empleado',
+          'venta.detalles',
+          'venta.detalles.producto',
+        ],
+      });
+
+      if (!pagoCompleto) {
+        throw new NotFoundException('Pago no encontrado después de crear');
+      }
+
+      return pagoCompleto;
     } catch (error: unknown) {
       console.error('Error al crear el pago:', error);
 
-      // Type guard para asegurar que el error tiene las propiedades necesarias
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
 
@@ -71,11 +89,22 @@ export class PagoService {
     }
 
     try {
-      const pago = await this.pagoRepository.findOneBy({ id });
-      if (!pago) {
+      const pagoCompleto = await this.pagoRepository.findOne({
+        where: { id }, // 👈 aquí usamos directamente el id que recibimos
+        relations: [
+          'venta', // la venta asociada
+          'venta.cliente', // cliente de la venta
+          'venta.empleado', // empleado de la venta
+          'venta.detalles', // detalles de la venta (propiedad correcta)
+          'venta.detalles.producto', // productos dentro de cada detalle
+        ],
+      });
+
+      if (!pagoCompleto) {
         throw new NotFoundException(`Pago con ID ${id} no encontrado`);
       }
-      return pago;
+
+      return pagoCompleto;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw error;
@@ -84,7 +113,6 @@ export class PagoService {
       throw new InternalServerErrorException('Error interno al buscar el pago');
     }
   }
-
   /**
    * Actualiza un pago existente.
    * @param id - ID del pago a actualizar.

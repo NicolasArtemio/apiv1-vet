@@ -1,34 +1,40 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  TableInheritance,
   OneToMany,
+  OneToOne, 
+  CreateDateColumn
 } from 'typeorm';
-import { Rol } from 'src/enums/Rol.enum';
-import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
-import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
-import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
+import { Rol } from '../../enums/Rol.enum';
+import { EstadoUsuario } from '../../enums/EstadoUsuario.enum';
+import { Mensaje } from '../../mensaje/entities/mensaje.entity';
+import { Notificacion } from '../../notificaciones/entities/notificacione.entity';
+import { Empleado } from '../../empleado/entities/empleado.entity';
+import { Cliente } from '../../cliente/entities/cliente.entity';
 
 @Entity()
-@TableInheritance({ column: { type: 'varchar', name: 'type' } })
-export abstract class Usuario {
+export class Usuario {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   email: string;
 
-  @Column()
+  @Column({ select: false })
   contrasena: string;
 
   @Column('enum', { enum: Rol })
   rol: Rol;
 
-  @Column('timestamp')
-  fecha_registro: Date;
+  @CreateDateColumn({ name: 'fecha_registro' })
+  fechaRegistro: Date;
 
-  @Column('enum', { enum: EstadoUsuario })
+  @Column('enum', {
+    enum: EstadoUsuario,
+    default: EstadoUsuario.ACTIVO,
+  })
   estado: EstadoUsuario;
 
   @OneToMany(() => Mensaje, (mensaje) => mensaje.usuario)
@@ -36,4 +42,10 @@ export abstract class Usuario {
 
   @OneToMany(() => Notificacion, (notificacion) => notificacion.usuario)
   notificaciones: Notificacion[];
+
+  @OneToOne(() => Empleado, (empleado) => empleado.usuario)
+  empleado: Empleado;
+
+  @OneToOne(() => Cliente, (cliente) => cliente.usuario)
+  cliente: Cliente;
 }

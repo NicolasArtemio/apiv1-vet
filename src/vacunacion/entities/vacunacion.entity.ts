@@ -1,4 +1,4 @@
-import { Mascota } from "src/mascotas/entities/mascota.entity";
+import { Mascota } from "../../mascotas/entities/mascota.entity";
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
    
 @Entity() 

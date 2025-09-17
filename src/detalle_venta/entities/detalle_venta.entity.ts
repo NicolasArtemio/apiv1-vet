@@ -1,5 +1,5 @@
-import { Producto } from 'src/productos/entities/producto.entity';
-import { Venta } from 'src/ventas/entities/venta.entity';
+import { Producto } from '../../productos/entities/producto.entity';
+import { Venta } from '../../ventas/entities/venta.entity';
 import {
   Column,
   Entity,
@@ -14,15 +14,15 @@ export class DetalleVenta {
   id_detalle: number;
 
   @Column()
-  id_venta: number;
-
-  @Column()
-  id_producto: number;
-
-  @Column()
   cantidad: number;
 
-  @ManyToOne(() => Venta, (venta) => venta.detallesVenta)
+  @Column('decimal')
+  precio: number;
+
+  @Column('decimal')
+  subtotal: number;
+
+  @ManyToOne(() => Venta, (venta) => venta.detalles)
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 

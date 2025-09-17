@@ -1,42 +1,39 @@
+import { Cliente } from '../../cliente/entities/cliente.entity';
+import { DetalleVenta } from '../../detalle_venta/entities/detalle_venta.entity';
+import { Empleado } from '../../empleado/entities/empleado.entity';
+import { Pago } from '../../pago/entities/pago.entity';
 import {
   Column,
-  OneToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  ManyToOne,
+  Entity,
   JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Entity } from 'typeorm/decorator/entity/Entity';
-import { Pago } from 'src/pago/entities/pago.entity';
-import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
-import { Empleado } from 'src/empleado/entities/empleado.entity';
-import { Cliente } from 'src/cliente/entities/cliente.entity';
-
 @Entity()
 export class Venta {
   @PrimaryGeneratedColumn()
   id_compra: number;
 
-  @Column()
-  id_cliente: number;
-
-  @Column()
-  total: number;
-
   @Column('timestamp')
   fecha: Date;
 
-  @OneToOne(() => Pago, (pago) => pago.venta)
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  total: number;
+
+  @OneToOne(() => Pago, (pago) => pago.venta, { cascade: true })
   pago: Pago;
 
-  @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.venta)
-  detallesVenta: DetalleVenta[];
+  @OneToMany(() => DetalleVenta, (detalle) => detalle.venta, { cascade: true })
+  detalles: DetalleVenta[];
 
-  @ManyToOne(() => Empleado, (empleado) => empleado.venta)
+  @ManyToOne(() => Empleado, (empleado) => empleado.ventas)
   @JoinColumn({ name: 'id_empleado' })
   empleado: Empleado;
 
-  @ManyToOne(() => Cliente, (cliente) => cliente.venta)
-@JoinColumn({ name: 'id_cliente'})
-cliente: Cliente;
+  @ManyToOne(() => Cliente, (cliente) => cliente.ventas)
+  @JoinColumn({ name: 'id_cliente' })
+  cliente: Cliente;
 }
+
