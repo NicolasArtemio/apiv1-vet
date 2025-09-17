@@ -22,7 +22,7 @@ export class DetalleVenta {
   @Column('decimal')
   subtotal: number;
 
-  @ManyToOne(() => Venta, (venta) => venta.detalles)
+  @ManyToOne(() => Venta, (venta) => venta.detalles, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 
