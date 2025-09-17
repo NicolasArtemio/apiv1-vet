@@ -7,6 +7,7 @@ import { Empleado } from '../empleado/entities/empleado.entity';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { DetalleVenta } from '../detalle_venta/entities/detalle_venta.entity';
 import { Producto } from 'src/productos/entities/producto.entity';
+import { Pago } from 'src/pago/entities/pago.entity';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { Producto } from 'src/productos/entities/producto.entity';
       Cliente,
       DetalleVenta,
       Producto,
+      Pago,
     ]),
   ],
   controllers: [VentasController],

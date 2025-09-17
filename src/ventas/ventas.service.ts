@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   Injectable,
@@ -10,10 +13,11 @@ import { Venta } from './entities/venta.entity';
 import { UpdateVentaDto } from './dto/update-venta.dto';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { Empleado } from '../empleado/entities/empleado.entity';
-import { DetalleVenta } from 'src/detalle_venta/entities/detalle_venta.entity';
+import { DetalleVenta } from '../detalle_venta/entities/detalle_venta.entity';
 import { Repository } from 'typeorm';
 import { CreateVentaDto } from './dto/create-venta.dto';
-import { Producto } from 'src/productos/entities/producto.entity';
+import { Producto } from '../productos/entities/producto.entity';
+import { Pago } from '../pago/entities/pago.entity';
 
 @Injectable()
 export class VentasService {
@@ -26,6 +30,8 @@ export class VentasService {
     private empleadoRepository: Repository<Empleado>,
     @InjectRepository(Producto)
     private productoRepository: Repository<Producto>,
+    @InjectRepository(Pago)
+    private pagoRepository: Repository<Pago>,
   ) {}
 
   /**
@@ -94,20 +100,22 @@ export class VentasService {
         fecha,
         total,
         detalles,
+        metodo_pago: createVentaDto.metodo_pago,
+        estado_pago: createVentaDto.estado_pago,
       });
 
       // 5️⃣ Guardar
       const ventaGuardada = await this.ventaRepository.save(venta);
 
       // 6️⃣ Opcional: crear un pago inicial
-      // const pago = this.pagoRepository.create({
-      //   venta: ventaGuardada,
-      //   fecha_pago: new Date(),
-      //   monto_pago: ventaGuardada.total,
-      //   metodo_pago: TipoPagos.EFECTIVO,
-      //   estado_pago: EstadoPagos.PAGADO,
-      // });
-      // await this.pagoRepository.save(pago);
+      const pago = this.pagoRepository.create({
+        venta: ventaGuardada,
+        fecha_pago: new Date(),
+        monto_pago: ventaGuardada.total,
+        metodo_pago: createVentaDto.metodo_pago,
+        estado_pago: createVentaDto.estado_pago,
+      });
+      await this.pagoRepository.save(pago);
 
       return ventaGuardada;
     } catch (error) {

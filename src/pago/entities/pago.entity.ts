@@ -1,16 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 import { EstadoPagos } from '../../enums/EstadoPagos.enum';
 import { TipoPagos } from '../../enums/TipoPagos.enum';
-import { Entity, Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { JoinColumn } from 'typeorm/decorator/relations/JoinColumn';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
 import { Venta } from '../../ventas/entities/venta.entity';
 
 @Entity()
 export class Pago {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column()
-  id_venta: number;
 
   @Column('timestamp')
   fecha_pago: Date;
@@ -24,7 +21,7 @@ export class Pago {
   @Column('enum', { enum: EstadoPagos })
   estado_pago: EstadoPagos;
 
-  @OneToOne(() => Venta, (venta) => venta.pago)
+  @ManyToOne(() => Venta, venta => venta.pago, { eager: true })
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 }
