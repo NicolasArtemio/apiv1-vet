@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import { TipoPagos } from '../../enums/TipoPagos.enum';
 import { Cliente } from '../../cliente/entities/cliente.entity';
 import { DetalleVenta } from '../../detalle_venta/entities/detalle_venta.entity';
 import { Empleado } from '../../empleado/entities/empleado.entity';
@@ -11,6 +14,7 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { EstadoPagos } from '../../enums/EstadoPagos.enum';
 @Entity()
 export class Venta {
   @PrimaryGeneratedColumn()
@@ -22,7 +26,14 @@ export class Venta {
   @Column('decimal', { precision: 10, scale: 2, default: 0 })
   total: number;
 
+  @Column({ type: 'enum', enum: TipoPagos })
+  metodo_pago: TipoPagos;
+
+  @Column({ type: 'enum', enum: EstadoPagos })
+  estado_pago: EstadoPagos;
+
   @OneToOne(() => Pago, (pago) => pago.venta, { cascade: true })
+  @JoinColumn()
   pago: Pago;
 
   @OneToMany(() => DetalleVenta, (detalle) => detalle.venta, { cascade: true })
@@ -36,4 +47,3 @@ export class Venta {
   @JoinColumn({ name: 'id_cliente' })
   cliente: Cliente;
 }
-
