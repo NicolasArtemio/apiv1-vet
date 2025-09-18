@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MascotasService } from './mascotas.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Mascota } from './entities/mascota.entity';
-import { mockRepositoryMascota } from './mock';
+import { mockRepositoryCliente, mockRepositoryMascota } from './mock';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { ClienteService } from '../cliente/cliente.service';
 import { UpdateMascotasDto } from './dto/update-mascotas.dto';
@@ -17,7 +17,8 @@ describe('MascotasService', () => {
         MascotasService,
         ClienteService,
         { provide: getRepositoryToken(Mascota), useValue: mockRepositoryMascota },
-        { provide: getRepositoryToken(Cliente), useValue: {} },
+        { provide: getRepositoryToken(Cliente), useValue: mockRepositoryCliente },
+       
       ],
     }).compile();
 

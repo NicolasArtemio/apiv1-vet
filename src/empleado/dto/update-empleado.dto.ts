@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateEmpleadoDto } from './create-empleado.dto';
-import { UpdateUsuarioDto } from 'src/usuario/dto/update-usuario.dto';
+import { UpdateUsuarioDto } from '../../usuario/dto/update-usuario.dto';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 

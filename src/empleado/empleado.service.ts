@@ -12,10 +12,10 @@ import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 import { Empleado } from './entities/empleado.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
-import { Rol } from 'src/enums/Rol.enum';
-import { UsuarioService } from 'src/usuario/usuario.service';
-import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
+import { Rol } from '../enums/Rol.enum';
+import { UsuarioService } from '../usuario/usuario.service';
+import { Usuario } from '../usuario/entities/usuario.entity';
 
 @Injectable()
 export class EmpleadoService {
