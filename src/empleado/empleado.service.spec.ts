@@ -125,42 +125,58 @@ describe('EmpleadoService', () => {
     });
   });
 
-    describe('update', () => {
-  it('debería actualizar un empleado por id', async () => {
-    const id = 1;
-    const updateEmpleadoDto = { telefono: '1144556677', ciudad: 'La Plata' };
-
-    // Simular que existe el empleado
-    mockRepositoryEmpleado.findOne.mockResolvedValue({
-      id,
-      nombre: 'Celeste',
-      apellido: 'Ruspil',
-      telefono: '1122334455',
-      ciudad: 'Buenos Aires',
-      cliente_id: '1',
-      especialidad: 'Veterinaria',
-      fecha_nacimiento: new Date('1990-05-10'),
-      dni: 12345678,
-      direccion: 'Av. Siempre Viva 123',
+   describe('update', () => {
+      it('debería actualizar un empleado por id con todos los campos', async () => {
+        const id = 1;
+        const updateEmpleadoDto = { 
+          nombre: 'Celeste',
+          apellido: 'Ruspil',
+          telefono: '1144556677',
+          ciudad: 'La Plata',
+          especialidad: 'Veterinaria',
+          fecha_nacimiento: new Date('1991-06-15'),
+          dni: 87654321,
+          direccion: 'Calle Nueva 456',
+          email: 'celeste.ruspil@gmail.com',
+          contrasena: 'nuevaPassword123'
+        };
+    
+        // el empleado original en la base de datos
+        mockRepositoryEmpleado.findOne.mockResolvedValue({
+          id,
+          nombre: 'Celeste',
+          apellido: 'Ruspil',
+          telefono: '1122334455',
+          ciudad: 'Buenos Aires',
+          especialidad: 'Veterinaria',
+          fecha_nacimiento: new Date('1990-05-10'),
+          dni: 12345678,
+          direccion: 'Av. Siempre Viva 123',
+          email: 'celebridad@gmail.com',
+          contrasena: 'viejaPassword'
+        });
+    
+        // el repositorio devuelve el empleado actualizado
+        mockRepositoryEmpleado.save.mockResolvedValue({
+          id,
+          ...updateEmpleadoDto,
+        });
+    
+        const resultado = await service.update(id, updateEmpleadoDto);
+    
+        expect(mockRepositoryEmpleado.findOne).toHaveBeenCalledWith({
+          where: { id },
+          relations: ['usuario'], 
+        });
+        expect(mockRepositoryEmpleado.save).toHaveBeenCalled();
+    
+        // ahora probamos que todos los campos se hayan actualizado
+        expect(resultado).toEqual({
+          id,
+          ...updateEmpleadoDto,
+        });
+      });
     });
-
-    // Simular save
-    mockRepositoryEmpleado.save.mockResolvedValue({
-      ...updateEmpleadoDto,
-      id,
-    });
-
-    const resultado = await service.update(id, updateEmpleadoDto);
-
-    expect(mockRepositoryEmpleado.findOne).toHaveBeenCalledWith({
-      where: { id },
-      relations: ['usuario'], 
-    });
-    expect(mockRepositoryEmpleado.save).toHaveBeenCalled();
-    expect(resultado.telefono).toEqual(updateEmpleadoDto.telefono);
-    expect(resultado.ciudad).toEqual(updateEmpleadoDto.ciudad);
-  });
-});
 
 
   describe('remove', () => {
