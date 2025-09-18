@@ -1,5 +1,5 @@
-import { IsDate, IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
-import { EstadoTurno } from "src/enums/estadoTurno.enum";
+import {IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString, } from "class-validator";
+import { EstadoTurno } from "../../enums/estadoTurno.enum";
 
 
 export class CreateTurnoDto {

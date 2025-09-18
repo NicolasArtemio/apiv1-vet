@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
-import { Rol } from 'src/enums/Rol.enum';
+import { EstadoUsuario } from '../../enums/EstadoUsuario.enum';
+import { Rol } from '../../enums/Rol.enum';
 
 export class CreateUsuarioDto {
   @IsOptional()

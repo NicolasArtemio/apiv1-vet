@@ -4,7 +4,7 @@ import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Turno } from './entities/turno.entity';
-import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
+
 
 @Injectable()
 export class TurnoService {
@@ -14,7 +14,7 @@ export class TurnoService {
     private readonly turnoRepository: Repository<Turno>,
 
   ) { }
-  async createTurno(createTurnoDto: CreateTurnoDto): Promise<Turno> {
+  async create(createTurnoDto: CreateTurnoDto): Promise<Turno> {
     try {
       const turno = this.turnoRepository.create(createTurnoDto)
       return await this.turnoRepository.save(turno);
