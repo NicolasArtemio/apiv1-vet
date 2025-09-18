@@ -13,7 +13,7 @@ import { UpdateMascotasDto } from './dto/update-mascotas.dto';
 import { Mascota } from './entities/mascota.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { Cliente } from '../cliente/entities/cliente.entity';
 
 @Injectable()
 export class MascotasService {

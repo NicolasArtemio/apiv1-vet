@@ -50,6 +50,7 @@ describe('ClienteService', () => {
         contrasena: 'password123'
       };
       const resultadoEsperado = { id: 1, ...ClienteDto }
+      
       mockRepositoryCliente.create.mockReturnValue(resultadoEsperado);
       mockRepositoryCliente.save.mockResolvedValue(resultadoEsperado);
 
