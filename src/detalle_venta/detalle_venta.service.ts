@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   Injectable,
   NotFoundException,
@@ -6,21 +5,14 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
-<<<<<<< HEAD
-=======
 
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
->>>>>>> 10824e497bd527dd0c8ab682cda9340915e06a3e
-=======
 import { InjectRepository } from '@nestjs/typeorm';
 import { Producto } from 'src/productos/entities/producto.entity';
 import { Venta } from 'src/ventas/entities/venta.entity';
 import { Repository } from 'typeorm';
->>>>>>> 2ac244bdabf6bedb32c8e04ebfaff7db5238df69
 import { CreateDetalleVentaDto } from './dto/create-detalle_venta.dto';
 import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';
 import { DetalleVenta } from './entities/detalle_venta.entity';
-<<<<<<< HEAD
 
 @Injectable()
 export class DetalleVentaService {
