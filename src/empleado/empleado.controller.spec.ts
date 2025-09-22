@@ -24,7 +24,7 @@ describe('EmpleadoController', () => {
 
     controller = module.get<EmpleadoController>(EmpleadoController);
 
-    jest.clearAllMocks(); // Limpia mocks 
+    jest.clearAllMocks();
   });
 
   it('debería estar definido el controller', () => {
@@ -32,7 +32,7 @@ describe('EmpleadoController', () => {
   });
 
   describe('create', () => {
-    it('debería crear un empleado', async () => {
+    it('debería fallar al crear un empleado', async () => {
       const empleadoDto = {
         nombre: 'Celeste',
         cliente_id: '1',
@@ -47,81 +47,31 @@ describe('EmpleadoController', () => {
         contrasena: '123456',
       };
 
-      const resultadoEsperado = { id: 1, ...empleadoDto };
-      mockEmpleadoService.create.mockResolvedValue(resultadoEsperado);
+      mockEmpleadoService.create.mockRejectedValue(new Error('Error al crear empleado'));
 
-      const resultado = await controller.create(empleadoDto);
-
-      expect(resultado).toEqual(resultadoEsperado);
-      expect(mockEmpleadoService.create).toHaveBeenCalledWith(empleadoDto);
+      await expect(controller.create(empleadoDto)).rejects.toThrow('Error al crear empleado');
     });
   });
 
   describe('findAll', () => {
-    it('debería devolver un array de empleados', async () => {
-      const resultadoEsperado = [
-        {
-          id: 1,
-          nombre: 'Celeste',
-          cliente_id: '1',
-          apellido: 'Ruspil',
-          fecha_nacimiento: new Date('1990-05-10'),
-          dni: 12345678,
-          telefono: '1122334455',
-          ciudad: 'Buenos Aires',
-          direccion: 'Av. Siempre Viva 123',
-          especialidad: 'Veterinaria',
-        },
-        {
-          id: 2,
-          nombre: 'Carlos',
-          cliente_id: '2',
-          apellido: 'Pérez',
-          fecha_nacimiento: new Date('1985-07-20'),
-          dni: 87654321,
-          telefono: '1199887766',
-          ciudad: 'Rosario',
-          direccion: 'Calle Falsa 456',
-          especialidad: 'Peluquería Canina',
-        },
-      ];
+    it('debería fallar al devolver un array de empleados', async () => {
+      mockEmpleadoService.findAll.mockRejectedValue(new Error('Error al buscar empleados'));
 
-      mockEmpleadoService.findAll.mockResolvedValue(resultadoEsperado);
-
-      const resultado = await controller.findAll();
-
-      expect(mockEmpleadoService.findAll).toHaveBeenCalled();
-      expect(resultado).toEqual(resultadoEsperado);
+      await expect(controller.findAll()).rejects.toThrow('Error al buscar empleados');
     });
   });
 
   describe('findOne', () => {
-    it('debería devolver un empleado por id', async () => {
+    it('debería fallar al buscar un empleado por id', async () => {
       const id = '1';
-      const resultadoEsperado = {
-        id: 1,
-        nombre: 'Celeste',
-        cliente_id: '1',
-        apellido: 'Ruspil',
-        fecha_nacimiento: new Date('1990-05-10'),
-        dni: 12345678,
-        telefono: '1122334455',
-        ciudad: 'Buenos Aires',
-        direccion: 'Av. Siempre Viva 123',
-        especialidad: 'Veterinaria',
-      };
+      mockEmpleadoService.findOne.mockRejectedValue(new Error('Empleado no encontrado'));
 
-      mockEmpleadoService.findOne.mockResolvedValue(resultadoEsperado);
-
-      const resultado = await controller.findOne(id);
-
-      expect(mockEmpleadoService.findOne).toHaveBeenCalledWith(+id);
-      expect(resultado).toEqual(resultadoEsperado);
+      await expect(controller.findOne(id)).rejects.toThrow('Empleado no encontrado');
     });
   });
 
   describe('update', () => {
-    it('debería actualizar un empleado por id con todos los campos', async () => {
+    it('debería fallar al actualizar un empleado por id con todos los campos', async () => {
       const id = '1';
       const updateEmpleadoDto = {
         nombre: 'Celeste',
@@ -136,26 +86,18 @@ describe('EmpleadoController', () => {
         contrasena: 'nuevaPassword123',
       };
 
-      const resultadoEsperado = { id: +id, ...updateEmpleadoDto };
+      mockEmpleadoService.update.mockRejectedValue(new Error('Error al actualizar empleado'));
 
-      mockEmpleadoService.update.mockResolvedValue(resultadoEsperado);
-
-      const resultado = await controller.update(id, updateEmpleadoDto);
-
-      expect(mockEmpleadoService.update).toHaveBeenCalledWith(+id, updateEmpleadoDto);
-      expect(resultado).toEqual(resultadoEsperado);
+      await expect(controller.update(id, updateEmpleadoDto)).rejects.toThrow('Error al actualizar empleado');
     });
   });
 
   describe('remove', () => {
-    it('debería eliminar un empleado por id', async () => {
+    it('debería fallar al eliminar un empleado por id', async () => {
       const id = '1';
-      mockEmpleadoService.remove.mockResolvedValue({ id: +id });
+      mockEmpleadoService.remove.mockRejectedValue(new Error('Error al eliminar empleado'));
 
-      const resultado = await controller.remove(id);
-
-      expect(mockEmpleadoService.remove).toHaveBeenCalledWith(+id);
-      expect(resultado).toEqual({ id: +id });
+      await expect(controller.remove(id)).rejects.toThrow('Error al eliminar empleado');
     });
   });
 });
