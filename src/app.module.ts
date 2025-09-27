@@ -16,6 +16,7 @@ import { TurnoModule } from './turno/turno.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { MascotasModule } from './mascotas/mascotas.module';
 import { VacunacionModule } from './vacunacion/vacunacion.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
     NotificacionesModule,
     MascotasModule,
     VacunacionModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
