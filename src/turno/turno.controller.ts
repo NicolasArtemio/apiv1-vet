@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TurnoService } from './turno.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
@@ -9,7 +17,7 @@ export class TurnoController {
 
   @Post()
   create(@Body() createTurnoDto: CreateTurnoDto) {
-    return this.turnoService.createTurno(createTurnoDto);
+    return this.turnoService.create(createTurnoDto);
   }
 
   @Get()
@@ -30,5 +38,5 @@ export class TurnoController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.turnoService.remove(+id);
-  } 
+  }
 }

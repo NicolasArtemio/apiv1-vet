@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   BadRequestException,
   ConflictException,
@@ -16,6 +17,7 @@ import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { Rol } from '../enums/Rol.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
+import { BcryptHelper } from 'src/common/helpers/BcrCrypt.hrlper';
 
 @Injectable()
 export class EmpleadoService {
@@ -42,10 +44,12 @@ export class EmpleadoService {
         throw new BadRequestException('email y contraseña son obligatorios');
       }
 
+      const hashedPassword = await BcryptHelper.HashPassword(dto.contrasena);
+
       // Crear nuevo empleado con la información del DTO
       const nuevoUsuario = await this.usuarioService.create({
         email: dto.email,
-        contrasena: dto.contrasena,
+        contrasena: hashedPassword,
         rol: Rol.EMPLEADO,
         fecha_registro: new Date(),
         estado: EstadoUsuario.ACTIVO,

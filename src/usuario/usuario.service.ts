@@ -66,6 +66,28 @@ export class UsuarioService {
     }
   }
 
+  async findByEmail(email: string): Promise<Usuario | null> {
+    try {
+      const usuario = await this.usuarioRepository.findOneBy({ email });
+      return usuario;
+    } catch (error) {
+      console.error('Error al buscar el usuario por email:', error);
+      throw new BadRequestException('Error al buscar el usuario por email');
+    }
+  }
+
+  async findByPassword(contrasena: string): Promise<Usuario | null> {
+    try {
+      const usuario = await this.usuarioRepository.findOneBy({ contrasena });
+      return usuario;
+    } catch (error) {
+      console.error('Error al buscar el usuario por contraseña:', error);
+      throw new BadRequestException(
+        'Error al buscar el usuario por contraseña',
+      );
+    }
+  }
+
   async remove(id: number): Promise<Usuario | null> {
     try {
       const usuario = await this.usuarioRepository.findOneBy({ id });

@@ -16,6 +16,7 @@ import { Rol } from '../enums/Rol.enum';
 import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
+import { BcryptHelper } from 'src/common/helpers/BcrCrypt.hrlper';
 
 @Injectable()
 export class ClienteService {
@@ -43,10 +44,12 @@ export class ClienteService {
         throw new BadRequestException('email y contraseña son obligatorios');
       }
 
+      const hashedPassword = await BcryptHelper.HashPassword(createClienteDto.contrasena);
+
       // 1. Crear y guardar el usuario
       const nuevoUsuario = await this.usuarioService.create({
         email: createClienteDto.email,
-        contrasena: createClienteDto.contrasena,
+        contrasena: hashedPassword,
         rol: Rol.USER,
         fecha_registro: new Date(),
         estado: EstadoUsuario.ACTIVO,
@@ -98,11 +101,7 @@ export class ClienteService {
       );
     }
   }
-
-  async update(
-  id: number,
-  updateClienteDto: UpdateClienteDto,
-): Promise<Cliente> {
+  async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
   try {
     const cliente = await this.clienteRepository.findOne({
       where: { id },

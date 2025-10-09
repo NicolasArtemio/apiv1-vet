@@ -22,7 +22,7 @@ export class Usuario {
   @Column()
   email: string;
 
-  @Column({ select: false })
+  @Column()
   contrasena: string;
 
   @Column('enum', { enum: Rol })

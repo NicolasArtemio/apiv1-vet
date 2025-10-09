@@ -5,7 +5,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Cliente } from './entities/cliente.entity';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
-import { UpdateClienteDto } from './dto/update-cliente.dto';
 
 describe('ClienteService', () => {
   let service: ClienteService;
@@ -135,26 +134,49 @@ describe('ClienteService', () => {
     })
   })
 
-  describe('update', () => {
-    it('deberia actualizar un cliente por id', async () => {
-      const id = 1;
-      const updateClienteDto = {
-        foto_perfil: 'ruta/a/foto.jpg',
-        nombre: 'Juan',
-        apellido: 'Perez',
-        fecha_nacimiento: new Date('1990-01-01'),
-        dni: 12345678,
-        telefono: '123456789',
-        ciudad: 'Olavarria',
-        direccion: 'Calle Falsa 123',
-        email: 'juanperez@gmail.com'
-      }
+describe('update', () => {
+  it('deberia actualizar un cliente por id', async () => {
+    const id = 1;
+    const updateClienteDto = {
+      foto_perfil: 'ruta/a/foto.jpg',
+      nombre: 'Juan Actualizado',
+      apellido: 'Perez',
+      fecha_nacimiento: new Date('1990-01-01'),
+      dni: 12345678,
+      telefono: '123456789',
+      ciudad: 'Olavarria',
+      direccion: 'Calle Falsa 456',
+      email: 'juanactualizado@gmail.com'
+    };
 
-      const resultadoEsperado = { id: 1, ...updateClienteDto }
-      mockRepositoryCliente.create.mockReturnValue(resultadoEsperado);
-      mockRepositoryCliente.save.mockResolvedValue(resultadoEsperado);
-    })
-  })
+    const clienteExistente = {
+      id,
+      foto_perfil: 'ruta/a/foto.jpg',
+      nombre: 'Juan',
+      apellido: 'Perez',
+      fecha_nacimiento: new Date('1990-01-01'),
+      dni: 12345678,
+      telefono: '123456789',
+      ciudad: 'Olavarria',
+      direccion: 'Calle Falsa 123',
+      email: 'juanperez@gmail.com'
+    };
+
+    const resultadoEsperado = { id, ...updateClienteDto };
+
+    mockRepositoryCliente.findOneBy.mockResolvedValue(clienteExistente);
+    mockRepositoryCliente.create.mockReturnValue(resultadoEsperado);
+    mockRepositoryCliente.save.mockResolvedValue(resultadoEsperado);
+
+    const resultado = await service.update(id, updateClienteDto);
+
+    expect(mockRepositoryCliente.findOneBy).toHaveBeenCalledWith({ id });
+    expect(mockRepositoryCliente.create).toHaveBeenCalledWith({ id, ...updateClienteDto });
+    expect(mockRepositoryCliente.save).toHaveBeenCalledWith(resultadoEsperado);
+    expect(resultado).toEqual(resultadoEsperado);
+  });
+});
+
 
   describe('remove', () => {
     it('deberia eliminar un cliente por id', async () => {
