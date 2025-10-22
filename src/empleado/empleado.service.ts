@@ -17,7 +17,7 @@ import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { Rol } from '../enums/Rol.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
-import { BcryptHelper } from 'src/common/helpers/BcrCrypt.hrlper';
+import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
 
 @Injectable()
 export class EmpleadoService {

@@ -3,8 +3,8 @@ import { ClienteService } from './cliente.service';
 import { ClienteController } from './cliente.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cliente } from './entities/cliente.entity';
-import { MascotasModule } from 'src/mascotas/mascotas.module';
-import { UsuarioModule } from 'src/usuario/usuario.module';
+import { MascotasModule } from '../mascotas/mascotas.module';
+import { UsuarioModule } from '../usuario/usuario.module';
 
 @Module({
   imports: [
