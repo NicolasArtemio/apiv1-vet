@@ -8,11 +8,17 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UpdateClienteDto } from 'src/cliente/dto/update-cliente.dto';
+import { Cliente } from 'src/cliente/entities/cliente.entity';
+import { plainToClass } from 'class-transformer';
+import { validateOrReject } from 'class-validator';
 @Injectable()
 export class UsuarioService {
   constructor(
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
+    @InjectRepository(Usuario)
+    private clienteRepository: Repository<Usuario>,
   ) {}
 
   /**
