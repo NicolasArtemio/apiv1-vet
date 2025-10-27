@@ -8,10 +8,7 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdateClienteDto } from 'src/cliente/dto/update-cliente.dto';
-import { Cliente } from 'src/cliente/entities/cliente.entity';
-import { plainToClass } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
+import { EstadoUsuario } from 'src/enums/EstadoUsuario.enum';
 @Injectable()
 export class UsuarioService {
   constructor(
@@ -94,17 +91,19 @@ export class UsuarioService {
     }
   }
 
-  async remove(id: number): Promise<Usuario | null> {
-    try {
-      const usuario = await this.usuarioRepository.findOneBy({ id });
-      if (!usuario) {
-        throw new NotFoundException('Usuario no encontrado');
-      }
-      await this.usuarioRepository.remove(usuario);
-      return usuario;
-    } catch (error) {
-      console.error('Error al eliminar el usuario:', error);
-      throw new BadRequestException('Error al eliminar el usuario');
+  async remove(id: number): Promise<Usuario> {
+    const usuario = await this.usuarioRepository.findOneBy({ id });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con ID ${id} no encontrado.`);
     }
+
+    if (usuario.estado === EstadoUsuario.INACTIVO) {
+      return usuario;
+    }
+
+    usuario.estado = EstadoUsuario.INACTIVO;
+
+    return this.usuarioRepository.save(usuario);
   }
 }

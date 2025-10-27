@@ -86,22 +86,18 @@ export class ClienteService {
     return this.clienteRepository.find();
   }
 
-  async findOne(id: number): Promise<Cliente | null> {
-    if (id <= 0) {
-      throw new BadRequestException('El ID debe ser un número positivo');
+  async findOne(id: number): Promise<Cliente> {
+    const cliente = await this.clienteRepository.findOne({
+      where: { id },
+      // ¡ESTO ES LA CLAVE! Sin esto, cliente.usuario será undefined o un proxy vacío.
+      relations: ['usuario'],
+    });
+
+    if (!cliente) {
+      throw new NotFoundException(`Cliente con ID ${id} no encontrado.`);
     }
-    try {
-      const cliente = await this.clienteRepository.findOneBy({ id });
-      if (!cliente) {
-        throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
-      }
-      return cliente;
-    } catch (error) {
-      console.error('Error al buscar el cliente:', error);
-      throw new InternalServerErrorException(
-        `No se encontro el cliente con el id ${id}`,
-      );
-    }
+
+    return cliente;
   }
   async update(
     id: number,

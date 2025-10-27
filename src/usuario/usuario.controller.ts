@@ -57,12 +57,39 @@ export class UsuarioController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUsuarioDto: UpdateUsuarioDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    if (user.role === Rol.USER && user.id !== id) {
+      throw new ForbiddenException(
+        'Acceso denegado. Solo puedes actualizar tu propia cuenta de usuario.',
+      );
+    }
+
+    return this.usuarioService.update(id, updateUsuarioDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    if (user.role === Rol.USER && user.id !== id) {
+      throw new ForbiddenException(
+        'Acceso denegado. Solo puedes desactivar tu propia cuenta.',
+      );
+    }
+
+    return this.usuarioService.remove(id);
   }
 }
