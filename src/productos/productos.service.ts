@@ -1,29 +1,32 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Producto } from './entities/producto.entity';
 import { Repository } from 'typeorm';
-import { CategoriaProducto } from 'src/enums/CategoriaProducto.enum';
 
 @Injectable()
 export class ProductosService {
   constructor(
     @InjectRepository(Producto)
-    private readonly productosRepository: Repository<Producto>
-  ) { }
+    private readonly productosRepository: Repository<Producto>,
+  ) {}
 
   async create(createProductoDto: CreateProductoDto): Promise<Producto> {
     try {
-
-       const nuevoProducto= this.productosRepository.create({
-              ...createProductoDto ,
-              fecha_vencimiento: new Date(),
-            });
+      const nuevoProducto = this.productosRepository.create({
+        ...createProductoDto,
+        fecha_vencimiento: new Date(),
+      });
 
       return await this.productosRepository.save(nuevoProducto);
     } catch (error) {
-
       console.error('Error mientras se crea el producto', error);
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
@@ -39,29 +42,30 @@ export class ProductosService {
       }
       throw new InternalServerErrorException('Error al crear producto');
     }
-
   }
-
 
   findAll(): Promise<Producto[]> {
     return this.productosRepository.find();
   }
 
   async findOne(id: number): Promise<Producto | null> {
-       try{
-         const producto = await this.productosRepository.findOneBy({ id });
-         if (!producto) {
-           throw new NotFoundException('producto no encontrado');
-         }
-         return producto;
-       } catch (error) {
-         console.error('Error al buscar el producto:', error);
-         throw new BadRequestException('Error al buscar el producto');
-       }
+    try {
+      const producto = await this.productosRepository.findOneBy({ id });
+      if (!producto) {
+        throw new NotFoundException('producto no encontrado');
+      }
+      return producto;
+    } catch (error) {
+      console.error('Error al buscar el producto:', error);
+      throw new BadRequestException('Error al buscar el producto');
+    }
   }
 
-  async update(id: number, updateProductoDto: UpdateProductoDto): Promise<Producto | null> {
-      try{
+  async update(
+    id: number,
+    updateProductoDto: UpdateProductoDto,
+  ): Promise<Producto | null> {
+    try {
       const producto = await this.productosRepository.findOneBy({ id });
       if (!producto) {
         throw new NotFoundException('producto no encontrado');
@@ -75,7 +79,7 @@ export class ProductosService {
   }
 
   async remove(id: number): Promise<Producto | null> {
-        try {
+    try {
       const producto = await this.productosRepository.findOneBy({ id });
       if (!producto) {
         throw new NotFoundException('producto no encontrado');

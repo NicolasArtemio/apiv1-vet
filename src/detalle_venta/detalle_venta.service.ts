@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Producto } from 'src/productos/entities/producto.entity';
-import { Venta } from 'src/ventas/entities/venta.entity';
+import { Producto } from '../productos/entities/producto.entity';
+import { Venta } from '../ventas/entities/venta.entity';
 import { Repository } from 'typeorm';
 import { CreateDetalleVentaDto } from './dto/create-detalle_venta.dto';
 import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';

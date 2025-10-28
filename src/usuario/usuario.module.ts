@@ -3,10 +3,10 @@ import { UsuarioService } from './usuario.service';
 import { UsuarioController } from './usuario.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity';
-import { Mensaje } from 'src/mensaje/entities/mensaje.entity';
-import { MensajeService } from 'src/mensaje/mensaje.service';
-import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
-import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
+import { Mensaje } from '../mensaje/entities/mensaje.entity';
+import { MensajeService } from '../mensaje/mensaje.service';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
+import { Notificacion } from '../notificaciones/entities/notificacione.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Usuario, Mensaje, Notificacion])],

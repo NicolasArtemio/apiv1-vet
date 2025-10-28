@@ -6,9 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Empleado } from '../empleado/entities/empleado.entity';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { DetalleVenta } from '../detalle_venta/entities/detalle_venta.entity';
-import { Producto } from 'src/productos/entities/producto.entity';
-import { Pago } from 'src/pago/entities/pago.entity';
-
+import { Producto } from '../productos/entities/producto.entity';
+import { Pago } from '../pago/entities/pago.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
