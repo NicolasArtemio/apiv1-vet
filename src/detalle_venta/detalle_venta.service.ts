@@ -71,17 +71,22 @@ export class DetalleVentaService {
   }
 
   async findAll(): Promise<DetalleVenta[]> {
-    return this.detalleVentaRepository.find();
+    return this.detalleVentaRepository.find({
+      relations: ['producto', 'venta'],
+    });
   }
   async findOne(id: number): Promise<DetalleVenta | null> {
     try {
-      const DetalleVenta = await this.detalleVentaRepository.findOneBy({
-        id_detalle: id,
+      const detalleVenta = await this.detalleVentaRepository.findOne({
+        where: { id_detalle: id },
+        relations: ['producto', 'venta'],
       });
-      if (!DetalleVenta) {
+
+      if (!detalleVenta) {
         throw new NotFoundException('Detalle Venta no encontrado');
       }
-      return DetalleVenta;
+
+      return detalleVenta;
     } catch (error) {
       console.error('Error al buscar el Detalle Venta:', error);
       throw new BadRequestException('Error al buscar el Detalle Venta');

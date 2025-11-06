@@ -31,12 +31,14 @@ export class ClienteController {
   constructor(private readonly clienteService: ClienteService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createClienteDto: CreateClienteDto) {
     return this.clienteService.create(createClienteDto);
   }
 
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
+  @HttpCode(HttpStatus.OK)
   @Roles(Rol.ADMIN)
   findAll() {
     return this.clienteService.findAll();
@@ -44,6 +46,7 @@ export class ClienteController {
 
   @Get(':id')
   @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id', ParseIntPipe) id: number,
     @Req() req: AuthenticatedRequest,
