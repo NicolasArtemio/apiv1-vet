@@ -44,6 +44,15 @@ export class ClienteService {
         throw new BadRequestException('email y contraseña son obligatorios');
       }
 
+      const foundUser = await this.usuarioService.findByEmail(
+        createClienteDto.email,
+      );
+      if (foundUser) {
+        throw new ConflictException(
+          'Ya existe un usuario registrado con ese mail',
+        );
+      }
+
       const hashedPassword = await BcryptHelper.HashPassword(
         createClienteDto.contrasena,
       );

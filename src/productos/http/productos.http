@@ -4,13 +4,13 @@ POST http://localhost:3000/api/v1/productos HTTP/1.1
 Content-Type: application/json
 
 {
-  "nombre": "Shampoo",
+  "nombre": "Pipeta",
   "marca": "Canin",
-  "descripcion":"Shampo para perros y gatos",
+  "descripcion":"Pipeta anti pulga",
   "precio": 120,
   "stock": 15,
   "categoria":"Estetica e Higiene",
-  "tipo_uso":"Interno"
+  "tipo_uso":"Comercial"
 }
 
 
