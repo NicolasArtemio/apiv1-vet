@@ -6,40 +6,109 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  ParseIntPipe,
+  Req,
+  NotFoundException,
+  ForbiddenException,
+  UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { EmpleadoService } from './empleado.service';
 import { CreateEmpleadoDto } from './dto/create-empleado.dto';
 import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
+import { AuthGuard } from 'src/guards/auth/auth.guard';
+import { RolesGuard } from 'src/guards/roles/roles.guard';
+import { Roles } from 'src/common/decorators/roles.decorator';
+import { Rol } from 'src/enums/Rol.enum';
+import { AuthenticatedRequest } from 'src/common/interfaces/authenticatedrequest.interface';
 
 @Controller('empleado')
 export class EmpleadoController {
   constructor(private readonly empleadoService: EmpleadoService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Rol.ADMIN)
   create(@Body() createEmpleadoDto: CreateEmpleadoDto) {
     return this.empleadoService.create(createEmpleadoDto);
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Rol.ADMIN)
   findAll() {
     return this.empleadoService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.empleadoService.findOne(+id);
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    const empleado = await this.empleadoService.findOne(id);
+
+    if (!empleado) {
+      throw new NotFoundException(`Empleado con ID ${id} no encontrado`);
+    }
+
+    if (user.role === Rol.ADMIN && user.id !== empleado.usuario.id) {
+      throw new ForbiddenException(
+        'Acceso denegado. No eres el propietario de este perfil',
+      );
+    }
+
+    return empleado;
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateEmpleadoDto: UpdateEmpleadoDto,
+    @Req() req: AuthenticatedRequest,
   ) {
-    return this.empleadoService.update(+id, updateEmpleadoDto);
+    const user = req.user;
+
+    if (!user) {
+      throw new UnauthorizedException(
+        'Se requiere autenticacion para modificar el perfil',
+      );
+    }
+
+    const empleado = await this.empleadoService.findOne(id);
+
+    if (!empleado) {
+      throw new NotFoundException(`Empleado con id ${id} no encontrado`);
+    }
+    if (!empleado.usuario || !empleado.usuario.id) {
+      throw new InternalServerErrorException(
+        'Error: El perfil del empleado no esta vinculado correctamente',
+      );
+    }
+
+    if (user.role === Rol.EMPLEADO && user.id !== empleado.usuario.id) {
+      throw new ForbiddenException(
+        'Acceso denegado. Solo puedes actualizar tu propio perfil de empleado',
+      );
+    }
+
+    return this.empleadoService.update(id, updateEmpleadoDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.empleadoService.remove(+id);
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Rol.ADMIN)
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.empleadoService.remove(id);
   }
 }
