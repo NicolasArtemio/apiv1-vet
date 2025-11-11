@@ -1,4 +1,4 @@
-import { Rol } from 'src/enums/Rol.enum';
+import { Rol } from '../../enums/Rol.enum';
 import { Request } from 'express';
 
 export interface AuthenticatedRequest extends Request {

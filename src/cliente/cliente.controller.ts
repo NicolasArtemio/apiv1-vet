@@ -17,14 +17,14 @@ import {
   HttpStatus,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/guards/auth/auth.guard';
-import { RolesGuard } from 'src/guards/roles/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Rol } from 'src/enums/Rol.enum';
-import { AuthenticatedRequest } from 'src/common/interfaces/authenticatedrequest.interface';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Rol } from '../enums/Rol.enum';
+import { AuthenticatedRequest } from '../common/interfaces/authenticatedrequest.interface';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
+import { AuthGuard } from '../guards/uth/auth.guard';
+import { RolesGuard } from '../guards/roles/roles.guard';
 
 @Controller('cliente')
 export class ClienteController {

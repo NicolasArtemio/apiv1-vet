@@ -16,11 +16,11 @@ import {
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { AuthGuard } from 'src/guards/auth/auth.guard';
-import { RolesGuard } from 'src/guards/roles/roles.guard';
-import { Roles } from 'src/common/decorators/roles.decorator';
-import { Rol } from 'src/enums/Rol.enum';
-import { AuthenticatedRequest } from 'src/common/interfaces/authenticatedrequest.interface';
+import { RolesGuard } from '../guards/roles/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Rol } from '../enums/Rol.enum';
+import { AuthenticatedRequest } from '../common/interfaces/authenticatedrequest.interface';
+import { AuthGuard } from '../guards/uth/auth.guard';
 
 @Controller('usuarios')
 export class UsuarioController {

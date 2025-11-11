@@ -5,7 +5,7 @@ import { UsuarioService } from '../usuario/usuario.service';
 import { AdminSeed } from './empleado.seed';
 import { Empleado } from '../empleado/entities/empleado.entity';
 import { Usuario } from '../usuario/entities/usuario.entity';
-import { AppModule } from 'src/app.module';
+import { AppModule } from '../app.module';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
