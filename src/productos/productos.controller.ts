@@ -13,10 +13,10 @@ import {
 import { ProductosService } from './productos.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
-import { AuthGuard } from '../guards/auth/auth.guard';
 import { RolesGuard } from '../guards/roles/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
 import { Rol } from '../enums/Rol.enum';
+import { AuthGuard } from 'src/guards/uth/auth.guard';
 
 @Controller('productos')
 export class ProductosController {
