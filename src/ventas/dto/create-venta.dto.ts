@@ -8,8 +8,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateDetalleVentaDto } from '../../detalle_venta/dto/create-detalle_venta.dto';
-import { EstadoPagos } from '../../enums/EstadoPagos.enum';
-import { TipoPagos } from '../../enums/TipoPagos.enum';
+import { EstadoPagos } from 'src/enums/estado-pagos.enum';
+import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 
 export class CreateVentaDto {
   @IsPositive()
@@ -35,3 +35,4 @@ export class CreateVentaDto {
   @IsEnum(EstadoPagos)
   estado_pago: EstadoPagos;
 }
+

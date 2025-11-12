@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmpleadoDto } from '../empleado/dto/create-empleado.dto';
-import { Rol } from '../enums/Rol.enum';
 import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
-import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Empleado } from '../empleado/entities/empleado.entity';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 @Injectable()
 export class AdminSeed {

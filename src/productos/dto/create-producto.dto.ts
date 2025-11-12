@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsPositive, IsString, IsEnum } from 'class-validator';
-import { CategoriaProducto } from '../../enums/CategoriaProducto.enum';
-import { TipoUso } from '../../enums/TipoUso.enum';
+import { CategoriaProducto } from '../../enums/categoria-producto.enum';
+import { SubcategoriaProducto } from 'src/enums/subcategoria-producto.enum';
+import { TipoUso } from 'src/enums/tipo-uso.enum';
 
 export class CreateProductoDto {
   @IsString()
@@ -25,6 +26,12 @@ export class CreateProductoDto {
   @IsString()
   @IsEnum(CategoriaProducto)
   categoria: CategoriaProducto;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum(SubcategoriaProducto)
+  subcategoria: SubcategoriaProducto;
+
   @IsNotEmpty()
   @IsString()
   @IsEnum(TipoUso)

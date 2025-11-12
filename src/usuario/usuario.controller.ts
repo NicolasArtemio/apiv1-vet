@@ -18,9 +18,9 @@ import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { RolesGuard } from '../guards/roles/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Rol } from '../enums/Rol.enum';
 import { AuthenticatedRequest } from '../common/interfaces/authenticatedrequest.interface';
 import { AuthGuard } from '../guards/uth/auth.guard';
+import { Rol } from 'src/enums/rol.enum';
 
 @Controller('usuarios')
 export class UsuarioController {

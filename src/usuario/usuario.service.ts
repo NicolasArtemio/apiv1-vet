@@ -8,7 +8,7 @@ import { UpdateUsuarioDto } from './dto/update-usuario.dto';
 import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
 @Injectable()
 export class UsuarioService {
   constructor(

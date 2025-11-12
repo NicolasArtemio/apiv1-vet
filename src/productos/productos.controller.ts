@@ -15,8 +15,8 @@ import { CreateProductoDto } from './dto/create-producto.dto';
 import { UpdateProductoDto } from './dto/update-producto.dto';
 import { RolesGuard } from '../guards/roles/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Rol } from '../enums/Rol.enum';
 import { AuthGuard } from 'src/guards/uth/auth.guard';
+import { Rol } from 'src/enums/rol.enum';
 
 @Controller('productos')
 export class ProductosController {

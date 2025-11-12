@@ -1,3 +1,6 @@
+import { EstadoLectura } from 'src/enums/estado-lectura.enum';
+import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 import {
   Column,
   CreateDateColumn,
@@ -6,9 +9,6 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { TipoNotificacion } from '../../enums/tipoNotificacion.enum';
-import { EstadoLectura } from '../../enums/estadoLectura.enum';
-import { Usuario } from '../../usuario/entities/usuario.entity';
 
 @Entity()
 export class Notificacion {
@@ -31,8 +31,8 @@ export class Notificacion {
   })
   leido: EstadoLectura;
 
- @CreateDateColumn({ type: 'timestamp' })
-fecha_creacion: Date;
+  @CreateDateColumn({ type: 'timestamp' })
+  fecha_creacion: Date;
 
   @Column({ type: 'timestamp', nullable: true })
   fecha_lectura: Date;

@@ -1,8 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { EstadoPagos } from '../../enums/EstadoPagos.enum';
-import { TipoPagos } from '../../enums/TipoPagos.enum';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { Venta } from '../../ventas/entities/venta.entity';
+import { EstadoPagos } from 'src/enums/estado-pagos.enum';
+import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 
 @Entity()
 export class Pago {
@@ -21,7 +27,8 @@ export class Pago {
   @Column('enum', { enum: EstadoPagos })
   estado_pago: EstadoPagos;
 
-  @ManyToOne(() => Venta, venta => venta.pago, { eager: true })
+  @ManyToOne(() => Venta, (venta) => venta.pago, { eager: true })
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 }
+

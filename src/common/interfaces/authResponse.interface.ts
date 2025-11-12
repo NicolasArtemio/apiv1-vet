@@ -1,4 +1,4 @@
-import { Rol } from '../../enums/Rol.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 export interface AuthResponse {
   access_token: string;

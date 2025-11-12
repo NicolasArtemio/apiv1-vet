@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
-import { TipoPagos } from '../../enums/TipoPagos.enum';
+import { EstadoPagos } from 'src/enums/estado-pagos.enum';
+import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 import { Cliente } from '../../cliente/entities/cliente.entity';
 import { DetalleVenta } from '../../detalle_venta/entities/detalle_venta.entity';
 import { Empleado } from '../../empleado/entities/empleado.entity';
@@ -14,7 +15,6 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { EstadoPagos } from '../../enums/EstadoPagos.enum';
 @Entity()
 export class Venta {
   @PrimaryGeneratedColumn()
@@ -47,3 +47,4 @@ export class Venta {
   @JoinColumn({ name: 'id_cliente' })
   cliente: Cliente;
 }
+

@@ -4,15 +4,15 @@ import {
   PrimaryGeneratedColumn,
   Column,
   OneToMany,
-  OneToOne, 
-  CreateDateColumn
+  OneToOne,
+  CreateDateColumn,
 } from 'typeorm';
-import { Rol } from '../../enums/Rol.enum';
-import { EstadoUsuario } from '../../enums/EstadoUsuario.enum';
 import { Mensaje } from '../../mensaje/entities/mensaje.entity';
 import { Notificacion } from '../../notificaciones/entities/notificacione.entity';
 import { Empleado } from '../../empleado/entities/empleado.entity';
 import { Cliente } from '../../cliente/entities/cliente.entity';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 @Entity()
 export class Usuario {

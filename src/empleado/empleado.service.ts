@@ -13,11 +13,11 @@ import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 import { Empleado } from './entities/empleado.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
-import { Rol } from '../enums/Rol.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
 import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 @Injectable()
 export class EmpleadoService {

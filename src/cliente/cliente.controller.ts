@@ -18,13 +18,13 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Rol } from '../enums/Rol.enum';
 import { AuthenticatedRequest } from '../common/interfaces/authenticatedrequest.interface';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { AuthGuard } from '../guards/uth/auth.guard';
 import { RolesGuard } from '../guards/roles/roles.guard';
+import { Rol } from 'src/enums/rol.enum';
 
 @Controller('cliente')
 export class ClienteController {
