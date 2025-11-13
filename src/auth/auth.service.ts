@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AuthResponse } from 'src/common/interfaces/authResponse.interface';
-import { UsuarioService } from 'src/usuario/usuario.service';
+import { AuthResponse } from '../common/interfaces/authResponse.interface';
+import { UsuarioService } from '../usuario/usuario.service';
 import { LoginDto } from './dto/create-auth.dto';
-import { BcryptHelper } from 'src/common/helpers/BcrCrypt.hrlper';
+import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,10 @@ export class AuthService {
 
     if (!usuario) throw new UnauthorizedException('usuario incorrecto');
 
-    const passwordValido = await BcryptHelper.ComparePassword(contrasena, usuario.contrasena)
+    const passwordValido = await BcryptHelper.ComparePassword(
+      contrasena,
+      usuario.contrasena,
+    );
     if (!passwordValido)
       throw new UnauthorizedException('contraseña incorrecta');
 

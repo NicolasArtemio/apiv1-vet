@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Producto } from 'src/productos/entities/producto.entity';
-import { Venta } from 'src/ventas/entities/venta.entity';
+import { Producto } from '../productos/entities/producto.entity';
+import { Venta } from '../ventas/entities/venta.entity';
 import { Repository } from 'typeorm';
 import { CreateDetalleVentaDto } from './dto/create-detalle_venta.dto';
 import { UpdateDetalleVentaDto } from './dto/update-detalle_venta.dto';
@@ -71,17 +71,22 @@ export class DetalleVentaService {
   }
 
   async findAll(): Promise<DetalleVenta[]> {
-    return this.detalleVentaRepository.find();
+    return this.detalleVentaRepository.find({
+      relations: ['producto', 'venta'],
+    });
   }
   async findOne(id: number): Promise<DetalleVenta | null> {
     try {
-      const DetalleVenta = await this.detalleVentaRepository.findOneBy({
-        id_detalle: id,
+      const detalleVenta = await this.detalleVentaRepository.findOne({
+        where: { id_detalle: id },
+        relations: ['producto', 'venta'],
       });
-      if (!DetalleVenta) {
+
+      if (!detalleVenta) {
         throw new NotFoundException('Detalle Venta no encontrado');
       }
-      return DetalleVenta;
+
+      return detalleVenta;
     } catch (error) {
       console.error('Error al buscar el Detalle Venta:', error);
       throw new BadRequestException('Error al buscar el Detalle Venta');

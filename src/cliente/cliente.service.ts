@@ -16,7 +16,7 @@ import { Rol } from '../enums/Rol.enum';
 import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
-import { BcryptHelper } from 'src/common/helpers/BcrCrypt.hrlper';
+import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
 
 @Injectable()
 export class ClienteService {
@@ -44,7 +44,18 @@ export class ClienteService {
         throw new BadRequestException('email y contraseña son obligatorios');
       }
 
-      const hashedPassword = await BcryptHelper.HashPassword(createClienteDto.contrasena);
+      const foundUser = await this.usuarioService.findByEmail(
+        createClienteDto.email,
+      );
+      if (foundUser) {
+        throw new ConflictException(
+          'Ya existe un usuario registrado con ese mail',
+        );
+      }
+
+      const hashedPassword = await BcryptHelper.HashPassword(
+        createClienteDto.contrasena,
+      );
 
       // 1. Crear y guardar el usuario
       const nuevoUsuario = await this.usuarioService.create({
@@ -84,61 +95,58 @@ export class ClienteService {
     return this.clienteRepository.find();
   }
 
-  async findOne(id: number): Promise<Cliente | null> {
-    if (id <= 0) {
-      throw new BadRequestException('El ID debe ser un número positivo');
-    }
-    try {
-      const cliente = await this.clienteRepository.findOneBy({ id });
-      if (!cliente) {
-        throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
-      }
-      return cliente;
-    } catch (error) {
-      console.error('Error al buscar el cliente:', error);
-      throw new InternalServerErrorException(
-        `No se encontro el cliente con el id ${id}`,
-      );
-    }
-  }
-  async update(id: number, updateClienteDto: UpdateClienteDto): Promise<Cliente> {
-  try {
+  async findOne(id: number): Promise<Cliente> {
     const cliente = await this.clienteRepository.findOne({
       where: { id },
+      // ¡ESTO ES LA CLAVE! Sin esto, cliente.usuario será undefined o un proxy vacío.
       relations: ['usuario'],
     });
 
     if (!cliente) {
-      throw new NotFoundException('Cliente no encontrado');
+      throw new NotFoundException(`Cliente con ID ${id} no encontrado.`);
     }
 
-    // Actualizar campos del cliente
-    Object.assign(cliente, updateClienteDto);
-
-    // Actualizar datos del usuario relacionado (si vienen)
-    if (updateClienteDto.usuario && cliente.usuario) {
-      Object.assign(cliente.usuario, updateClienteDto.usuario);
-      await this.usuarioRepository.save(cliente.usuario);
-    }
-
-    return await this.clienteRepository.save(cliente);
-
-  } catch (error) {
-    console.error('Error al actualizar el cliente:', error);
-
-    const err = error as { code?: string; errno?: number };
-
-    if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-      throw new ConflictException('Datos duplicados: el email ya existe');
-    }
-
-    throw new InternalServerErrorException(
-      'Error interno al actualizar el cliente',
-    );
+    return cliente;
   }
-}
+  async update(
+    id: number,
+    updateClienteDto: UpdateClienteDto,
+  ): Promise<Cliente> {
+    try {
+      const cliente = await this.clienteRepository.findOne({
+        where: { id },
+        relations: ['usuario'],
+      });
 
-  
+      if (!cliente) {
+        throw new NotFoundException('Cliente no encontrado');
+      }
+
+      // Actualizar campos del cliente
+      Object.assign(cliente, updateClienteDto);
+
+      // Actualizar datos del usuario relacionado (si vienen)
+      if (updateClienteDto.usuario && cliente.usuario) {
+        Object.assign(cliente.usuario, updateClienteDto.usuario);
+        await this.usuarioRepository.save(cliente.usuario);
+      }
+
+      return await this.clienteRepository.save(cliente);
+    } catch (error) {
+      console.error('Error al actualizar el cliente:', error);
+
+      const err = error as { code?: string; errno?: number };
+
+      if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+        throw new ConflictException('Datos duplicados: el email ya existe');
+      }
+
+      throw new InternalServerErrorException(
+        'Error interno al actualizar el cliente',
+      );
+    }
+  }
+
   async remove(id: number): Promise<Cliente | null> {
     if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');

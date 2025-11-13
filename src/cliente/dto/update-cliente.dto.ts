@@ -14,6 +14,10 @@ export class UpdateClienteDto extends PartialType(CreateClienteDto) {
   direccion?: string;
 
   @IsOptional()
+  @Type(() => Date)
+  fecha_nacimiento?: Date;
+
+  @IsOptional()
   @ValidateNested()
   @Type(() => UpdateUsuarioDto)
   usuario?: UpdateUsuarioDto;

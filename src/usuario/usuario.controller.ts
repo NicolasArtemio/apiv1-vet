@@ -1,34 +1,95 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  ParseIntPipe,
+  ForbiddenException,
+  Req,
+} from '@nestjs/common';
 import { UsuarioService } from './usuario.service';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
+import { RolesGuard } from '../guards/roles/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Rol } from '../enums/Rol.enum';
+import { AuthenticatedRequest } from '../common/interfaces/authenticatedrequest.interface';
+import { AuthGuard } from '../guards/uth/auth.guard';
 
-@Controller('usuario')
+@Controller('usuarios')
 export class UsuarioController {
   constructor(private readonly usuarioService: UsuarioService) {}
 
   @Post()
+  @HttpCode(HttpStatus.CREATED)
   create(@Body() createUsuarioDto: CreateUsuarioDto) {
     return this.usuarioService.create(createUsuarioDto);
   }
 
   @Get()
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Rol.ADMIN)
+  @HttpCode(HttpStatus.OK)
   findAll() {
     return this.usuarioService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usuarioService.findOne(+id);
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    if (user.role === Rol.USER && user.id !== +id) {
+      throw new ForbiddenException('Access denied');
+    }
+
+    return await this.usuarioService.findOne(+id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsuarioDto: UpdateUsuarioDto) {
-    return this.usuarioService.update(+id, updateUsuarioDto);
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateUsuarioDto: UpdateUsuarioDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    if (user.role === Rol.USER && user.id !== id) {
+      throw new ForbiddenException(
+        'Acceso denegado. Solo puedes actualizar tu propia cuenta de usuario.',
+      );
+    }
+
+    return this.usuarioService.update(id, updateUsuarioDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usuarioService.remove(+id);
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    if (user.role === Rol.USER && user.id !== id) {
+      throw new ForbiddenException(
+        'Acceso denegado. Solo puedes desactivar tu propia cuenta.',
+      );
+    }
+
+    return this.usuarioService.remove(id);
   }
 }

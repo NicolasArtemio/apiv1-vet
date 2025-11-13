@@ -1,16 +1,4 @@
-### CREAR UNA FACTURA
-
-POST http://localhost:3000/api/v1/detalle-venta HTTP/1.1
-Content-Type: application/json
-
-{
-  "id_venta": 1,
-  "id_producto": 1,
-  "cantidad": 2
-}
-
-
-### OBTENER FACTURAS
+# ### OBTENER FACTURAS
 
 GET http://localhost:3000/api/v1/detalle-venta HTTP/1.1
 

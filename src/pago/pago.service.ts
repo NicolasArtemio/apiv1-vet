@@ -35,13 +35,7 @@ export class PagoService {
       // 2️⃣ Traer el pago completo con relaciones correctamente cargadas
       const pagoCompleto = await this.pagoRepository.findOne({
         where: { id: pago.id },
-        relations: [
-          'venta',
-          'venta.cliente',
-          'venta.empleado',
-          'venta.detalles',
-          'venta.detalles.producto',
-        ],
+        relations: ['venta', 'venta.cliente', 'venta.empleado'],
       });
 
       if (!pagoCompleto) {
@@ -95,8 +89,6 @@ export class PagoService {
           'venta', // la venta asociada
           'venta.cliente', // cliente de la venta
           'venta.empleado', // empleado de la venta
-          'venta.detalles', // detalles de la venta (propiedad correcta)
-          'venta.detalles.producto', // productos dentro de cada detalle
         ],
       });
 
