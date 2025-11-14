@@ -12,7 +12,6 @@ import {
   Param,
   Patch,
   Post,
-  UnauthorizedException,
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
@@ -25,10 +24,14 @@ import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { AuthGuard } from '../guards/uth/auth.guard';
 import { RolesGuard } from '../guards/roles/roles.guard';
 import { Rol } from 'src/enums/rol.enum';
+import { EmpleadoService } from 'src/empleado/empleado.service';
 
 @Controller('cliente')
 export class ClienteController {
-  constructor(private readonly clienteService: ClienteService) {}
+  constructor(
+    private readonly clienteService: ClienteService,
+    private readonly empleadoService: EmpleadoService,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -39,9 +42,33 @@ export class ClienteController {
   @Get()
   @UseGuards(AuthGuard, RolesGuard)
   @HttpCode(HttpStatus.OK)
-  @Roles(Rol.ADMIN)
-  findAll() {
-    return this.clienteService.findAll();
+  @Roles(Rol.EMPLEADO)
+  async findAll(@Req() req: AuthenticatedRequest) {
+    const user = req.user;
+
+    let isSpecialAdmin = false;
+
+    const perfilAutenticado = await this.empleadoService.findOneByUsuarioId(
+      user.id,
+    );
+
+    if (perfilAutenticado && perfilAutenticado.especialidad === 'Admin') {
+      isSpecialAdmin = true;
+    }
+
+    if (isSpecialAdmin) {
+      return this.clienteService.findAll();
+    }
+
+    if (!perfilAutenticado) {
+      throw new InternalServerErrorException(
+        'Error de seguridad: Usuario autenticado no tiene perfil de empleado asociado.',
+      );
+    }
+
+    throw new ForbiddenException(
+      'Acceso denegado. Solo el Administrador Especial puede ver la lista completa de clientes.',
+    );
   }
 
   @Get(':id')
@@ -52,16 +79,31 @@ export class ClienteController {
     @Req() req: AuthenticatedRequest,
   ) {
     const user = req.user;
-
     const cliente = await this.clienteService.findOne(id);
 
     if (!cliente) {
       throw new NotFoundException(`Cliente con ID ${id} no encontrado.`);
     }
 
-    if (user.role === Rol.USER && user.id !== cliente.usuario.id) {
+    let isSpecialAdmin = false;
+
+    if (user.role === Rol.EMPLEADO) {
+      const perfilAutenticado = await this.empleadoService.findOneByUsuarioId(
+        user.id,
+      );
+
+      if (perfilAutenticado && perfilAutenticado.especialidad === 'Admin') {
+        isSpecialAdmin = true;
+      }
+    }
+
+    if (
+      user.role === Rol.USER &&
+      user.id !== cliente.usuario.id &&
+      !isSpecialAdmin
+    ) {
       throw new ForbiddenException(
-        'Acceso denegado. No eres el propietario de este perfil.',
+        'Acceso denegado. No eres el propietario de este perfil ni un administrador.',
       );
     }
 
@@ -78,27 +120,26 @@ export class ClienteController {
   ) {
     const user = req.user;
 
-    if (!user) {
-      throw new UnauthorizedException(
-        'Se requiere autenticación para modificar el perfil.',
-      );
-    }
-
     const cliente = await this.clienteService.findOne(id);
 
-    if (!cliente) {
-      throw new NotFoundException(`Cliente con ID ${id} no encontrado.`);
-    }
-
-    if (!cliente.usuario || !cliente.usuario.id) {
-      throw new InternalServerErrorException(
-        'Error: El perfil de cliente no está vinculado correctamente.',
+    let isSpecialAdmin = false;
+    if (user.role === Rol.EMPLEADO) {
+      const perfilAutenticado = await this.empleadoService.findOneByUsuarioId(
+        user.id,
       );
+
+      if (perfilAutenticado && perfilAutenticado.especialidad === 'Admin') {
+        isSpecialAdmin = true;
+      }
     }
 
-    if (user.role === Rol.USER && user.id !== cliente.usuario.id) {
+    if (
+      user.role === Rol.USER &&
+      user.id !== cliente.usuario.id &&
+      !isSpecialAdmin
+    ) {
       throw new ForbiddenException(
-        'Acceso denegado. Solo puedes actualizar tu propio perfil de cliente.',
+        'Acceso denegado. Solo puedes actualizar tu propio perfil de cliente o eres un administrador.',
       );
     }
 
@@ -107,8 +148,23 @@ export class ClienteController {
 
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Rol.ADMIN)
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.clienteService.remove(id);
+  @Roles(Rol.EMPLEADO)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    const perfilAutenticado = await this.empleadoService.findOneByUsuarioId(
+      user.id,
+    );
+
+    if (perfilAutenticado && perfilAutenticado.especialidad === 'Admin') {
+      return this.clienteService.remove(id);
+    }
+
+    throw new ForbiddenException(
+      'Acceso denegado. Solo el Administrador Especial puede eliminar perfiles de cliente.',
+    );
   }
 }

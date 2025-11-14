@@ -91,6 +91,12 @@ export class EmpleadoService {
     }
   }
 
+  async findOneByUsuarioId(usuarioId: number): Promise<Empleado | null> {
+    return this.empleadoRepository.findOne({
+      where: { usuario: { id: usuarioId } },
+    });
+  }
+
   async findAll(): Promise<Empleado[]> {
     return this.empleadoRepository.find();
   }

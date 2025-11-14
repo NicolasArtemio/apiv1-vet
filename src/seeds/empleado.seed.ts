@@ -29,7 +29,7 @@ export class AdminSeed {
       fecha_nacimiento: new Date('1990-01-01'),
       dni: 12345678,
       ciudad: 'Ciudad Central',
-      especialidad: 'Administración',
+      especialidad: 'Admin',
     };
 
     const dto = createEmpleadoDto;
@@ -52,7 +52,7 @@ export class AdminSeed {
     const nuevoUsuario = await this.usuarioService.create({
       email: dto.email,
       contrasena: hashedPassword,
-      rol: Rol.ADMIN,
+      rol: Rol.EMPLEADO,
       fecha_registro: new Date(),
       estado: EstadoUsuario.ACTIVO,
     });
