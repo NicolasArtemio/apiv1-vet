@@ -98,7 +98,7 @@ export class EmpleadoService {
   }
 
   async findAll(): Promise<Empleado[]> {
-    return this.empleadoRepository.find();
+    return this.empleadoRepository.find({ relations: ['usuario'] });
   }
 
   async findOne(id: number): Promise<Empleado | null> {
@@ -106,7 +106,10 @@ export class EmpleadoService {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const empleado = await this.empleadoRepository.findOneBy({ id });
+      const empleado = await this.empleadoRepository.findOne({
+        where: { id },
+        relations: ['usuario'],
+      });
       if (!empleado) {
         throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
       }

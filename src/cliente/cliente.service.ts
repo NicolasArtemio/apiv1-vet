@@ -92,7 +92,9 @@ export class ClienteService {
     }
   }
   async findAll(): Promise<Cliente[]> {
-    return this.clienteRepository.find();
+    return this.clienteRepository.find({
+      relations: ['usuario'],
+    });
   }
 
   async findOne(id: number): Promise<Cliente> {
