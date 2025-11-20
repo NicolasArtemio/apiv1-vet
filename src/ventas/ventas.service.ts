@@ -127,9 +127,17 @@ export class VentasService {
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */
-  async findAll(): Promise<Venta[]> {
-    return this.ventaRepository.find();
-  }
+async findAll(): Promise<Venta[]> {
+  return this.ventaRepository.find({
+    relations: [
+      'cliente',
+      'empleado',
+      'detalles',
+      'detalles.producto',
+      'pago'
+    ],
+  });
+}
 
   /**
    * Busca y devuelve una venta por su ID.
@@ -138,28 +146,25 @@ export class VentasService {
    * @throws NotFoundException si la venta no es encontrada.
    * @throws InternalServerErrorException si ocurre un error interno al buscar la venta.
    */
-  async findOne(id: number): Promise<Venta> {
-    if (id <= 0) {
-      throw new BadRequestException('El ID debe ser un número positivo');
-    }
+async findOne(id: number): Promise<Venta> {
+  const venta = await this.ventaRepository.findOne({
+    where: { id_compra: id },
+    relations: [
+      'cliente',
+      'empleado',
+      'detalles',
+      'detalles.producto',
+      'pago'
+    ],
+  });
 
-    try {
-      const venta = await this.ventaRepository.findOne({
-        where: { id_compra: id },
-      });
-
-      if (!venta) {
-        throw new NotFoundException(`Venta con ID ${id} no encontrada`);
-      }
-
-      return venta;
-    } catch (error) {
-      console.error('Error al buscar la venta:', error);
-      throw new InternalServerErrorException(
-        'Error interno al buscar la venta',
-      );
-    }
+  if (!venta) {
+    throw new NotFoundException(`Venta con ID ${id} no encontrada`);
   }
+
+  return venta;
+}
+
 
   /**
    * Actualiza una venta existente.

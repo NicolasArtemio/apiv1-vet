@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { VentasService } from './ventas.service';
 import { CreateVentaDto } from './dto/create-venta.dto';
@@ -24,18 +25,17 @@ export class VentasController {
   findAll() {
     return this.ventasService.findAll();
   }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ventasService.findOne(+id);
-  }
+@Get(':id')
+async findOne(@Param('id', ParseIntPipe) id: number) {
+  return this.ventasService.findOne(id);
+}
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVentaDto: UpdateVentaDto) {
-    return this.ventasService.update(+id, updateVentaDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateVentaDto: UpdateVentaDto) {
+    return this.ventasService.update(id, updateVentaDto);
   }
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ventasService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.ventasService.remove(id);
   }
 }
