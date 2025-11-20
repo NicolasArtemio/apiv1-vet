@@ -10,14 +10,17 @@ export class Producto {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  nombre: string;
+
+ 
 
   @Column()
   marca: string;
 
   @Column()
   descripcion: string;
+
+  @Column()
+  kg: number;
 
   @Column('decimal')
   precio: number;
