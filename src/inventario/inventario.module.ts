@@ -11,7 +11,6 @@ import { EmpleadoModule } from 'src/empleado/empleado.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Inventario, Producto, Empleado]),
-    forwardRef(() => ProductosModule),
     forwardRef(() => EmpleadoModule),
   ],
   controllers: [InventarioController],

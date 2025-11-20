@@ -10,43 +10,61 @@ import { UpdateInventarioDto } from './dto/update-inventario.dto';
 import { Inventario } from './entities/inventario.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { Producto } from 'src/productos/entities/producto.entity';
+import { TipoUso } from 'src/enums/tipo-uso.enum';
 @Injectable()
 export class InventarioService {
   constructor(
     @InjectRepository(Inventario)
     private readonly inventarioRepository: Repository<Inventario>,
+    @InjectRepository(Producto)
+    private readonly productoRepository: Repository<Producto>,
   ) {}
-async create(createInventarioDto: CreateInventarioDto): Promise<Inventario> {
-  try {
-    const nuevoInventario = this.inventarioRepository.create({
-      ...createInventarioDto,
-      empleado: { id: createInventarioDto.id_empleado },
-    });
+  async create(createInventarioDto: CreateInventarioDto): Promise<Inventario> {
+    try {
+      const producto = await this.productoRepository.findOne({
+        where: { id: createInventarioDto.id_producto },
+      });
 
-    return await this.inventarioRepository.save(nuevoInventario);
-  } catch (error) {
-    console.error('Error al crear el inventario ', error);
+      if (!producto) {
+        throw new BadRequestException('El producto no existe');
+      }
 
-    if (typeof error === 'object' && error !== null) {
-      const err = error as { code?: string; errno?: number };
-
-      if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-        throw new ConflictException(
-          'Ya existe un inventario con datos duplicados',
+      if (producto.tipo_uso !== TipoUso.INTERNO) {
+        throw new BadRequestException(
+          'Solo los productos de uso interno pueden agregarse al inventario',
         );
       }
 
-      if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-        throw new BadRequestException('Datos referenciados no existen');
+      const nuevoInventario = this.inventarioRepository.create({
+        ...createInventarioDto,
+        empleado: { id: createInventarioDto.id_empleado },
+        producto: { id: createInventarioDto.id_producto },
+      });
+
+      return await this.inventarioRepository.save(nuevoInventario);
+    } catch (error) {
+      console.error('Error al crear el inventario ', error);
+
+      if (typeof error === 'object' && error !== null) {
+        const err = error as { code?: string; errno?: number };
+
+        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
+          throw new ConflictException(
+            'Ya existe un inventario con datos duplicados',
+          );
+        }
+
+        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
+          throw new BadRequestException('Datos referenciados no existen');
+        }
       }
+
+      throw new InternalServerErrorException(
+        'Error interno al crear el inventario',
+      );
     }
-
-    throw new InternalServerErrorException(
-      'Error interno al crear el inventario',
-    );
   }
-}
-
 
   async findAll(): Promise<Inventario[]> {
     return await this.inventarioRepository.find();
