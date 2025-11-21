@@ -3,9 +3,13 @@ import { CategoriaProducto } from '../../enums/categoria-producto.enum';
 import { SubcategoriaProducto } from 'src/enums/subcategoria-producto.enum';
 import { TipoUso } from 'src/enums/tipo-uso.enum';
 import { isNumber } from 'lodash';
+import { Url } from 'url';
 
 export class CreateProductoDto {
-
+  
+@IsString()
+ @IsNotEmpty()
+  img:Url
 
   @IsString()
   @IsNotEmpty()
@@ -18,6 +22,7 @@ export class CreateProductoDto {
  @IsNumber()
  @IsNotEmpty()
  kg:number;
+
   @IsPositive()
   precio: number;
 
