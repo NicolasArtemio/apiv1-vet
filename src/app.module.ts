@@ -17,6 +17,7 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { MascotasModule } from './mascotas/mascotas.module';
 import { VacunacionModule } from './vacunacion/vacunacion.module';
 import { AuthModule } from './auth/auth.module';
+import { MercadoPagoModule } from './mercado_pago/mercado-pago.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { AuthModule } from './auth/auth.module';
     NotificacionesModule,
     MascotasModule,
     VacunacionModule,
+    MercadoPagoModule,
     AuthModule,
   ],
   controllers: [],
