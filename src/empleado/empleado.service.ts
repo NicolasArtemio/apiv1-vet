@@ -13,11 +13,11 @@ import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 import { Empleado } from './entities/empleado.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
-import { Rol } from '../enums/Rol.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
 import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 @Injectable()
 export class EmpleadoService {
@@ -91,8 +91,14 @@ export class EmpleadoService {
     }
   }
 
+  async findOneByUsuarioId(usuarioId: number): Promise<Empleado | null> {
+    return this.empleadoRepository.findOne({
+      where: { usuario: { id: usuarioId } },
+    });
+  }
+
   async findAll(): Promise<Empleado[]> {
-    return this.empleadoRepository.find();
+    return this.empleadoRepository.find({ relations: ['usuario'] });
   }
 
   async findOne(id: number): Promise<Empleado | null> {
@@ -100,7 +106,10 @@ export class EmpleadoService {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
     try {
-      const empleado = await this.empleadoRepository.findOneBy({ id });
+      const empleado = await this.empleadoRepository.findOne({
+        where: { id },
+        relations: ['usuario'],
+      });
       if (!empleado) {
         throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);
       }

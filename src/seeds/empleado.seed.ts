@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEmpleadoDto } from '../empleado/dto/create-empleado.dto';
-import { Rol } from '../enums/Rol.enum';
 import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
-import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Empleado } from '../empleado/entities/empleado.entity';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 @Injectable()
 export class AdminSeed {
@@ -29,7 +29,7 @@ export class AdminSeed {
       fecha_nacimiento: new Date('1990-01-01'),
       dni: 12345678,
       ciudad: 'Ciudad Central',
-      especialidad: 'Administración',
+      especialidad: 'Admin',
     };
 
     const dto = createEmpleadoDto;
@@ -52,7 +52,7 @@ export class AdminSeed {
     const nuevoUsuario = await this.usuarioService.create({
       email: dto.email,
       contrasena: hashedPassword,
-      rol: Rol.ADMIN,
+      rol: Rol.EMPLEADO,
       fecha_registro: new Date(),
       estado: EstadoUsuario.ACTIVO,
     });

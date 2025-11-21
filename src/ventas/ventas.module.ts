@@ -8,6 +8,7 @@ import { Cliente } from '../cliente/entities/cliente.entity';
 import { DetalleVenta } from '../detalle_venta/entities/detalle_venta.entity';
 import { Producto } from '../productos/entities/producto.entity';
 import { Pago } from '../pago/entities/pago.entity';
+import { EmpleadoModule } from 'src/empleado/empleado.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -18,6 +19,7 @@ import { Pago } from '../pago/entities/pago.entity';
       Producto,
       Pago,
     ]),
+    EmpleadoModule,   // ← AGREGAR ESTO
   ],
   controllers: [VentasController],
   providers: [VentasService],

@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { EstadoLectura } from '../../enums/estadoLectura.enum';
-import { TipoNotificacion } from '../../enums/tipoNotificacion.enum';
+import { EstadoLectura } from 'src/enums/estado-lectura.enum';
+import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
 
 export class CreateNotificacioneDto {
   @IsString()

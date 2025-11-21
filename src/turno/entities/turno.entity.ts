@@ -7,8 +7,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { EstadoTurno } from '../../enums/estadoTurno.enum';
 import { Mascota } from '../../mascotas/entities/mascota.entity';
+import { EstadoTurno } from 'src/enums/estado-turno.enum';
 
 @Entity()
 export class Turno {
@@ -24,7 +24,7 @@ export class Turno {
   @Column()
   observaciones: string;
 
- @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamp' })
   fecha_registro: Date;
 
   @UpdateDateColumn({ type: 'timestamp' })
@@ -34,4 +34,3 @@ export class Turno {
   @JoinColumn({ name: 'mascota_id' })
   mascota: Mascota;
 }
-

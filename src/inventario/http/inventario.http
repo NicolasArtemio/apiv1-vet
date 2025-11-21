@@ -2,6 +2,7 @@
 
 POST http://localhost:3000/api/v1/inventario HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiZW1wbGVhZG8iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjM1OTEwNjcsImV4cCI6MTc2MzYwOTA2N30.611cvQWe2xAn3FPrh7wQ4d_G-glaoyJSsTjcnNvjTSY
 
 {
   "id_producto": 1,

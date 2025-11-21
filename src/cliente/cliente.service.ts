@@ -12,11 +12,11 @@ import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Cliente } from './entities/cliente.entity';
 import { Repository } from 'typeorm';
-import { Rol } from '../enums/Rol.enum';
-import { EstadoUsuario } from '../enums/EstadoUsuario.enum';
 import { UsuarioService } from '../usuario/usuario.service';
 import { Usuario } from '../usuario/entities/usuario.entity';
 import { BcryptHelper } from '../common/helpers/BcrCrypt.hrlper';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 @Injectable()
 export class ClienteService {
@@ -92,7 +92,9 @@ export class ClienteService {
     }
   }
   async findAll(): Promise<Cliente[]> {
-    return this.clienteRepository.find();
+    return this.clienteRepository.find({
+      relations: ['usuario'],
+    });
   }
 
   async findOne(id: number): Promise<Cliente> {

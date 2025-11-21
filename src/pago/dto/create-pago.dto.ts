@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsPositive, IsInt, IsDate, IsNotEmpty, IsEnum } from 'class-validator';
-import { EstadoPagos } from '../../enums/EstadoPagos.enum';
-import { TipoPagos } from '../../enums/TipoPagos.enum';
+import { EstadoPagos } from 'src/enums/estado-pagos.enum';
+import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 
 export class CreatePagoDto {
   @IsPositive()

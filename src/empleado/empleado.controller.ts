@@ -21,9 +21,9 @@ import { CreateEmpleadoDto } from './dto/create-empleado.dto';
 import { UpdateEmpleadoDto } from './dto/update-empleado.dto';
 import { RolesGuard } from '../guards/roles/roles.guard';
 import { Roles } from '../common/decorators/roles.decorator';
-import { Rol } from '../enums/Rol.enum';
 import { AuthenticatedRequest } from '../common/interfaces/authenticatedrequest.interface';
 import { AuthGuard } from '../guards/uth/auth.guard';
+import { Rol } from 'src/enums/rol.enum';
 
 @Controller('empleado')
 export class EmpleadoController {
@@ -32,7 +32,7 @@ export class EmpleadoController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Rol.ADMIN)
+  @Roles(Rol.EMPLEADO)
   create(@Body() createEmpleadoDto: CreateEmpleadoDto) {
     return this.empleadoService.create(createEmpleadoDto);
   }
@@ -40,7 +40,7 @@ export class EmpleadoController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Rol.ADMIN)
+  @Roles(Rol.EMPLEADO)
   findAll() {
     return this.empleadoService.findAll();
   }
@@ -60,7 +60,7 @@ export class EmpleadoController {
       throw new NotFoundException(`Empleado con ID ${id} no encontrado`);
     }
 
-    if (user.role === Rol.ADMIN && user.id !== empleado.usuario.id) {
+    if (user.role === Rol.EMPLEADO && user.id !== empleado.usuario.id) {
       throw new ForbiddenException(
         'Acceso denegado. No eres el propietario de este perfil',
       );
@@ -107,8 +107,23 @@ export class EmpleadoController {
 
   @Delete(':id')
   @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Rol.ADMIN)
-  remove(@Param('id', ParseIntPipe) id: number) {
+  @Roles(Rol.EMPLEADO)
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const user = req.user;
+
+    const perfilAutenticado = await this.empleadoService.findOneByUsuarioId(
+      user.id,
+    );
+
+    if (!perfilAutenticado || perfilAutenticado.especialidad !== 'Admin') {
+      throw new ForbiddenException(
+        'Acceso denegado. Solo el Administrador Especial puede eliminar perfiles de empleado.',
+      );
+    }
+
     return this.empleadoService.remove(id);
   }
 }

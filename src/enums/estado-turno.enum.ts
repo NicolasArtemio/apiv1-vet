@@ -1,4 +1,3 @@
-
 export enum EstadoTurno {
   PENDIENTE = 'pendiente',
   COMPLETADO = 'completado',

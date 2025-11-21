@@ -1,12 +1,12 @@
 import {
-  IsDate,
-  IsEnum,
+  IsString,
   IsNotEmpty,
   IsOptional,
-  IsString,
+  IsEnum,
+  IsDate,
 } from 'class-validator';
-import { EstadoUsuario } from '../../enums/EstadoUsuario.enum';
-import { Rol } from '../../enums/Rol.enum';
+import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
+import { Rol } from 'src/enums/rol.enum';
 
 export class CreateUsuarioDto {
   @IsOptional()
