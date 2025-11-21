@@ -9,7 +9,7 @@ export class CreateProductoDto {
   
 @IsString()
  @IsNotEmpty()
-  img:Url
+  img:string;
 
   @IsString()
   @IsNotEmpty()

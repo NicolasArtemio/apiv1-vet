@@ -12,7 +12,7 @@ export class Producto {
   id: number;
   
   @Column()
-  img:Url;
+  img:string;
 
   @Column()
   marca: string;
