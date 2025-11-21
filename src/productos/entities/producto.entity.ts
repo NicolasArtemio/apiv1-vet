@@ -4,20 +4,24 @@ import { CategoriaProducto } from '../../enums/categoria-producto.enum';
 import { Inventario } from '../../inventario/entities/inventario.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TipoUso } from 'src/enums/tipo-uso.enum';
+import { Url } from 'url';
 
 @Entity()
 export class Producto {
   @PrimaryGeneratedColumn()
   id: number;
-
+  
   @Column()
-  nombre: string;
+  img:string;
 
   @Column()
   marca: string;
 
   @Column()
   descripcion: string;
+
+  @Column()
+  kg: number;
 
   @Column('decimal')
   precio: number;

@@ -7,11 +7,11 @@ import { UsuarioModule } from '../usuario/usuario.module';
 import { InventarioModule } from '../inventario/inventario.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Empleado]),
-    forwardRef(() => UsuarioModule),
-    InventarioModule,
-  ],
+imports: [
+  TypeOrmModule.forFeature([Empleado]),
+  forwardRef(() => UsuarioModule),
+   forwardRef(() => InventarioModule),
+],
   controllers: [EmpleadoController],
   providers: [EmpleadoService],
   exports: [EmpleadoService],
