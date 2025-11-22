@@ -20,10 +20,10 @@ export class Producto {
   @Column()
   descripcion: string;
 
-  @Column()
+  @Column('decimal', { precision: 5, scale: 2 })
   kg: number;
 
-  @Column('decimal')
+  @Column('decimal', { precision: 10, scale: 2 })
   precio: number;
 
   @Column()
@@ -47,3 +47,4 @@ export class Producto {
   @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.producto)
   detallesVenta: DetalleVenta[];
 }
+ 
