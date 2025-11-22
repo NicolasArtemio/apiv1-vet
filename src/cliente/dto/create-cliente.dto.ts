@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { CreateUsuarioDto } from '../../usuario/dto/create-usuario.dto';
 export class CreateClienteDto extends CreateUsuarioDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   foto_perfil: string;
 
   @IsString()
