@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsPositive, IsString, IsEnum, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsPositive, IsString, IsEnum, IsNumber, IsOptional, IsDateString } from 'class-validator';
 import { CategoriaProducto } from '../../enums/categoria-producto.enum';
 import { SubcategoriaProducto } from 'src/enums/subcategoria-producto.enum';
 import { TipoUso } from 'src/enums/tipo-uso.enum';
@@ -19,9 +19,8 @@ export class CreateProductoDto {
   @IsNotEmpty()
   descripcion: string;
   
- @IsNumber()
- @IsNotEmpty()
- kg:number;
+  @IsNumber()
+  kg?: number | null;
 
   @IsPositive()
   precio: number;
@@ -43,4 +42,8 @@ export class CreateProductoDto {
   @IsString()
   @IsEnum(TipoUso)
   tipo_uso: TipoUso;
+
+  @IsOptional()
+  @IsDateString()
+  fecha_vencimiento?: Date;
 }

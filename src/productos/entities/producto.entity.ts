@@ -20,8 +20,8 @@ export class Producto {
   @Column()
   descripcion: string;
 
-  @Column('decimal', { precision: 5, scale: 2 })
-  kg: number;
+  @Column('decimal', { precision: 5, scale: 2, nullable: true })
+  kg: number | null;
 
   @Column('decimal', { precision: 10, scale: 2 })
   precio: number;
@@ -38,8 +38,8 @@ export class Producto {
   @Column('enum', { enum: TipoUso })
   tipo_uso: TipoUso;
 
-  @Column('date')
-  fecha_vencimiento: Date;
+  @Column('date', { nullable: true })
+  fecha_vencimiento: Date | null;
 
   @OneToMany(() => Inventario, (inventario) => inventario.producto)
   inventarios: Inventario[];
