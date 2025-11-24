@@ -8,7 +8,7 @@ export class MercadoPagoService {
 
   constructor() {
     this.client = new MercadoPagoConfig({
-      accessToken: 'TEST-00000000-0000-0000-0000-000000000000',
+      accessToken: process.env.MERCADO_PAGO_ACCESS_TOKEN || '',
       options: { timeout: 5000 },
     });
   }

@@ -1,13 +1,14 @@
 import { Controller, Post, Body, Res, HttpStatus, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { MercadoPagoService } from './mercado-pago.service';
+import { CreateOrderDto } from './dto/order-dto';
 
 @Controller('mercado-pago')
 export class MercadoPagoController {
   constructor(private readonly mpService: MercadoPagoService) {}
 
   @Post('create-order')
-  async createOrder(@Body() body: any, @Res() res: Response) {
+  async createOrder(@Body() body: CreateOrderDto, @Res() res: Response) {
     try {
       const response = await this.mpService.createPreference(body);
       return res.status(HttpStatus.CREATED).json(response);
