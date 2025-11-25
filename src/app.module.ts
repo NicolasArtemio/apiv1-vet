@@ -17,7 +17,7 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { MascotasModule } from './mascotas/mascotas.module';
 import { VacunacionModule } from './vacunacion/vacunacion.module';
 import { AuthModule } from './auth/auth.module';
-import { MercadoPagoModule } from './mercado_pago/mercado-pago.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -36,7 +36,7 @@ import { MercadoPagoModule } from './mercado_pago/mercado-pago.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
-        synchronize: true, // ¡no usar en producción!
+        synchronize: false, // ¡no usar en producción!
       }),
     }),
     VentasModule,
@@ -59,8 +59,8 @@ import { MercadoPagoModule } from './mercado_pago/mercado-pago.module';
     NotificacionesModule,
     MascotasModule,
     VacunacionModule,
-    MercadoPagoModule,
     AuthModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],
