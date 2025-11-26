@@ -18,6 +18,7 @@ import { MascotasModule } from './mascotas/mascotas.module';
 import { VacunacionModule } from './vacunacion/vacunacion.module';
 import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
+import { CheckoutModule } from './checkout/checkout.module';
 
 @Module({
   imports: [
@@ -61,6 +62,7 @@ import { MessageModule } from './message/message.module';
     VacunacionModule,
     AuthModule,
     MessageModule,
+    CheckoutModule,
   ],
   controllers: [],
   providers: [],
