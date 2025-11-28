@@ -37,7 +37,7 @@ import { CheckoutModule } from './checkout/checkout.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
-        synchronize: false, // ¡no usar en producción!
+        synchronize: true, // ¡no usar en producción!
       }),
     }),
     VentasModule,
