@@ -93,15 +93,14 @@ export class ClienteService {
   }
   async findAll(): Promise<Cliente[]> {
     return this.clienteRepository.find({
-      relations: ['usuario'],
+      relations: ['usuario', 'mascotas', 'ventas'],
     });
   }
 
   async findOne(id: number): Promise<Cliente> {
     const cliente = await this.clienteRepository.findOne({
       where: { id },
-      // ¡ESTO ES LA CLAVE! Sin esto, cliente.usuario será undefined o un proxy vacío.
-      relations: ['usuario'],
+      relations: ['usuario', 'mascotas', 'ventas'],
     });
 
     if (!cliente) {
@@ -117,7 +116,6 @@ export class ClienteService {
     try {
       const cliente = await this.clienteRepository.findOne({
         where: { id },
-        relations: ['usuario'],
       });
 
       if (!cliente) {

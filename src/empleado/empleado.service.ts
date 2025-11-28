@@ -98,7 +98,7 @@ export class EmpleadoService {
   }
 
   async findAll(): Promise<Empleado[]> {
-    return this.empleadoRepository.find({ relations: ['usuario'] });
+    return this.empleadoRepository.find({ relations: ['usuario', 'ventas'] });
   }
 
   async findOne(id: number): Promise<Empleado | null> {
@@ -108,7 +108,7 @@ export class EmpleadoService {
     try {
       const empleado = await this.empleadoRepository.findOne({
         where: { id },
-        relations: ['usuario'],
+        relations: ['usuario', 'vemtas'],
       });
       if (!empleado) {
         throw new HttpException('Cliente no encontrado', HttpStatus.NOT_FOUND);

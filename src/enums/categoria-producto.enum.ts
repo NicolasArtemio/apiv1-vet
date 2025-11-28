@@ -3,4 +3,5 @@ export enum CategoriaProducto {
   GATO = 'Gato',
   AVE = 'Ave',
   EXOTICO = 'Exótico',
+  CLINICA = 'Clínica',
 }

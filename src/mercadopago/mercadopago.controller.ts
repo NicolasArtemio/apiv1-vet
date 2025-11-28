@@ -28,7 +28,7 @@ export class MercadoPagoController {
     }
 
     try {
-      // 👈 CORRECCIÓN 2: Usar this.mercadopagoClient
+      //  CORRECCIÓN 2: Usar this.mercadopagoClient
       const payment = await new Payment(this.mercadopagoClient).get({
         id: paymentId,
       });
