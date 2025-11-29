@@ -10,6 +10,7 @@ import { Producto } from '../productos/entities/producto.entity';
 import { Pago } from '../pago/entities/pago.entity';
 import { EmpleadoModule } from 'src/empleado/empleado.module';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { ClienteModule } from 'src/cliente/cliente.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -22,10 +23,10 @@ import { Usuario } from 'src/usuario/entities/usuario.entity';
       Usuario,
     ]),
     EmpleadoModule,
+    ClienteModule,
   ],
   controllers: [VentasController],
   providers: [VentasService],
   exports: [VentasService],
 })
 export class VentasModule {}
-

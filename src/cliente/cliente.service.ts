@@ -109,6 +109,44 @@ export class ClienteService {
 
     return cliente;
   }
+
+  public async encontrarOCrearCliente(email: string): Promise<Cliente> {
+    // 1. Intentar encontrar el usuario existente con la relación Cliente
+    const usuarioExistente = await this.usuarioRepository.findOne({
+      where: { email },
+      relations: { cliente: true },
+    });
+
+    // Caso 1: ✅ El usuario existe Y ya es un Cliente registrado.
+    if (usuarioExistente?.cliente) {
+      return usuarioExistente.cliente;
+    }
+
+    // --- Si llegamos aquí, el cliente NO existe ---
+
+    let usuarioBase = usuarioExistente; // Podría ser null o un Usuario sin Cliente
+
+    // Caso 2: 🛑 El Usuario NO existe, lo creamos (Cliente Invitado).
+    if (!usuarioBase) {
+      const nuevoUsuario = this.usuarioRepository.create({
+        email: email,
+        // ⚠️ IMPORTANTE: Configura aquí la contraseña o estado de un usuario invitado
+        // (e.g., password: 'TEMPORARY_MP_PASSWORD', o un flag)
+      });
+      usuarioBase = await this.usuarioRepository.save(nuevoUsuario);
+    }
+    // 🎯 Eliminamos el 'throw new BadRequestException' anterior, ya que si el usuario existe
+    // pero no es cliente, lo convertimos a cliente para esta venta.
+
+    // 3. Crear el registro de Cliente asociado (al Usuario existente o recién creado)
+    const nuevoCliente = this.clienteRepository.create({
+      usuario: usuarioBase, // Usamos el Usuario existente o recién guardado
+      nombre: usuarioBase.email.split('@')[0] || 'Invitado MP',
+      // ... otros campos de Cliente requeridos (ej: telefono, dirección si se obtienen)
+    });
+
+    return this.clienteRepository.save(nuevoCliente); // Guardamos y retornamos el nuevo registro de Cliente
+  }
   async update(
     id: number,
     updateClienteDto: UpdateClienteDto,

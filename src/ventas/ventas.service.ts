@@ -22,7 +22,7 @@ import { EstadoPagos } from 'src/enums/estado-pagos.enum';
 import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 import { MPItem } from 'src/common/interfaces/mpitem.interface';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
-import { CreatePagoDto } from 'src/pago/dto/create-pago.dto';
+import { ClienteService } from 'src/cliente/cliente.service';
 
 @Injectable()
 export class VentasService {
@@ -39,6 +39,7 @@ export class VentasService {
     private pagoRepository: Repository<Pago>,
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
+    private readonly clienteService: ClienteService,
   ) {}
 
   /**
@@ -129,20 +130,23 @@ export class VentasService {
       throw error;
     }
   }
-
   public async crearVentaDesdeMercadoPago(
     paymentIdMP: string,
-    referenciaOrden: string, // Aunque no se use, debe estar para mantener el orden
+    referenciaOrden: string,
     clienteEmail: string,
     itemsComprados: MPItem[],
   ): Promise<Venta> {
-    // Ahora, idClienteNum, clienteEmail, itemsComprados, y paymentIdMP son variables válidas.
-    const idClienteNum: number =
-      await this.obtenerIdClientePorEmail(clienteEmail);
+    // 🛑 CORRECCIÓN CLAVE: Encontrar o Crear Cliente
+    // Reemplazamos la función que lanzaba una excepción por una que garantiza un Cliente existente.
+    const clienteEncontrado =
+      await this.clienteService.encontrarOCrearCliente(clienteEmail);
+    const idClienteNum: number = clienteEncontrado.id;
 
+    // 1. Construir el DTO
+    // Los campos 'total' y 'pago' deben ser opcionales en CreateVentaDto para que este funcione.
     const createVentaDto: CreateVentaDto = {
-      id_cliente: idClienteNum,
-      id_empleado: 1,
+      id_cliente: idClienteNum, // ID garantizado por el paso anterior
+      id_empleado: 1, // ⚠️ Asegúrate de que el Empleado con ID 1 exista en la DB
       fecha: new Date(),
       metodo_pago: TipoPagos.TRANSFERENCIA,
       estado_pago: EstadoPagos.APROBADO,
@@ -154,8 +158,11 @@ export class VentasService {
       })),
     };
 
+    // 2. Guardar Venta, DetalleVenta y Pago (this.create se encarga de calcular el total)
     const ventaGuardada = await this.create(createVentaDto);
 
+    // 3. ACTUALIZACIÓN: Añadir paymentIdMP al Pago recién creado
+    // Se busca el Pago que se creó en el paso 2
     const pagoExistente = await this.pagoRepository.findOneBy({
       venta: { id_compra: ventaGuardada.id_compra },
     });
@@ -182,32 +189,6 @@ export class VentasService {
         'pago',
       ],
     });
-  }
-
-  /**
-   * Busca el ID de Cliente a través del email (que es el identificador de Usuario).
-   * @param email El email/usuario recibido de Mercado Pago.
-   * @returns El ID numérico del Cliente.
-   */
-  public async obtenerIdClientePorEmail(email: string): Promise<number> {
-    const usuario = await this.usuarioRepository.findOne({
-      where: { email },
-      relations: {
-        cliente: true,
-      },
-    });
-
-    if (!usuario) {
-      throw new NotFoundException(`Usuario con email ${email} no encontrado.`);
-    }
-
-    if (!usuario.cliente) {
-      throw new BadRequestException(
-        `El usuario ${email} no está registrado como Cliente.`,
-      );
-    }
-
-    return usuario.cliente.id;
   }
 
   /**
