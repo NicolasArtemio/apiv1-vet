@@ -4,15 +4,14 @@ import { CategoriaProducto } from '../../enums/categoria-producto.enum';
 import { Inventario } from '../../inventario/entities/inventario.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { TipoUso } from 'src/enums/tipo-uso.enum';
-import { Url } from 'url';
 
 @Entity()
 export class Producto {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @Column()
-  img:string;
+  img: string;
 
   @Column()
   marca: string;
@@ -20,10 +19,10 @@ export class Producto {
   @Column()
   descripcion: string;
 
-  @Column()
-  kg: number;
+  @Column('decimal', { precision: 5, scale: 2, nullable: true })
+  kg: number | null;
 
-  @Column('decimal')
+  @Column('decimal', { precision: 10, scale: 2 })
   precio: number;
 
   @Column()
@@ -33,13 +32,13 @@ export class Producto {
   categoria: CategoriaProducto;
 
   @Column('enum', { enum: SubcategoriaProducto })
-  subcategoria: SubcategoriaProducto;
+  subcategoria?: SubcategoriaProducto;
 
   @Column('enum', { enum: TipoUso })
   tipo_uso: TipoUso;
 
-  @Column('date')
-  fecha_vencimiento: Date;
+  @Column('date', { nullable: true })
+  fecha_vencimiento: Date | null;
 
   @OneToMany(() => Inventario, (inventario) => inventario.producto)
   inventarios: Inventario[];
@@ -47,3 +46,4 @@ export class Producto {
   @OneToMany(() => DetalleVenta, (detalleVenta) => detalleVenta.producto)
   detallesVenta: DetalleVenta[];
 }
+

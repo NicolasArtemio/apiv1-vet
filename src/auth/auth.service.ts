@@ -49,6 +49,7 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user: {
+        id: usuario.id,
         email: usuario.email,
         role: usuario.rol,
         isAdmin: especialidadAdmin, // 👈 AÑADIR BANDERA A LA RESPUESTA

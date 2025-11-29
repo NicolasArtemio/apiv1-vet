@@ -16,8 +16,8 @@ export class Cliente {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  foto_perfil: string;
+  @Column({ default: '' })
+  foto_perfil?: string;
 
   @Column()
   nombre: string;

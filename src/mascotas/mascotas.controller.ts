@@ -6,21 +6,25 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { MascotasService } from './mascotas.service';
 import { CreateMascotasDto } from './dto/create-mascotas.dto';
 import { UpdateMascotasDto } from './dto/update-mascotas.dto';
+import { AuthGuard } from 'src/guards/uth/auth.guard';
 
 @Controller('mascotas')
 export class MascotasController {
   constructor(private readonly mascotasService: MascotasService) {}
 
   @Post()
+  @UseGuards(AuthGuard)
   create(@Body() createMascotaDto: CreateMascotasDto) {
     return this.mascotasService.create(createMascotaDto);
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   findAll() {
     return this.mascotasService.findAll();
   }
