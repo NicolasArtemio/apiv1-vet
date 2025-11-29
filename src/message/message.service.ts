@@ -1,7 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Preference, MercadoPagoConfig } from 'mercadopago';
 import { MPItem } from 'src/common/interfaces/mpitem.interface';
 import { MERCADO_PAGO_CLIENT } from 'src/mercadopago/mercadopago.provider';
+import { ProductosService } from 'src/productos/productos.service';
 import { VentasService } from 'src/ventas/ventas.service';
 
 interface Message {
@@ -24,6 +25,7 @@ export class MessageService {
     private readonly mercadopagoClient: MercadoPagoConfig,
     // 🎯 Inyectar VentaService para usar la lógica de DB
     private readonly ventaService: VentasService,
+    private readonly productoService: ProductosService,
   ) {}
 
   private messages: Message[] = [];
@@ -35,18 +37,37 @@ export class MessageService {
   public async createPreferenceFromItems(
     items: ProductoCheckoutDto[],
   ): Promise<string> {
-    // El mapeo es simple ya que ProductoCheckoutDto coincide con la estructura de MP
-    const mpItems = items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      unit_price: item.unit_price,
-      quantity: item.quantity,
-    }));
+    // 🛑 CORRECCIÓN: Usar Promise.all y mapeo asíncrono
+    const mpItemsPromises = items.map(async (itemDelFront) => {
+      // 🛑 CORRECCIÓN DE ID: Convertir a string antes de parseInt para evitar el error 'any'
+      const idString = itemDelFront.id.toString();
+
+      // Convertir el ID a número (number) para buscarlo en la DB
+      const idProductoNum = parseInt(idString);
+
+      const productoDB = await this.productoService.findOne(idProductoNum); // <-- Asumimos que findOne espera number
+
+      if (!productoDB) {
+        throw new NotFoundException(
+          `Producto con ID ${itemDelFront.id} no encontrado.`,
+        );
+      }
+
+      // 2. Construir el ítem de MP usando los datos verificados de la DB
+      return {
+        id: productoDB.id.toString(),
+        title: productoDB.descripcion,
+        // 🛑 CORRECCIÓN DE PRECIO: Usar directamente productoDB.precio
+        unit_price: productoDB.precio, // Elimina parseFloat(), TypeORM ya lo devuelve como number
+        quantity: itemDelFront.quantity,
+      };
+    });
+    // 3. Esperar que todas las promesas de búsqueda se completen
+    const mpItems = await Promise.all(mpItemsPromises);
 
     const preference = await new Preference(this.mercadopagoClient).create({
       body: {
-        items: mpItems,
-
+        items: mpItems, // Usar los items sincronizados
         notification_url:
           'https://apiv1-vet.onrender.com/api/mercadopago/notifications',
       },
@@ -57,7 +78,9 @@ export class MessageService {
     }
 
     return preference.init_point;
-  } /**
+  }
+
+  /**
    * Crea una preferencia de pago (versión de mensaje único).
    */
 
@@ -73,7 +96,7 @@ export class MessageService {
           },
         ],
         notification_url:
-          'https://tu-dominio.com/api/mercadopago/notifications',
+          'https://apiv1-vet.onrender.com/api/mercadopago/notifications',
         metadata: {
           text,
         },
