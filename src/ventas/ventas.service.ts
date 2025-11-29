@@ -132,42 +132,20 @@ export class VentasService {
 
   public async crearVentaDesdeMercadoPago(
     paymentIdMP: string,
-    referenciaOrden: string,
+    referenciaOrden: string, // Aunque no se use, debe estar para mantener el orden
     clienteEmail: string,
     itemsComprados: MPItem[],
   ): Promise<Venta> {
+    // Ahora, idClienteNum, clienteEmail, itemsComprados, y paymentIdMP son variables válidas.
     const idClienteNum: number =
       await this.obtenerIdClientePorEmail(clienteEmail);
 
-    console.log(
-      `Iniciando venta MP ID: ${paymentIdMP}. Ref interna: ${referenciaOrden}. Cliente ID: ${idClienteNum}`,
-    );
-
-    const totalCalculado = itemsComprados.reduce(
-      (sum, item) => sum + item.unit_price * item.quantity,
-      0,
-    );
-
-    const createPagoDto: CreatePagoDto = {
-      fecha_pago: new Date(),
-
-      id_venta: 0,
-
-      monto_pago: totalCalculado,
-      metodo_pago: TipoPagos.TRANSFERENCIA,
-      estado_pago: EstadoPagos.APROBADO,
-      paymentIdMP: paymentIdMP,
-    };
     const createVentaDto: CreateVentaDto = {
-      // Campos de Venta
       id_cliente: idClienteNum,
       id_empleado: 1,
       fecha: new Date(),
       metodo_pago: TipoPagos.TRANSFERENCIA,
       estado_pago: EstadoPagos.APROBADO,
-      total: totalCalculado,
-
-      pago: createPagoDto,
 
       // Mapeo de DetalleVenta
       detalles: itemsComprados.map((item) => ({
@@ -178,11 +156,19 @@ export class VentasService {
 
     const ventaGuardada = await this.create(createVentaDto);
 
-    // La línea de registro de pago ya no es necesaria aquí porque se hizo en cascada.
-    // // await this.registrarIdPagoMP(ventaGuardada.id_compra, paymentIdMP);
+    const pagoExistente = await this.pagoRepository.findOneBy({
+      venta: { id_compra: ventaGuardada.id_compra },
+    });
+
+    if (pagoExistente) {
+      pagoExistente.paymentIdMP = paymentIdMP;
+      await this.pagoRepository.save(pagoExistente);
+    }
 
     return ventaGuardada;
-  } /**
+  }
+
+  /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */

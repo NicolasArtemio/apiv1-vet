@@ -38,12 +38,12 @@ export class CreateVentaDto {
   @IsPositive()
   @IsNumber()
   @Min(0.01)
-  total: number;
+  total?: number;
 
   @IsEnum(EstadoPagos)
   estado_pago: EstadoPagos;
 
   @Type(() => CreatePagoDto)
   @ValidateNested()
-  pago: CreatePagoDto;
+  pago?: CreatePagoDto;
 }
