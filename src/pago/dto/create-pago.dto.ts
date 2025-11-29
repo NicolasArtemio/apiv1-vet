@@ -1,20 +1,31 @@
 import { Type } from 'class-transformer';
-import { IsPositive, IsInt, IsDate, IsNotEmpty, IsEnum } from 'class-validator';
+import {
+  IsPositive,
+  IsInt,
+  IsDate,
+  IsNotEmpty,
+  IsEnum,
+  IsString,
+} from 'class-validator';
 import { EstadoPagos } from 'src/enums/estado-pagos.enum';
 import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 
 export class CreatePagoDto {
   @IsPositive()
   @IsInt()
-  id_venta: number;
+  id_venta?: number;
 
   @IsDate()
   @Type(() => Date)
-  fecha_pago: Date;
+  fecha_pago?: Date;
 
   @IsPositive()
   @IsInt()
   monto_pago: number;
+
+  @IsString()
+  @IsNotEmpty()
+  paymentIdMP: string;
 
   @IsNotEmpty()
   @IsEnum(TipoPagos, {

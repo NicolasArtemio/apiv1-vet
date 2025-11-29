@@ -22,6 +22,7 @@ import { EstadoPagos } from 'src/enums/estado-pagos.enum';
 import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 import { MPItem } from 'src/common/interfaces/mpitem.interface';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { CreatePagoDto } from 'src/pago/dto/create-pago.dto';
 
 @Injectable()
 export class VentasService {
@@ -129,17 +130,12 @@ export class VentasService {
     }
   }
 
-  // En tu VentaService (o donde esté el método create(createVentaDto))
-  // En src/venta/ventas.service.ts
-
   public async crearVentaDesdeMercadoPago(
     paymentIdMP: string,
-    referenciaOrden: string, // El ID interno que pusiste en el metadata
+    referenciaOrden: string,
     clienteEmail: string,
     itemsComprados: MPItem[],
   ): Promise<Venta> {
-    // 1. **BÚSQUEDA DEL CLIENTE Y VALIDACIÓN**
-    // Obtiene el ID numérico del Cliente. Lanza excepción si no existe/no es cliente.
     const idClienteNum: number =
       await this.obtenerIdClientePorEmail(clienteEmail);
 
@@ -147,47 +143,46 @@ export class VentasService {
       `Iniciando venta MP ID: ${paymentIdMP}. Ref interna: ${referenciaOrden}. Cliente ID: ${idClienteNum}`,
     );
 
-    // 2. **CÁLCULO DE DATOS**
-    // Calcula el total sumando (precio * cantidad) de todos los ítems.
     const totalCalculado = itemsComprados.reduce(
       (sum, item) => sum + item.unit_price * item.quantity,
       0,
     );
 
-    // 3. **TRANSFORMACIÓN A DTO**
-    const createVentaDto: CreateVentaDto = {
-      // Campos obligatorios:
-      id_cliente: idClienteNum,
-      id_empleado: 1, // Usar un ID de empleado por defecto válido para ventas online
-      fecha: new Date(),
-      metodo_pago: TipoPagos.TRANSFERENCIA, // Asumir esto o usar el tipo de MP si lo extraes
-      estado_pago: EstadoPagos.APROBADO,
+    const createPagoDto: CreatePagoDto = {
+      fecha_pago: new Date(),
 
-      // 🛑 CAMPO CORREGIDO: Añadir el total calculado
+      id_venta: 0,
+
+      monto_pago: totalCalculado,
+      metodo_pago: TipoPagos.TRANSFERENCIA,
+      estado_pago: EstadoPagos.APROBADO,
+      paymentIdMP: paymentIdMP,
+    };
+    const createVentaDto: CreateVentaDto = {
+      // Campos de Venta
+      id_cliente: idClienteNum,
+      id_empleado: 1,
+      fecha: new Date(),
+      metodo_pago: TipoPagos.TRANSFERENCIA,
+      estado_pago: EstadoPagos.APROBADO,
       total: totalCalculado,
 
-      // Mapeo de ítems de MP a DetalleVenta[]
+      pago: createPagoDto,
+
+      // Mapeo de DetalleVenta
       detalles: itemsComprados.map((item) => ({
-        // item.id debe ser el ID de tu producto en la DB (usamos parseInt)
         id_producto: parseInt(item.id),
         cantidad: item.quantity,
       })),
-      // ... (otros campos que necesite tu DTO)
     };
 
-    // 4. **PERSISTENCIA**
-    // Llama a la función principal de creación de venta (que debe manejar la transacción
-    // de Venta y DetalleVenta).
     const ventaGuardada = await this.create(createVentaDto);
 
-    // 5. **REGISTRO DE MP (Opcional)**
-    // Si tienes una tabla 'pago', aquí registrarías el paymentIdMP
-    // await this.registrarIdPagoMP(ventaGuardada.id_compra, paymentIdMP);
+    // La línea de registro de pago ya no es necesaria aquí porque se hizo en cascada.
+    // // await this.registrarIdPagoMP(ventaGuardada.id_compra, paymentIdMP);
 
     return ventaGuardada;
-  }
-
-  /**
+  } /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */
@@ -209,11 +204,10 @@ export class VentasService {
    * @returns El ID numérico del Cliente.
    */
   public async obtenerIdClientePorEmail(email: string): Promise<number> {
-    // 1. Buscar el usuario por email
     const usuario = await this.usuarioRepository.findOne({
-      where: { email }, // Asumiendo que 'email' es un campo de la entidad Usuario
+      where: { email },
       relations: {
-        cliente: true, // Importante: Cargar la relación 'cliente'
+        cliente: true,
       },
     });
 
@@ -221,16 +215,12 @@ export class VentasService {
       throw new NotFoundException(`Usuario con email ${email} no encontrado.`);
     }
 
-    // 2. Verificar que el usuario sea un cliente
     if (!usuario.cliente) {
-      // Esto puede ocurrir si es un Empleado y no un Cliente
       throw new BadRequestException(
         `El usuario ${email} no está registrado como Cliente.`,
       );
     }
 
-    // 3. Devolver el ID del Cliente (que es el que espera createVentaDto)
-    // 🛑 CORRECCIÓN DE TIPO: Asumimos que usuario.cliente.id es un number
     return usuario.cliente.id;
   }
 
