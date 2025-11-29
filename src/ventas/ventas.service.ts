@@ -174,7 +174,7 @@ export class VentasService {
 
     const createVentaDto: CreateVentaDto = {
       id_cliente: cliente.id,
-      id_empleado: null,
+      id_empleado: 1,
       fecha: new Date(),
       metodo_pago: TipoPagos.TRANSFERENCIA,
       estado_pago: EstadoPagos.APROBADO,
@@ -198,47 +198,6 @@ export class VentasService {
     await this.pagoRepository.save(pago);
 
     return ventaGuardada;
-  }
-  /**
-   * Busca y devuelve todas las ventas.
-   * @returns Lista de todas las ventas.
-   */
-  async findAll(): Promise<Venta[]> {
-    return this.ventaRepository.find({
-      relations: [
-        'cliente',
-        'empleado',
-        'detalles',
-        'detalles.producto',
-        'pago',
-      ],
-    });
-  }
-
-  /**
-   * Busca y devuelve una venta por su ID.
-   * @param id - ID de la venta a buscar.
-   * @returns La venta encontrada.
-   * @throws NotFoundException si la venta no es encontrada.
-   * @throws InternalServerErrorException si ocurre un error interno al buscar la venta.
-   */
-  async findOne(id: number): Promise<Venta> {
-    const venta = await this.ventaRepository.findOne({
-      where: { id_compra: id },
-      relations: [
-        'cliente',
-        'empleado',
-        'detalles',
-        'detalles.producto',
-        'pago',
-      ],
-    });
-
-    if (!venta) {
-      throw new NotFoundException(`Venta con ID ${id} no encontrada`);
-    }
-
-    return venta;
   }
 
   /**
