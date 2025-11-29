@@ -12,6 +12,7 @@ import {
 import { CreateDetalleVentaDto } from '../../detalle_venta/dto/create-detalle_venta.dto';
 import { EstadoPagos } from 'src/enums/estado-pagos.enum';
 import { TipoPagos } from 'src/enums/tipo-pagos.enum';
+import { CreatePagoDto } from 'src/pago/dto/create-pago.dto';
 
 export class CreateVentaDto {
   @IsPositive()
@@ -41,4 +42,8 @@ export class CreateVentaDto {
 
   @IsEnum(EstadoPagos)
   estado_pago: EstadoPagos;
+
+  @Type(() => CreatePagoDto)
+  @ValidateNested()
+  pago: CreatePagoDto;
 }
