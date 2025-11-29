@@ -174,7 +174,7 @@ export class VentasService {
 
     const createVentaDto: CreateVentaDto = {
       id_cliente: cliente.id,
-      id_empleado: 1,
+      id_empleado: null,
       fecha: new Date(),
       metodo_pago: TipoPagos.TRANSFERENCIA,
       estado_pago: EstadoPagos.APROBADO,
