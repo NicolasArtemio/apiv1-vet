@@ -18,6 +18,10 @@ import { Repository } from 'typeorm';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { Producto } from '../productos/entities/producto.entity';
 import { Pago } from '../pago/entities/pago.entity';
+import { EstadoPagos } from 'src/enums/estado-pagos.enum';
+import { TipoPagos } from 'src/enums/tipo-pagos.enum';
+import { MPItem } from 'src/common/interfaces/mpitem.interface';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Injectable()
 export class VentasService {
@@ -32,6 +36,8 @@ export class VentasService {
     private productoRepository: Repository<Producto>,
     @InjectRepository(Pago)
     private pagoRepository: Repository<Pago>,
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
   ) {}
 
   /**
@@ -45,7 +51,6 @@ export class VentasService {
 
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
-      // 0️⃣ Validar que haya al menos un detalle
       if (!createVentaDto.detalles || createVentaDto.detalles.length === 0) {
         throw new BadRequestException(
           'La venta debe tener al menos un detalle',
@@ -123,21 +128,99 @@ export class VentasService {
       throw error;
     }
   }
-  /**
+
+  // En tu VentaService (o donde esté el método create(createVentaDto))
+
+  public async crearVentaDesdeMercadoPago(
+    paymentIdMP: string,
+    referenciaOrden: string, // El ID interno que pusiste en el metadata
+    clienteEmail: string,
+    itemsComprados: MPItem[],
+  ): Promise<Venta> {
+    // 🛑 CORRECCIÓN 1: Usar await para esperar el resultado de la búsqueda asíncrona.
+    // La búsqueda devuelve el ID numérico del Cliente (obtenido vía Usuario).
+    const idClienteNum: number =
+      await this.obtenerIdClientePorEmail(clienteEmail);
+
+    // 🛑 CORRECCIÓN 2: Uso de variables para eliminar advertencias de ESLint.
+    console.log(
+      `Iniciando venta MP ID: ${paymentIdMP}. Ref interna: ${referenciaOrden}`,
+    );
+
+    // 1. **TRANSFORMACIÓN DE DATOS:** Adaptar los datos de MP a tu DTO interno.
+    const createVentaDto: CreateVentaDto = {
+      // 🛑 CORRECCIÓN 3: Asignar la variable numérica resultante.
+      id_cliente: idClienteNum,
+
+      // 🛑 CORRECCIÓN 4: Usar un valor numérico para id_empleado.
+      id_empleado: 1, // Ejemplo: Usar un ID de empleado por defecto para ventas online
+
+      fecha: new Date(),
+      metodo_pago: TipoPagos.TRANSFERENCIA,
+      estado_pago: EstadoPagos.APROBADO,
+
+      // Mapeo de ítems de MP a DetalleVenta[]
+      detalles: itemsComprados.map((item) => ({
+        // item.id debe ser el ID de tu producto en la DB
+        id_producto: parseInt(item.id),
+        cantidad: item.quantity,
+      })),
+      // ... (otros campos necesarios)
+    };
+
+    // 2. **PERSISTENCIA:** Llamar a la función principal de creación de venta.
+    const ventaGuardada = await this.create(createVentaDto);
+
+    // 3. **REGISTRO DE MP:** Opcional: Registrar el ID de MP en la venta o pago asociado.
+    // await this.registrarIdPagoMP(ventaGuardada.id, paymentIdMP);
+
+    return ventaGuardada;
+  } /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */
-async findAll(): Promise<Venta[]> {
-  return this.ventaRepository.find({
-    relations: [
-      'cliente',
-      'empleado',
-      'detalles',
-      'detalles.producto',
-      'pago'
-    ],
-  });
-}
+  async findAll(): Promise<Venta[]> {
+    return this.ventaRepository.find({
+      relations: [
+        'cliente',
+        'empleado',
+        'detalles',
+        'detalles.producto',
+        'pago',
+      ],
+    });
+  }
+
+  /**
+   * Busca el ID de Cliente a través del email (que es el identificador de Usuario).
+   * @param email El email/usuario recibido de Mercado Pago.
+   * @returns El ID numérico del Cliente.
+   */
+  public async obtenerIdClientePorEmail(email: string): Promise<number> {
+    // 1. Buscar el usuario por email
+    const usuario = await this.usuarioRepository.findOne({
+      where: { email }, // Asumiendo que 'email' es un campo de la entidad Usuario
+      relations: {
+        cliente: true, // Importante: Cargar la relación 'cliente'
+      },
+    });
+
+    if (!usuario) {
+      throw new NotFoundException(`Usuario con email ${email} no encontrado.`);
+    }
+
+    // 2. Verificar que el usuario sea un cliente
+    if (!usuario.cliente) {
+      // Esto puede ocurrir si es un Empleado y no un Cliente
+      throw new BadRequestException(
+        `El usuario ${email} no está registrado como Cliente.`,
+      );
+    }
+
+    // 3. Devolver el ID del Cliente (que es el que espera createVentaDto)
+    // 🛑 CORRECCIÓN DE TIPO: Asumimos que usuario.cliente.id es un number
+    return usuario.cliente.id;
+  }
 
   /**
    * Busca y devuelve una venta por su ID.
@@ -146,25 +229,24 @@ async findAll(): Promise<Venta[]> {
    * @throws NotFoundException si la venta no es encontrada.
    * @throws InternalServerErrorException si ocurre un error interno al buscar la venta.
    */
-async findOne(id: number): Promise<Venta> {
-  const venta = await this.ventaRepository.findOne({
-    where: { id_compra: id },
-    relations: [
-      'cliente',
-      'empleado',
-      'detalles',
-      'detalles.producto',
-      'pago'
-    ],
-  });
+  async findOne(id: number): Promise<Venta> {
+    const venta = await this.ventaRepository.findOne({
+      where: { id_compra: id },
+      relations: [
+        'cliente',
+        'empleado',
+        'detalles',
+        'detalles.producto',
+        'pago',
+      ],
+    });
 
-  if (!venta) {
-    throw new NotFoundException(`Venta con ID ${id} no encontrada`);
+    if (!venta) {
+      throw new NotFoundException(`Venta con ID ${id} no encontrada`);
+    }
+
+    return venta;
   }
-
-  return venta;
-}
-
 
   /**
    * Actualiza una venta existente.
