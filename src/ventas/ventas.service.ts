@@ -130,6 +130,7 @@ export class VentasService {
   }
 
   // En tu VentaService (o donde esté el método create(createVentaDto))
+  // En src/venta/ventas.service.ts
 
   public async crearVentaDesdeMercadoPago(
     paymentIdMP: string,
@@ -137,45 +138,56 @@ export class VentasService {
     clienteEmail: string,
     itemsComprados: MPItem[],
   ): Promise<Venta> {
-    // 🛑 CORRECCIÓN 1: Usar await para esperar el resultado de la búsqueda asíncrona.
-    // La búsqueda devuelve el ID numérico del Cliente (obtenido vía Usuario).
+    // 1. **BÚSQUEDA DEL CLIENTE Y VALIDACIÓN**
+    // Obtiene el ID numérico del Cliente. Lanza excepción si no existe/no es cliente.
     const idClienteNum: number =
       await this.obtenerIdClientePorEmail(clienteEmail);
 
-    // 🛑 CORRECCIÓN 2: Uso de variables para eliminar advertencias de ESLint.
     console.log(
-      `Iniciando venta MP ID: ${paymentIdMP}. Ref interna: ${referenciaOrden}`,
+      `Iniciando venta MP ID: ${paymentIdMP}. Ref interna: ${referenciaOrden}. Cliente ID: ${idClienteNum}`,
     );
 
-    // 1. **TRANSFORMACIÓN DE DATOS:** Adaptar los datos de MP a tu DTO interno.
+    // 2. **CÁLCULO DE DATOS**
+    // Calcula el total sumando (precio * cantidad) de todos los ítems.
+    const totalCalculado = itemsComprados.reduce(
+      (sum, item) => sum + item.unit_price * item.quantity,
+      0,
+    );
+
+    // 3. **TRANSFORMACIÓN A DTO**
     const createVentaDto: CreateVentaDto = {
-      // 🛑 CORRECCIÓN 3: Asignar la variable numérica resultante.
+      // Campos obligatorios:
       id_cliente: idClienteNum,
-
-      // 🛑 CORRECCIÓN 4: Usar un valor numérico para id_empleado.
-      id_empleado: 1, // Ejemplo: Usar un ID de empleado por defecto para ventas online
-
+      id_empleado: 1, // Usar un ID de empleado por defecto válido para ventas online
       fecha: new Date(),
-      metodo_pago: TipoPagos.TRANSFERENCIA,
+      metodo_pago: TipoPagos.TRANSFERENCIA, // Asumir esto o usar el tipo de MP si lo extraes
       estado_pago: EstadoPagos.APROBADO,
+
+      // 🛑 CAMPO CORREGIDO: Añadir el total calculado
+      total: totalCalculado,
 
       // Mapeo de ítems de MP a DetalleVenta[]
       detalles: itemsComprados.map((item) => ({
-        // item.id debe ser el ID de tu producto en la DB
+        // item.id debe ser el ID de tu producto en la DB (usamos parseInt)
         id_producto: parseInt(item.id),
         cantidad: item.quantity,
       })),
-      // ... (otros campos necesarios)
+      // ... (otros campos que necesite tu DTO)
     };
 
-    // 2. **PERSISTENCIA:** Llamar a la función principal de creación de venta.
+    // 4. **PERSISTENCIA**
+    // Llama a la función principal de creación de venta (que debe manejar la transacción
+    // de Venta y DetalleVenta).
     const ventaGuardada = await this.create(createVentaDto);
 
-    // 3. **REGISTRO DE MP:** Opcional: Registrar el ID de MP en la venta o pago asociado.
-    // await this.registrarIdPagoMP(ventaGuardada.id, paymentIdMP);
+    // 5. **REGISTRO DE MP (Opcional)**
+    // Si tienes una tabla 'pago', aquí registrarías el paymentIdMP
+    // await this.registrarIdPagoMP(ventaGuardada.id_compra, paymentIdMP);
 
     return ventaGuardada;
-  } /**
+  }
+
+  /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */
