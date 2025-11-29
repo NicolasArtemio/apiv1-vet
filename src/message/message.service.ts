@@ -57,8 +57,9 @@ export class MessageService {
       return {
         id: productoDB.id.toString(),
         title: productoDB.descripcion,
-        // 🛑 CORRECCIÓN DE PRECIO: Usar directamente productoDB.precio
-        unit_price: productoDB.precio, // Elimina parseFloat(), TypeORM ya lo devuelve como number
+        // 🛑 CORRECCIÓN: Usamos parseFloat() O Number() para garantizar que sea un número.
+        // Esto resuelve el error 400 de Mercado Pago.
+        unit_price: Number(productoDB.precio),
         quantity: itemDelFront.quantity,
       };
     });
