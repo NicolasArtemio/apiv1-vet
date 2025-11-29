@@ -39,12 +39,11 @@ export class Venta {
   @OneToMany(() => DetalleVenta, (detalle) => detalle.venta, { cascade: true })
   detalles: DetalleVenta[];
 
-  @ManyToOne(() => Empleado, (empleado) => empleado.ventas)
+  @ManyToOne(() => Empleado, (empleado) => empleado.ventas, { nullable: true })
   @JoinColumn({ name: 'id_empleado' })
-  empleado: Empleado;
+  empleado?: Empleado | null;
 
   @ManyToOne(() => Cliente, (cliente) => cliente.ventas)
   @JoinColumn({ name: 'id_cliente' })
   cliente: Cliente;
 }
-

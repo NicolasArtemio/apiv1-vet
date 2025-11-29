@@ -1,5 +1,6 @@
 export interface MPItem {
-  id_producto: number;
-  cantidad: number;
-  precio: number;
+  id: string;
+  title: string;
+  quantity: number;
+  unit_price: number;
 }

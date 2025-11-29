@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsInt,
   IsNumber,
+  IsOptional,
   IsPositive,
   Min,
   ValidateNested,
@@ -19,9 +20,10 @@ export class CreateVentaDto {
   @IsInt()
   id_cliente: number;
 
-  @IsPositive()
+  @IsOptional()
   @IsInt()
-  id_empleado: number;
+  @IsPositive()
+  id_empleado?: number | null;
 
   @IsDate()
   @Type(() => Date)
