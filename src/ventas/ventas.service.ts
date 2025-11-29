@@ -229,6 +229,25 @@ export class VentasService {
     }
   }
 
+  async findAll(): Promise<Venta[]> {
+    return this.ventaRepository.find({
+      relations: ['cliente', 'empleado', 'detalles', 'pago'],
+    });
+  }
+
+  async findOne(id: number): Promise<Venta> {
+    const venta = await this.ventaRepository.findOne({
+      where: { id_compra: id },
+      relations: ['cliente', 'empleado', 'detalles', 'pago'],
+    });
+
+    if (!venta) {
+      throw new NotFoundException(`Venta con ID ${id} no encontrada`);
+    }
+
+    return venta;
+  }
+
   /**
    * Elimina una venta por su ID.
    * @param id - ID de la venta a eliminar.
