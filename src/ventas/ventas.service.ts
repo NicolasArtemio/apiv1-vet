@@ -137,7 +137,6 @@ export class VentasService {
     clienteEmail: string,
     itemsComprados: MPItem[],
   ): Promise<Venta> {
-    // 0. Evitar duplicados por reintentos
     const ventaExistente = await this.pagoRepository.findOne({
       where: { paymentIdMP },
       relations: ['venta'],
@@ -148,10 +147,9 @@ export class VentasService {
       return ventaExistente.venta;
     }
 
-    // 1. Encontrar o crear cliente
     const cliente =
       await this.clienteService.encontrarOCrearCliente(clienteEmail);
-    const idClienteNum = cliente.id;
+
     const detallesMapeados: CreateDetalleVentaDto[] = [];
 
     for (const item of itemsComprados) {
@@ -170,31 +168,36 @@ export class VentasService {
         id_producto: idProducto,
         cantidad: item.quantity,
       });
-    } // 3. Construir DTO
+    }
+
     const createVentaDto: CreateVentaDto = {
-      id_cliente: idClienteNum,
-      id_empleado: 1,
+      id_cliente: cliente.id,
+      id_empleado: null,
       fecha: new Date(),
       metodo_pago: TipoPagos.TRANSFERENCIA,
       estado_pago: EstadoPagos.APROBADO,
       detalles: detallesMapeados,
     };
 
-    // 4. Guardar Venta y Detalles
     const ventaGuardada = await this.create(createVentaDto);
 
-    // 5. Guardar el ID del pago MP en tabla "Pago"
-    const pagoExistente = await this.pagoRepository.findOneBy({
+    let pago = await this.pagoRepository.findOneBy({
       venta: { id_compra: ventaGuardada.id_compra },
     });
 
-    if (pagoExistente) {
-      pagoExistente.paymentIdMP = paymentIdMP;
-      await this.pagoRepository.save(pagoExistente);
+    if (!pago) {
+      pago = this.pagoRepository.create({
+        paymentIdMP,
+        venta: ventaGuardada,
+      });
     }
 
+    pago.paymentIdMP = paymentIdMP;
+    await this.pagoRepository.save(pago);
+
     return ventaGuardada;
-  } /**
+  }
+  /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */
