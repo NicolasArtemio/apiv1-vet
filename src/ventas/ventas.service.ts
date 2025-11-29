@@ -23,6 +23,7 @@ import { TipoPagos } from 'src/enums/tipo-pagos.enum';
 import { MPItem } from 'src/common/interfaces/mpitem.interface';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { ClienteService } from 'src/cliente/cliente.service';
+import { CreateDetalleVentaDto } from 'src/detalle_venta/dto/create-detalle_venta.dto';
 
 @Injectable()
 export class VentasService {
@@ -136,33 +137,53 @@ export class VentasService {
     clienteEmail: string,
     itemsComprados: MPItem[],
   ): Promise<Venta> {
-    // 🛑 CORRECCIÓN CLAVE: Encontrar o Crear Cliente
-    // Reemplazamos la función que lanzaba una excepción por una que garantiza un Cliente existente.
-    const clienteEncontrado =
-      await this.clienteService.encontrarOCrearCliente(clienteEmail);
-    const idClienteNum: number = clienteEncontrado.id;
+    // 0. Evitar duplicados por reintentos
+    const ventaExistente = await this.pagoRepository.findOne({
+      where: { paymentIdMP },
+      relations: ['venta'],
+    });
 
-    // 1. Construir el DTO
-    // Los campos 'total' y 'pago' deben ser opcionales en CreateVentaDto para que este funcione.
+    if (ventaExistente) {
+      console.log(`⚠ Venta ya registrada para el pago ${paymentIdMP}`);
+      return ventaExistente.venta;
+    }
+
+    // 1. Encontrar o crear cliente
+    const cliente =
+      await this.clienteService.encontrarOCrearCliente(clienteEmail);
+    const idClienteNum = cliente.id;
+    const detallesMapeados: CreateDetalleVentaDto[] = [];
+
+    for (const item of itemsComprados) {
+      const idProducto = parseInt(item.id);
+
+      const producto = await this.productoRepository.findOne({
+        where: { id: idProducto },
+      });
+
+      if (!producto) {
+        console.error(`Producto con ID ${idProducto} no existe. Ignorado.`);
+        continue;
+      }
+
+      detallesMapeados.push({
+        id_producto: idProducto,
+        cantidad: item.quantity,
+      });
+    } // 3. Construir DTO
     const createVentaDto: CreateVentaDto = {
-      id_cliente: idClienteNum, // ID garantizado por el paso anterior
-      id_empleado: 1, // ⚠️ Asegúrate de que el Empleado con ID 1 exista en la DB
+      id_cliente: idClienteNum,
+      id_empleado: 1,
       fecha: new Date(),
       metodo_pago: TipoPagos.TRANSFERENCIA,
       estado_pago: EstadoPagos.APROBADO,
-
-      // Mapeo de DetalleVenta
-      detalles: itemsComprados.map((item) => ({
-        id_producto: parseInt(item.id),
-        cantidad: item.quantity,
-      })),
+      detalles: detallesMapeados,
     };
 
-    // 2. Guardar Venta, DetalleVenta y Pago (this.create se encarga de calcular el total)
+    // 4. Guardar Venta y Detalles
     const ventaGuardada = await this.create(createVentaDto);
 
-    // 3. ACTUALIZACIÓN: Añadir paymentIdMP al Pago recién creado
-    // Se busca el Pago que se creó en el paso 2
+    // 5. Guardar el ID del pago MP en tabla "Pago"
     const pagoExistente = await this.pagoRepository.findOneBy({
       venta: { id_compra: ventaGuardada.id_compra },
     });
@@ -173,9 +194,7 @@ export class VentasService {
     }
 
     return ventaGuardada;
-  }
-
-  /**
+  } /**
    * Busca y devuelve todas las ventas.
    * @returns Lista de todas las ventas.
    */
