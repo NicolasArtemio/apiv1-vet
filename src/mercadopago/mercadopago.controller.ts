@@ -1,8 +1,8 @@
 import { Controller, Post, Body, HttpCode, Inject } from '@nestjs/common';
 import MercadoPagoConfig, { Payment } from 'mercadopago';
-import { MessageService } from '../message/message.service';
 import { MERCADO_PAGO_CLIENT } from './mercadopago.provider';
 import { MPItem } from 'src/common/interfaces/mpitem.interface';
+import { VentasService } from 'src/ventas/ventas.service';
 
 interface MessageMetadata {
   text: string;
@@ -22,7 +22,7 @@ interface PaymentAdditionalInfo {
 @Controller('mercadopago')
 export class MercadoPagoController {
   constructor(
-    private readonly messageService: MessageService, // Contiene la lógica de simulación
+    private readonly ventaService: VentasService,
     @Inject(MERCADO_PAGO_CLIENT)
     private readonly mercadopagoClient: MercadoPagoConfig,
   ) {}
@@ -53,20 +53,33 @@ export class MercadoPagoController {
           payment.payer?.email || 'email-no-disponible'; // Extracción de Metadatos
 
         const metadata = payment.metadata as unknown as MessageMetadata;
-        const referenciaOrden: string = metadata.text; // ID de Pago de Mercado Pago (MP)
+        const referenciaOrden: string = metadata.text;
 
-        const approvedPaymentId: string = payment.id!.toString(); // 🛑 Corrección: Acceso a items mediante additional_info.items
+        const approvedPaymentId: string = payment.id!.toString();
 
         const itemsComprados =
           (payment.additional_info as PaymentAdditionalInfo)?.items || [];
-        // Si hubieras implementado el VentaService, cambiarías 'messageService' por 'ventaService'.
 
-        this.messageService.guardarOrdenAprobada(
-          approvedPaymentId,
-          referenciaOrden,
-          clienteEmail,
-          itemsComprados,
-        );
+        // 🛑 CORRECCIÓN CLAVE: Usar await y el VentaService
+        try {
+          const ventaGuardada =
+            await this.ventaService.crearVentaDesdeMercadoPago(
+              approvedPaymentId,
+              referenciaOrden,
+              clienteEmail,
+              itemsComprados,
+            );
+
+          console.log(
+            `Notificación procesada. Venta registrada con ID: ${ventaGuardada.id_compra}`,
+          );
+        } catch (error) {
+          // Si falla la inserción (ej: Foreign Key o cliente no existe), logueamos y respondemos 200 a MP
+          console.error(
+            'Error al guardar la venta en la DB (posiblemente FK/Cliente):',
+            error,
+          );
+        }
 
         console.log(`Notificación procesada con éxito para pago: ${paymentId}`);
       } else {
