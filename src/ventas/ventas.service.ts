@@ -66,9 +66,11 @@ export class VentasService {
       });
       if (!cliente) throw new NotFoundException('Cliente no encontrado');
 
-      const empleado = await this.empleadoRepository.findOneBy({
-        id: createVentaDto.id_empleado,
-      });
+      const empleado = createVentaDto.id_empleado
+        ? await this.empleadoRepository.findOne({
+            where: { id: createVentaDto.id_empleado },
+          })
+        : null;
       if (!empleado) throw new NotFoundException('Empleado no encontrado');
 
       // 2️⃣ Transformar fecha
