@@ -4,7 +4,9 @@ import {
   IsDate,
   IsEnum,
   IsInt,
+  IsNumber,
   IsPositive,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { CreateDetalleVentaDto } from '../../detalle_venta/dto/create-detalle_venta.dto';
@@ -32,7 +34,11 @@ export class CreateVentaDto {
   @IsEnum(TipoPagos)
   metodo_pago: TipoPagos;
 
+  @IsPositive()
+  @IsNumber()
+  @Min(0.01)
+  total: number;
+
   @IsEnum(EstadoPagos)
   estado_pago: EstadoPagos;
 }
-
