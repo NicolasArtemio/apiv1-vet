@@ -176,7 +176,7 @@ export class VentasService {
       id_cliente: cliente.id,
       id_empleado: null,
       fecha: new Date(),
-      metodo_pago: TipoPagos.TRANSFERENCIA,
+      metodo_pago: TipoPagos.MERCADO_PAGO,
       estado_pago: EstadoPagos.APROBADO,
       detalles: detallesMapeados,
     };

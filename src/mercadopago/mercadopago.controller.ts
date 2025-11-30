@@ -40,6 +40,11 @@ export class MercadoPagoController {
       return { status: 'No payment ID' };
     }
 
+    if (body.type === 'test') {
+      console.log('🧪 Webhook de simulación recibido. Saltando consulta a MP.');
+      return { status: 'test ok' };
+    }
+
     try {
       // Obtener pago desde Mercado Pago
       const payment = await new Payment(this.mercadopagoClient).get({

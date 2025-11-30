@@ -66,6 +66,7 @@ export class NotificacionesService {
     } catch (error) {
       throw new InternalServerErrorException(
         `No se encontro el notificacion con el id ${id_notificaciones}`,
+        { cause: error },
       );
     }
   }
@@ -118,6 +119,9 @@ export class NotificacionesService {
     } catch (error) {
       throw new InternalServerErrorException(
         `No se encontro el cliente con el id ${id_notificaciones}`,
+        {
+          cause: error,
+        },
       );
     }
   }
