@@ -36,16 +36,13 @@ export class MessageService {
 
   public async createPreferenceFromItems(
     items: ProductoCheckoutDto[],
+    clienteEmail?: string, // opcional pero recomendable
   ): Promise<string> {
-    // 🛑 CORRECCIÓN: Usar Promise.all y mapeo asíncrono
     const mpItemsPromises = items.map(async (itemDelFront) => {
-      // 🛑 CORRECCIÓN DE ID: Convertir a string antes de parseInt para evitar el error 'any'
       const idString = itemDelFront.id.toString();
-
-      // Convertir el ID a número (number) para buscarlo en la DB
       const idProductoNum = parseInt(idString);
 
-      const productoDB = await this.productoService.findOne(idProductoNum); // <-- Asumimos que findOne espera number
+      const productoDB = await this.productoService.findOne(idProductoNum);
 
       if (!productoDB) {
         throw new NotFoundException(
@@ -53,24 +50,28 @@ export class MessageService {
         );
       }
 
-      // 2. Construir el ítem de MP usando los datos verificados de la DB
       return {
         id: productoDB.id.toString(),
         title: productoDB.descripcion,
-        // 🛑 CORRECCIÓN: Usamos parseFloat() O Number() para garantizar que sea un número.
-        // Esto resuelve el error 400 de Mercado Pago.
         unit_price: Number(productoDB.precio),
         quantity: itemDelFront.quantity,
       };
     });
-    // 3. Esperar que todas las promesas de búsqueda se completen
+
     const mpItems = await Promise.all(mpItemsPromises);
 
     const preference = await new Preference(this.mercadopagoClient).create({
       body: {
-        items: mpItems, // Usar los items sincronizados
+        items: mpItems,
         notification_url:
           'https://apiv1-vet.onrender.com/api/v1/mercadopago/notifications',
+
+        // 🟩 AGREGADO: esto es lo que el webhook necesita
+        metadata: {
+          referenciaOrden: `orden-${Date.now()}`,
+          email_cliente: clienteEmail ?? 'email-no-enviado',
+          items: mpItems, // 🔥 CLAVE para que no llegue vacío
+        },
       },
     });
 
@@ -79,9 +80,7 @@ export class MessageService {
     }
 
     return preference.init_point;
-  }
-
-  /**
+  } /**
    * Crea una preferencia de pago (versión de mensaje único).
    */
 
