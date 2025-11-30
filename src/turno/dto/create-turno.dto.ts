@@ -17,7 +17,7 @@ export class CreateTurnoDto {
   @IsEnum(TipoTurno)
   tipo: TipoTurno;
 
-  @IsOptional() // porque en la entidad ya tiene default
+  @IsOptional() 
   @IsEnum(EstadoTurno)
   estado?: EstadoTurno;
 

@@ -4,7 +4,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Turno } from './entities/turno.entity';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { CreateTurnoDto } from './dto/create-turno.dto';
-import { EstadoTurno } from './../enums/estadoTurno.enum';
+import { EstadoTurno } from '../enums/estado-turno.enum';
 
 const mockRepositoryTurno = {
   create: jest.fn(),
