@@ -42,7 +42,7 @@ export class AuthService {
       sub: usuario.id,
       email: usuario.email,
       role: usuario.rol,
-      isAdmin: especialidadAdmin, // 👈 AÑADIR BANDERA DE ADMIN (IMPORTANTE PARA EL FRONTEND)
+      isAdmin: especialidadAdmin,
     };
 
     // 4. Devolver la Respuesta
@@ -52,7 +52,7 @@ export class AuthService {
         id: usuario.id,
         email: usuario.email,
         role: usuario.rol,
-        isAdmin: especialidadAdmin, // 👈 AÑADIR BANDERA A LA RESPUESTA
+        isAdmin: especialidadAdmin,
       },
     };
   }

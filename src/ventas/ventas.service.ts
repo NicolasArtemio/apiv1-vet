@@ -60,23 +60,32 @@ export class VentasService {
         );
       }
 
-      // 1️⃣ Buscar cliente y empleado
+      // 1️⃣ Buscar CLIENTE
       const cliente = await this.clienteRepository.findOneBy({
         id: createVentaDto.id_cliente,
       });
       if (!cliente) throw new NotFoundException('Cliente no encontrado');
 
-      const empleado = createVentaDto.id_empleado
-        ? await this.empleadoRepository.findOne({
-            where: { id: createVentaDto.id_empleado },
-          })
-        : null;
-      if (!empleado) throw new NotFoundException('Empleado no encontrado');
+      // 2️⃣ Buscar EMPLEADO solo si viene un ID (ventas internas)
+      let empleado = null;
 
-      // 2️⃣ Transformar fecha
+      if (
+        createVentaDto.id_empleado !== null &&
+        createVentaDto.id_empleado !== undefined
+      ) {
+        empleado = await this.empleadoRepository.findOne({
+          where: { id: createVentaDto.id_empleado },
+        });
+
+        if (!empleado) {
+          throw new NotFoundException('Empleado no encontrado');
+        }
+      }
+
+      // 3️⃣ Transformar fecha
       const fecha = new Date(createVentaDto.fecha);
 
-      // 3️⃣ Crear detalles y calcular total
+      // 4️⃣ Crear detalles y calcular total
       const detalles: DetalleVenta[] = [];
       let total = 0;
 
@@ -84,10 +93,11 @@ export class VentasService {
         const producto = await this.productoRepository.findOneBy({
           id: d.id_producto,
         });
-        if (!producto)
+        if (!producto) {
           throw new NotFoundException(
             `Producto con id ${d.id_producto} no encontrado`,
           );
+        }
 
         const detalle = new DetalleVenta();
         detalle.producto = producto;
@@ -98,15 +108,13 @@ export class VentasService {
         total += detalle.subtotal;
         detalles.push(detalle);
 
-        // 3️⃣a. Opcional: descontar stock
-        // producto.stock -= d.cantidad;
-        // await this.productoRepository.save(producto);
+        // Opcional: actualizar stock
       }
 
-      // 4️⃣ Crear la venta
+      // 5️⃣ Crear la venta
       const venta = this.ventaRepository.create({
         cliente,
-        empleado,
+        empleado, // puede ser null → OK para MP
         fecha,
         total,
         detalles,
@@ -114,10 +122,10 @@ export class VentasService {
         estado_pago: createVentaDto.estado_pago,
       });
 
-      // 5️⃣ Guardar
+      // 6️⃣ Guardar venta
       const ventaGuardada = await this.ventaRepository.save(venta);
 
-      // 6️⃣ Opcional: crear un pago inicial
+      // 7️⃣ Crear pago inicial
       const pago = this.pagoRepository.create({
         venta: ventaGuardada,
         fecha_pago: new Date(),
@@ -125,6 +133,7 @@ export class VentasService {
         metodo_pago: createVentaDto.metodo_pago,
         estado_pago: createVentaDto.estado_pago,
       });
+
       await this.pagoRepository.save(pago);
 
       return ventaGuardada;
@@ -133,6 +142,7 @@ export class VentasService {
       throw error;
     }
   }
+
   public async crearVentaDesdeMercadoPago(
     paymentIdMP: string,
     referenciaOrden: string,

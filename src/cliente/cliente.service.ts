@@ -93,7 +93,7 @@ export class ClienteService {
   }
   async findAll(): Promise<Cliente[]> {
     return this.clienteRepository.find({
-      relations: ['usuario', 'mascotas' ],
+      relations: ['usuario', 'mascotas'],
     });
   }
 
@@ -117,21 +117,16 @@ export class ClienteService {
       relations: { cliente: true },
     });
 
-    // Caso 1: ✅ El usuario existe Y ya es un Cliente registrado.
     if (usuarioExistente?.cliente) {
       return usuarioExistente.cliente;
     }
 
-    // --- Si llegamos aquí, el cliente NO existe ---
-
     let usuarioBase = usuarioExistente; // Podría ser null o un Usuario sin Cliente
 
-    // Caso 2: 🛑 El Usuario NO existe, lo creamos (Cliente Invitado).
+    //El Usuario NO existe, lo creamos (Cliente Invitado).
     if (!usuarioBase) {
       const nuevoUsuario = this.usuarioRepository.create({
         email: email,
-        // ⚠️ IMPORTANTE: Configura aquí la contraseña o estado de un usuario invitado
-        // (e.g., password: 'TEMPORARY_MP_PASSWORD', o un flag)
       });
       usuarioBase = await this.usuarioRepository.save(nuevoUsuario);
     }
