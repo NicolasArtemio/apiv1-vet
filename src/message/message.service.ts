@@ -70,7 +70,7 @@ export class MessageService {
       body: {
         items: mpItems, // Usar los items sincronizados
         notification_url:
-          'https://apiv1-vet.onrender.com/api/mercadopago/notifications',
+          'https://apiv1-vet.onrender.com/api/v1/mercadopago/notifications',
       },
     });
 
@@ -97,7 +97,7 @@ export class MessageService {
           },
         ],
         notification_url:
-          'https://apiv1-vet.onrender.com/api/mercadopago/notifications',
+          'https://apiv1-vet.onrender.com/api/v1/mercadopago/notifications',
         metadata: {
           text,
         },
