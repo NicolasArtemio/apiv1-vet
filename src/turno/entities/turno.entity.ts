@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Mascota } from '../../mascotas/entities/mascota.entity';
 import { EstadoTurno } from 'src/enums/estado-turno.enum';
+import { TipoTurno } from 'src/enums/tipo-turno.enum';
 
 @Entity()
 export class Turno {
@@ -20,6 +21,9 @@ export class Turno {
 
   @Column({ type: 'enum', enum: EstadoTurno, default: EstadoTurno.PENDIENTE })
   estado: EstadoTurno;
+
+  @Column({ type: 'enum', enum: TipoTurno })
+  tipo: TipoTurno;
 
   @Column()
   observaciones: string;

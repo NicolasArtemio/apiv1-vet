@@ -61,7 +61,7 @@ export class MascotasService {
   }
 
   async findAll(): Promise<Mascota[]> {
-    return await this.mascotaRepository.find();
+    return await this.mascotaRepository.find({ relations: ['cliente', 'turno'] } );
   }
 
   async findOne(id: number): Promise<Mascota | null> {
@@ -71,7 +71,7 @@ export class MascotasService {
     try {
       const mascota = await this.mascotaRepository.findOne({
         where: { id },
-        relations: ['cliente'],
+        relations: ['cliente', 'turno'],
       });
       if (!mascota) {
         throw new HttpException(
