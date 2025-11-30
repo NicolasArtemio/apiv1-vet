@@ -14,6 +14,24 @@ export interface MpNotificationBody {
   data: { id: number };
 }
 
+interface MPGetPaymentResponse {
+  status?: string;
+  payer?: {
+    email?: string;
+  };
+  metadata?: MPMetaData;
+  external_reference?: string;
+  additional_info?: {
+    items?: Array<{
+      id: string;
+      title: string;
+      quantity: number;
+      unit_price: number;
+    }>;
+  };
+  id?: string | number;
+}
+
 @Controller('mercadopago')
 export class MercadoPagoController {
   constructor(
@@ -27,42 +45,49 @@ export class MercadoPagoController {
   async handleNotification(@Body() body: MpNotificationBody) {
     console.log('📩 Notificación recibida:', body);
 
-    // Aceptar Mercado Pago real y Postman
+    // Filtrar solo lo relevante
     if (body.type !== 'payment' && body.type !== 'test') {
       console.log('🔹 Notificación ignorada. Tipo:', body.type);
       return { status: 'Ignored' };
     }
 
     const paymentId = body.data?.id;
-
     if (!paymentId) {
       console.error('❌ Notificación sin ID');
       return { status: 'No payment ID' };
     }
 
     if (body.type === 'test') {
-      console.log('🧪 Webhook de simulación recibido. Saltando consulta a MP.');
+      console.log('🧪 Webhook de simulación recibido.');
       return { status: 'test ok' };
     }
 
     try {
-      // Obtener pago desde Mercado Pago
-      const payment = await new Payment(this.mercadopagoClient).get({
+      // 1️⃣ Obtener pago REAL
+      const payment = (await new Payment(this.mercadopagoClient).get({
         id: paymentId,
-      });
+      })) as MPGetPaymentResponse;
 
       console.log(`💳 Pago ${paymentId} recibido. Estado: ${payment.status}`);
 
       if (payment.status === 'approved') {
-        const metadata = payment.metadata as MPMetaData;
-
+        // 2️⃣ OBTENER EMAIL
         const clienteEmail =
-          metadata?.email_cliente ||
           payment.payer?.email ||
+          payment.metadata?.email_cliente ||
           'email-no-disponible';
 
-        const detalles: MPItem[] = metadata.items || [];
-        const referenciaOrden = metadata.referenciaOrden || '';
+        // 3️⃣ OBTENER ITEMS REALES DEL PAGO
+        const detalles: MPItem[] =
+          payment.additional_info?.items?.map((i) => ({
+            id: i.id,
+            title: i.title,
+            quantity: i.quantity,
+            unit_price: i.unit_price,
+          })) ?? [];
+
+        // 4️⃣ OBTENER REFERENCIA SI LA USASTE
+        const referenciaOrden = payment.external_reference || '';
 
         console.log('🧾 Datos reconstruidos:', {
           referenciaOrden,
@@ -70,6 +95,11 @@ export class MercadoPagoController {
           detalles,
         });
 
+        if (detalles.length === 0) {
+          console.error('❌ No se recibieron items en el pago.');
+        }
+
+        // 5️⃣ GUARDAR LA VENTA
         const venta = await this.ventaService.crearVentaDesdeMercadoPago(
           payment.id!.toString(),
           referenciaOrden,
