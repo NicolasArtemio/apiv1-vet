@@ -27,7 +27,8 @@ export class MercadoPagoController {
   async handleNotification(@Body() body: MpNotificationBody) {
     console.log('📩 Notificación recibida:', body);
 
-    if (body.type !== 'payment') {
+    // Aceptar Mercado Pago real y Postman
+    if (body.type !== 'payment' && body.type !== 'test') {
       console.log('🔹 Notificación ignorada. Tipo:', body.type);
       return { status: 'Ignored' };
     }
@@ -48,9 +49,6 @@ export class MercadoPagoController {
       console.log(`💳 Pago ${paymentId} recibido. Estado: ${payment.status}`);
 
       if (payment.status === 'approved') {
-        // --------------------------------------
-        // 1️⃣ Datos del cliente
-        // --------------------------------------
         const metadata = payment.metadata as MPMetaData;
 
         const clienteEmail =
@@ -58,14 +56,7 @@ export class MercadoPagoController {
           payment.payer?.email ||
           'email-no-disponible';
 
-        // --------------------------------------
-        // 2️⃣ Items del carrito enviados en metadata
-        // --------------------------------------
         const detalles: MPItem[] = metadata.items || [];
-
-        // --------------------------------------
-        // 3️⃣ Referencia de orden interna
-        // --------------------------------------
         const referenciaOrden = metadata.referenciaOrden || '';
 
         console.log('🧾 Datos reconstruidos:', {
@@ -74,21 +65,14 @@ export class MercadoPagoController {
           detalles,
         });
 
-        // --------------------------------------
-        // 4️⃣ Guardar venta en tu base de datos
-        // --------------------------------------
-        try {
-          const venta = await this.ventaService.crearVentaDesdeMercadoPago(
-            payment.id!.toString(),
-            referenciaOrden,
-            clienteEmail,
-            detalles,
-          );
+        const venta = await this.ventaService.crearVentaDesdeMercadoPago(
+          payment.id!.toString(),
+          referenciaOrden,
+          clienteEmail,
+          detalles,
+        );
 
-          console.log(`✅ Venta guardada. ID: ${venta.id_compra}`);
-        } catch (err) {
-          console.error('⚠ Error al guardar venta:', err);
-        }
+        console.log(`✅ Venta guardada. ID: ${venta.id_compra}`);
       }
 
       return { status: 'OK' };
