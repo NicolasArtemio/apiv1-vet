@@ -67,7 +67,9 @@ export class InventarioService {
   }
 
   async findAll(): Promise<Inventario[]> {
-    return await this.inventarioRepository.find();
+    return await this.inventarioRepository.find({
+      relations: ['producto', 'empleado'],
+    });
   }
 
   async findOne(id: number): Promise<Inventario | null> {

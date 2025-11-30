@@ -19,6 +19,9 @@ export class Inventario {
   @Column()
   id_empleado: number;
 
+  @Column()
+  cantidad: number;
+
   @Column('timestamp')
   fecha_uso: Date;
 

@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsDate,
   IsOptional,
+  Min,
 } from 'class-validator';
 
 export class CreateInventarioDto {
@@ -17,6 +18,12 @@ export class CreateInventarioDto {
   @IsInt()
   @IsNotEmpty()
   id_empleado: number;
+
+  @IsPositive()
+  @IsInt()
+  @IsNotEmpty()
+  @Min(1)
+  cantidad: number;
 
   @IsDate()
   @IsNotEmpty()
