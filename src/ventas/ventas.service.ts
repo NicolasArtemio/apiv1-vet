@@ -67,7 +67,7 @@ export class VentasService {
       if (!cliente) throw new NotFoundException('Cliente no encontrado');
 
       // 2️⃣ Buscar EMPLEADO solo si viene un ID (ventas internas)
-      let empleado = null;
+      let empleado: Empleado | null = null;
 
       if (
         createVentaDto.id_empleado !== null &&
