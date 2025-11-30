@@ -19,6 +19,7 @@ import { VacunacionModule } from './vacunacion/vacunacion.module';
 import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
 import { CheckoutModule } from './checkout/checkout.module';
+import { MercadoPagoModule } from './mercadopago/mercadopago.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { CheckoutModule } from './checkout/checkout.module';
     AuthModule,
     MessageModule,
     CheckoutModule,
+    MercadoPagoModule,
   ],
   controllers: [],
   providers: [],

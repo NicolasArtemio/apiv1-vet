@@ -9,6 +9,8 @@ import { DetalleVenta } from '../detalle_venta/entities/detalle_venta.entity';
 import { Producto } from '../productos/entities/producto.entity';
 import { Pago } from '../pago/entities/pago.entity';
 import { EmpleadoModule } from 'src/empleado/empleado.module';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { ClienteModule } from 'src/cliente/cliente.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -18,8 +20,10 @@ import { EmpleadoModule } from 'src/empleado/empleado.module';
       DetalleVenta,
       Producto,
       Pago,
+      Usuario,
     ]),
-    EmpleadoModule,   // ← AGREGAR ESTO
+    EmpleadoModule,
+    ClienteModule,
   ],
   controllers: [VentasController],
   providers: [VentasService],

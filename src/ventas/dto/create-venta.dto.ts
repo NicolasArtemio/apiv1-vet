@@ -4,21 +4,26 @@ import {
   IsDate,
   IsEnum,
   IsInt,
+  IsNumber,
+  IsOptional,
   IsPositive,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { CreateDetalleVentaDto } from '../../detalle_venta/dto/create-detalle_venta.dto';
 import { EstadoPagos } from 'src/enums/estado-pagos.enum';
 import { TipoPagos } from 'src/enums/tipo-pagos.enum';
+import { CreatePagoDto } from 'src/pago/dto/create-pago.dto';
 
 export class CreateVentaDto {
   @IsPositive()
   @IsInt()
   id_cliente: number;
 
-  @IsPositive()
+  @IsOptional()
   @IsInt()
-  id_empleado: number;
+  @IsPositive()
+  id_empleado?: number | null;
 
   @IsDate()
   @Type(() => Date)
@@ -32,7 +37,15 @@ export class CreateVentaDto {
   @IsEnum(TipoPagos)
   metodo_pago: TipoPagos;
 
+  @IsPositive()
+  @IsNumber()
+  @Min(0.01)
+  total?: number;
+
   @IsEnum(EstadoPagos)
   estado_pago: EstadoPagos;
-}
 
+  @Type(() => CreatePagoDto)
+  @ValidateNested()
+  pago?: CreatePagoDto;
+}

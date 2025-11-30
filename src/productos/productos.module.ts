@@ -7,10 +7,11 @@ import { EmpleadoModule } from 'src/empleado/empleado.module';
 
 @Module({
   imports: [
-  TypeOrmModule.forFeature([Producto]),
-  forwardRef(() => EmpleadoModule),
-],
+    TypeOrmModule.forFeature([Producto]),
+    forwardRef(() => EmpleadoModule),
+  ],
   controllers: [ProductosController],
   providers: [ProductosService],
+  exports: [ProductosService],
 })
 export class ProductosModule {}

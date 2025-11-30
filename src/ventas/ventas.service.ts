@@ -18,6 +18,12 @@ import { Repository } from 'typeorm';
 import { CreateVentaDto } from './dto/create-venta.dto';
 import { Producto } from '../productos/entities/producto.entity';
 import { Pago } from '../pago/entities/pago.entity';
+import { EstadoPagos } from 'src/enums/estado-pagos.enum';
+import { TipoPagos } from 'src/enums/tipo-pagos.enum';
+import { MPItem } from 'src/common/interfaces/mpitem.interface';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
+import { ClienteService } from 'src/cliente/cliente.service';
+import { CreateDetalleVentaDto } from 'src/detalle_venta/dto/create-detalle_venta.dto';
 
 @Injectable()
 export class VentasService {
@@ -32,6 +38,9 @@ export class VentasService {
     private productoRepository: Repository<Producto>,
     @InjectRepository(Pago)
     private pagoRepository: Repository<Pago>,
+    @InjectRepository(Usuario)
+    private usuarioRepository: Repository<Usuario>,
+    private readonly clienteService: ClienteService,
   ) {}
 
   /**
@@ -45,7 +54,6 @@ export class VentasService {
 
   async create(createVentaDto: CreateVentaDto): Promise<Venta> {
     try {
-      // 0️⃣ Validar que haya al menos un detalle
       if (!createVentaDto.detalles || createVentaDto.detalles.length === 0) {
         throw new BadRequestException(
           'La venta debe tener al menos un detalle',
@@ -58,9 +66,11 @@ export class VentasService {
       });
       if (!cliente) throw new NotFoundException('Cliente no encontrado');
 
-      const empleado = await this.empleadoRepository.findOneBy({
-        id: createVentaDto.id_empleado,
-      });
+      const empleado = createVentaDto.id_empleado
+        ? await this.empleadoRepository.findOne({
+            where: { id: createVentaDto.id_empleado },
+          })
+        : null;
       if (!empleado) throw new NotFoundException('Empleado no encontrado');
 
       // 2️⃣ Transformar fecha
@@ -123,48 +133,72 @@ export class VentasService {
       throw error;
     }
   }
-  /**
-   * Busca y devuelve todas las ventas.
-   * @returns Lista de todas las ventas.
-   */
-async findAll(): Promise<Venta[]> {
-  return this.ventaRepository.find({
-    relations: [
-      'cliente',
-      'empleado',
-      'detalles',
-      'detalles.producto',
-      'pago'
-    ],
-  });
-}
+  public async crearVentaDesdeMercadoPago(
+    paymentIdMP: string,
+    referenciaOrden: string,
+    clienteEmail: string,
+    itemsComprados: MPItem[],
+  ): Promise<Venta> {
+    const ventaExistente = await this.pagoRepository.findOne({
+      where: { paymentIdMP },
+      relations: ['venta'],
+    });
 
-  /**
-   * Busca y devuelve una venta por su ID.
-   * @param id - ID de la venta a buscar.
-   * @returns La venta encontrada.
-   * @throws NotFoundException si la venta no es encontrada.
-   * @throws InternalServerErrorException si ocurre un error interno al buscar la venta.
-   */
-async findOne(id: number): Promise<Venta> {
-  const venta = await this.ventaRepository.findOne({
-    where: { id_compra: id },
-    relations: [
-      'cliente',
-      'empleado',
-      'detalles',
-      'detalles.producto',
-      'pago'
-    ],
-  });
+    if (ventaExistente) {
+      console.log(`⚠ Venta ya registrada para el pago ${paymentIdMP}`);
+      return ventaExistente.venta;
+    }
 
-  if (!venta) {
-    throw new NotFoundException(`Venta con ID ${id} no encontrada`);
+    const cliente =
+      await this.clienteService.encontrarOCrearCliente(clienteEmail);
+
+    const detallesMapeados: CreateDetalleVentaDto[] = [];
+
+    for (const item of itemsComprados) {
+      const idProducto = parseInt(item.id);
+
+      const producto = await this.productoRepository.findOne({
+        where: { id: idProducto },
+      });
+
+      if (!producto) {
+        console.error(`Producto con ID ${idProducto} no existe. Ignorado.`);
+        continue;
+      }
+
+      detallesMapeados.push({
+        id_producto: idProducto,
+        cantidad: item.quantity,
+      });
+    }
+
+    const createVentaDto: CreateVentaDto = {
+      id_cliente: cliente.id,
+      id_empleado: null,
+      fecha: new Date(),
+      metodo_pago: TipoPagos.TRANSFERENCIA,
+      estado_pago: EstadoPagos.APROBADO,
+      detalles: detallesMapeados,
+    };
+
+    const ventaGuardada = await this.create(createVentaDto);
+
+    let pago = await this.pagoRepository.findOneBy({
+      venta: { id_compra: ventaGuardada.id_compra },
+    });
+
+    if (!pago) {
+      pago = this.pagoRepository.create({
+        paymentIdMP,
+        venta: ventaGuardada,
+      });
+    }
+
+    pago.paymentIdMP = paymentIdMP;
+    await this.pagoRepository.save(pago);
+
+    return ventaGuardada;
   }
-
-  return venta;
-}
-
 
   /**
    * Actualiza una venta existente.
@@ -193,6 +227,25 @@ async findOne(id: number): Promise<Venta> {
         'Error interno al actualizar la venta',
       );
     }
+  }
+
+  async findAll(): Promise<Venta[]> {
+    return this.ventaRepository.find({
+      relations: ['cliente', 'empleado', 'detalles', 'pago'],
+    });
+  }
+
+  async findOne(id: number): Promise<Venta> {
+    const venta = await this.ventaRepository.findOne({
+      where: { id_compra: id },
+      relations: ['cliente', 'empleado', 'detalles', 'pago'],
+    });
+
+    if (!venta) {
+      throw new NotFoundException(`Venta con ID ${id} no encontrada`);
+    }
+
+    return venta;
   }
 
   /**

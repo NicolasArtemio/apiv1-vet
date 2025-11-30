@@ -27,8 +27,10 @@ export class Pago {
   @Column('enum', { enum: EstadoPagos })
   estado_pago: EstadoPagos;
 
+  @Column({ type: 'varchar', length: 50, unique: true })
+  paymentIdMP: string;
+
   @ManyToOne(() => Venta, (venta) => venta.pago, { eager: true })
   @JoinColumn({ name: 'id_venta' })
   venta: Venta;
 }
-

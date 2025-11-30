@@ -1,17 +1,16 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Preference, MercadoPagoConfig } from 'mercadopago';
+import { MPItem } from 'src/common/interfaces/mpitem.interface';
 import { MERCADO_PAGO_CLIENT } from 'src/mercadopago/mercadopago.provider';
+import { ProductosService } from 'src/productos/productos.service';
+import { VentasService } from 'src/ventas/ventas.service';
 
-// 🛑 PASO 1: DEFINIR INTERFACES
-// Asegúrate de que estas interfaces estén definidas en un archivo accesible (ej: types.ts)
-// La interfaz Message es CRÍTICA para que `this.messages` se tipifique correctamente
 interface Message {
   id: string;
   text: string;
   createdAt: Date;
 }
 
-// La interfaz para los ítems del carrito (debe coincidir con ProductoCheckoutDto)
 interface ProductoCheckoutDto {
   id: string;
   title: string;
@@ -24,34 +23,54 @@ export class MessageService {
   constructor(
     @Inject(MERCADO_PAGO_CLIENT)
     private readonly mercadopagoClient: MercadoPagoConfig,
-  ) {} // 🛑 CORRECCIÓN TS: Tipar la propiedad `messages` para evitar errores de tipo 'never'
+    // 🎯 Inyectar VentaService para usar la lógica de DB
+    private readonly ventaService: VentasService,
+    private readonly productoService: ProductosService,
+  ) {}
 
   private messages: Message[] = [];
-
-  // ----------------------------------------------------
-  // 🎯 NUEVA FUNCIONALIDAD: CARRITO DE COMPRAS
-  // ----------------------------------------------------
 
   /**
    * Crea una preferencia de pago usando un array de ítems (desde el carrito).
    */
+
   public async createPreferenceFromItems(
     items: ProductoCheckoutDto[],
   ): Promise<string> {
-    // El mapeo es simple ya que ProductoCheckoutDto coincide con la estructura de MP
-    const mpItems = items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      unit_price: item.unit_price,
-      quantity: item.quantity,
-    }));
+    // 🛑 CORRECCIÓN: Usar Promise.all y mapeo asíncrono
+    const mpItemsPromises = items.map(async (itemDelFront) => {
+      // 🛑 CORRECCIÓN DE ID: Convertir a string antes de parseInt para evitar el error 'any'
+      const idString = itemDelFront.id.toString();
+
+      // Convertir el ID a número (number) para buscarlo en la DB
+      const idProductoNum = parseInt(idString);
+
+      const productoDB = await this.productoService.findOne(idProductoNum); // <-- Asumimos que findOne espera number
+
+      if (!productoDB) {
+        throw new NotFoundException(
+          `Producto con ID ${itemDelFront.id} no encontrado.`,
+        );
+      }
+
+      // 2. Construir el ítem de MP usando los datos verificados de la DB
+      return {
+        id: productoDB.id.toString(),
+        title: productoDB.descripcion,
+        // 🛑 CORRECCIÓN: Usamos parseFloat() O Number() para garantizar que sea un número.
+        // Esto resuelve el error 400 de Mercado Pago.
+        unit_price: Number(productoDB.precio),
+        quantity: itemDelFront.quantity,
+      };
+    });
+    // 3. Esperar que todas las promesas de búsqueda se completen
+    const mpItems = await Promise.all(mpItemsPromises);
 
     const preference = await new Preference(this.mercadopagoClient).create({
       body: {
-        items: mpItems,
-
+        items: mpItems, // Usar los items sincronizados
         notification_url:
-          'https://tu-dominio.com/api/mercadopago/notifications',
+          'https://apiv1-vet.onrender.com/api/v1/mercadopago/notifications',
       },
     });
 
@@ -60,13 +79,11 @@ export class MessageService {
     }
 
     return preference.init_point;
-  } /**
+  }
+
+  /**
    * Crea una preferencia de pago (versión de mensaje único).
    */
-
-  // ----------------------------------------------------
-  // MANTENIMIENTO (Método de mensaje único - Puedes eliminar si no lo usas)
-  // ----------------------------------------------------
 
   async createPaymentPreference(text: string): Promise<string> {
     const preference = await new Preference(this.mercadopagoClient).create({
@@ -80,7 +97,7 @@ export class MessageService {
           },
         ],
         notification_url:
-          'https://tu-dominio.com/api/mercadopago/notifications',
+          'https://apiv1-vet.onrender.com/api/v1/mercadopago/notifications',
         metadata: {
           text,
         },
@@ -92,19 +109,46 @@ export class MessageService {
     }
 
     return preference.init_point;
-  } /**
-   * Agrega el mensaje a la "DB" (simulación) después de la aprobación.
-   */ // 🛑 CORRECCIÓN ESLint: Se elimina 'async'
+  }
 
-  // ----------------------------------------------------
-  // 🛑 CORRECCIONES CRÍTICAS DE ESLINT/TS (Persistencia)
-  // ----------------------------------------------------
+  /**
+   * Guarda los datos de una orden aprobada en la DB (simulación/real).
+   * Este método resuelve el error de tipado en el MercadoPagoController.
+   */
+
+  public async guardarOrdenAprobada(
+    // 🛑 Hacer el método ASYNC
+    paymentIdMP: string,
+    referenciaOrden: string,
+    clienteEmail: string,
+    itemsComprados: MPItem[],
+  ) {
+    // 🛑 Reemplazar la simulación con la llamada al VentaService
+    const ventaGuardada = await this.ventaService.crearVentaDesdeMercadoPago(
+      paymentIdMP,
+      referenciaOrden,
+      clienteEmail,
+      itemsComprados,
+    );
+
+    // Opcional: Mantener un log para confirmar que la persistencia fue exitosa
+    console.log(
+      `[DB REAL LOG] Venta #${ventaGuardada.id_compra} creada. MP ID: ${paymentIdMP}`,
+    );
+
+    // 🛑 Opcional: Si quieres mantener el historial de mensajes interno,
+    // puedes seguir usando addMessage, pero ya no es la lógica central.
+    // this.addMessage(paymentIdMP, referenciaOrden);
+  }
+  /**
+   * Agrega el mensaje a la "DB" (simulación) después de la aprobación.
+   */
 
   addMessage(messageId: string, text: string) {
     if (this.messages.some((msg) => msg.id === messageId)) {
       console.log(`Mensaje con ID ${messageId} ya existe. Saltando.`);
       throw new Error('Message already added');
-    } // El tipado y la estructura ahora funcionan correctamente
+    }
 
     const newMessage: Message = { id: messageId, text, createdAt: new Date() };
 
@@ -112,7 +156,7 @@ export class MessageService {
     console.log('Nuevo mensaje agregado:', newMessage);
   } /**
    * Obtiene la lista de mensajes.
-   */ // 🛑 CORRECCIÓN ESLint: Se elimina 'async'
+   */
 
   listMessages(): Message[] {
     return this.messages;

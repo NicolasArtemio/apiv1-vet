@@ -36,10 +36,7 @@ export class VentasController {
       await this.empleadoService.findOneByUsuarioId(userId);
     return perfilAutenticado?.especialidad === 'Admin';
   }
-
   @Post()
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Rol.EMPLEADO)
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createVentaDto: CreateVentaDto) {
     return this.ventasService.create(createVentaDto);

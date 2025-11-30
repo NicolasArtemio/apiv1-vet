@@ -1,54 +1,84 @@
 import { Controller, Post, Body, HttpCode, Inject } from '@nestjs/common';
 import MercadoPagoConfig, { Payment } from 'mercadopago';
-import { MessageService } from '../message/message.service';
 import { MERCADO_PAGO_CLIENT } from './mercadopago.provider';
+import { VentasService } from 'src/ventas/ventas.service';
+import { MPItem } from 'src/common/interfaces/mpitem.interface';
+export interface MPMetaData {
+  email_cliente?: string;
+  referenciaOrden?: string;
+  items?: MPItem[];
+}
 
-interface MessageMetadata {
-  text: string;
+export interface MpNotificationBody {
+  type: string;
+  data: { id: number };
 }
 
 @Controller('mercadopago')
 export class MercadoPagoController {
   constructor(
-    private readonly messageService: MessageService,
+    private readonly ventaService: VentasService,
     @Inject(MERCADO_PAGO_CLIENT)
     private readonly mercadopagoClient: MercadoPagoConfig,
   ) {}
 
   @Post('notifications')
   @HttpCode(200)
-  async handleNotification(@Body() body: { data?: { id?: string } }) {
-    console.log('Notificación de Mercado Pago recibida:', body);
+  async handleNotification(@Body() body: MpNotificationBody) {
+    console.log('📩 Notificación recibida:', body);
+
+    // Aceptar Mercado Pago real y Postman
+    if (body.type !== 'payment' && body.type !== 'test') {
+      console.log('🔹 Notificación ignorada. Tipo:', body.type);
+      return { status: 'Ignored' };
+    }
 
     const paymentId = body.data?.id;
 
     if (!paymentId) {
-      console.error('Notificación sin ID de pago');
-      return;
+      console.error('❌ Notificación sin ID');
+      return { status: 'No payment ID' };
     }
 
     try {
-      //  CORRECCIÓN 2: Usar this.mercadopagoClient
+      // Obtener pago desde Mercado Pago
       const payment = await new Payment(this.mercadopagoClient).get({
         id: paymentId,
       });
 
+      console.log(`💳 Pago ${paymentId} recibido. Estado: ${payment.status}`);
+
       if (payment.status === 'approved') {
-        const metadata = payment.metadata as unknown as MessageMetadata;
-        const messageText: string = metadata.text;
+        const metadata = payment.metadata as MPMetaData;
 
-        // Nota: Cambié la re-declaración de paymentId a una constante si es necesario,
-        // pero la validación 'payment.id!' ya es correcta en el contexto.
-        const approvedPaymentId: string = payment.id!.toString();
+        const clienteEmail =
+          metadata?.email_cliente ||
+          payment.payer?.email ||
+          'email-no-disponible';
 
-        // Notamos que la llamada al servicio NO usa await (asumiendo que es síncrono como corregimos)
-        this.messageService.addMessage(approvedPaymentId, messageText);
-      } else {
-        console.log(`Pago ${paymentId} no aprobado. Estado: ${payment.status}`);
+        const detalles: MPItem[] = metadata.items || [];
+        const referenciaOrden = metadata.referenciaOrden || '';
+
+        console.log('🧾 Datos reconstruidos:', {
+          referenciaOrden,
+          clienteEmail,
+          detalles,
+        });
+
+        const venta = await this.ventaService.crearVentaDesdeMercadoPago(
+          payment.id!.toString(),
+          referenciaOrden,
+          clienteEmail,
+          detalles,
+        );
+
+        console.log(`✅ Venta guardada. ID: ${venta.id_compra}`);
       }
+
+      return { status: 'OK' };
     } catch (error) {
-      console.error('Error al procesar la notificación de pago:', error);
-      throw error;
+      console.error('🔥 Error procesando notificación:', error);
+      return { status: 'Error' };
     }
   }
 }
