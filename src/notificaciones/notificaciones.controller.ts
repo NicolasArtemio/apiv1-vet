@@ -22,10 +22,10 @@ export class NotificacionesController {
     return this.notificacionesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNotificacioneDto: UpdateNotificacioneDto) {
-    return this.notificacionesService.update(+id, updateNotificacioneDto);
-  }
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateNotificacioneDto: UpdateNotificacioneDto) {
+  //   return this.notificacionesService.update(+id, updateNotificacioneDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

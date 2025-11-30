@@ -70,35 +70,35 @@ export class NotificacionesService {
     }
   }
 
-  async update(
-    id_notificaciones: number,
-    UpdateMensajeDto: UpdateNotificacioneDto,
-  ): Promise<Notificacion> {
-    if (id_notificaciones <= 0) {
-      throw new BadRequestException('El ID debe ser un número positivo');
-    }
-    try {
-      const notificacion = await this.notificacionesRepository.findOneBy({
-        id_notificaciones,
-      });
-      if (!notificacion) {
-        throw new HttpException(
-          'notificacion no fue encontrado',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      const updateNotificacion = Object.assign(
-        notificacion,
-        UpdateNotificacioneDto,
-      );
-      return this.notificacionesRepository.save(updateNotificacion);
-    } catch (error) {
-      console.error('Error al buscar el notificacion', error);
-      throw new InternalServerErrorException(
-        `No se encontro el notificacion con el id ${id_notificaciones}`,
-      );
-    }
-  }
+  // async update(
+  //   id_notificaciones: number,
+  //   updateNotificacioneDto: UpdateNotificacioneDto,
+  // ): Promise<Notificacion> {
+  //   if (id_notificaciones <= 0) {
+  //     throw new BadRequestException('El ID debe ser un número positivo');
+  //   }
+  //   try {
+  //     const notificacion = await this.notificacionesRepository.findOneBy({
+  //       id_notificaciones,
+  //     });
+  //     if (!notificacion) {
+  //       throw new HttpException(
+  //         'notificacion no fue encontrado',
+  //         HttpStatus.BAD_REQUEST,
+  //       );
+  //     }
+  //     const updateNotificacion = Object.assign(
+  //       notificacion,
+  //       UpdateNotificacioneDto,
+  //     );
+  //     return this.notificacionesRepository.save(updateNotificacion);
+  //   } catch (error) {
+  //     console.error('Error al buscar el notificacion', error);
+  //     throw new InternalServerErrorException(
+  //       `No se encontro el notificacion con el id ${id_notificaciones}`,
+  //     );
+  //   }
+  // }
 
   async remove(id_notificaciones: number): Promise<Notificacion | null> {
     if (id_notificaciones <= 0) {
@@ -110,14 +110,14 @@ export class NotificacionesService {
       });
       if (!notificacion) {
         throw new HttpException(
-          'Cliente no encontrado',
+          'Notificacion no encontrada',
           HttpStatus.BAD_REQUEST,
         );
       }
       return this.notificacionesRepository.remove(notificacion);
     } catch (error) {
       throw new InternalServerErrorException(
-        `No se encontro el cliente con el id ${id_notificaciones}`,
+        `No se encontro la notificacion con el id ${id_notificaciones}`,
       );
     }
   }
