@@ -10,25 +10,53 @@ import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Turno } from './entities/turno.entity';
+import { NotificacionesGateway } from 'src/notificaciones/notificaciones.gateway';
+import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
 
 @Injectable()
 export class TurnoService {
   constructor(
     @InjectRepository(Turno)
     private readonly turnoRepository: Repository<Turno>,
+    private readonly notificacionesService: NotificacionesService,
+    private readonly notificacionesGateway: NotificacionesGateway,
   ) {}
 
-  async create(createTurnoDto: CreateTurnoDto): Promise<Turno> {
-    const turno = this.turnoRepository.create(createTurnoDto);
-    try {
-      return await this.turnoRepository.save(turno);
-    } catch (error) {
-      console.error('Error al crear el turno', error);
-      throw new InternalServerErrorException(
-        'Error al crear el turno. Por favor, inténtelo de nuevo más tarde.',
-      );
-    }
+async create(
+  createTurnoDto: CreateTurnoDto,
+  usuarioId: number,
+): Promise<Turno> {
+
+  // 1. Crear turno con relación al usuario
+  const turno = this.turnoRepository.create({
+    ...createTurnoDto,
+    usuario: { id: usuarioId },
+  });
+
+  try {
+    // 2. Guardar el turno
+    const turnoCreado = await this.turnoRepository.save(turno);
+
+    // 3. Crear la notificación
+    const notificacion = await this.notificacionesService.crearNotificacion({
+      usuarioId: usuarioId,
+      titulo: 'Nuevo turno creado',
+      mensaje: `Se creó un turno para el día ${turnoCreado.fecha_turno}`,
+    });
+
+    // 4. Enviar notificación por websockets
+    this.notificacionesGateway.enviarNotificacionAUsuario(
+      usuarioId.toString(),
+      notificacion,
+    );
+
+    return turnoCreado;
+  } catch (error) {
+    console.error('Error al crear el turno', error);
+    throw new InternalServerErrorException('Error al crear el turno.');
   }
+}
+
   async findAll(): Promise<Turno[]> {
     return await this.turnoRepository.find();
   }

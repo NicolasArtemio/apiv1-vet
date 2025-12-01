@@ -10,6 +10,7 @@ import {
 import { Mascota } from '../../mascotas/entities/mascota.entity';
 import { EstadoTurno } from 'src/enums/estado-turno.enum';
 import { TipoTurno } from 'src/enums/tipo-turno.enum';
+import { Usuario } from 'src/usuario/entities/usuario.entity';
 
 @Entity()
 export class Turno {
@@ -37,4 +38,8 @@ export class Turno {
   @ManyToOne(() => Mascota, (mascota) => mascota.turno, { eager: true })
   @JoinColumn({ name: 'mascota_id' })
   mascota: Mascota;
+
+  @ManyToOne(() => Usuario, (usuario) => usuario.turnos)
+  @JoinColumn({ name: 'usuario_id' })
+  usuario: Usuario;
 }

@@ -10,6 +10,10 @@ import { EstadoTurno } from 'src/enums/estado-turno.enum';
 import { TipoTurno } from 'src/enums/tipo-turno.enum';
 
 export class CreateTurnoDto {
+  @IsNumber()
+  @IsOptional() // opcional porque lo vas a agregar desde el token
+  id_usuario?: number;
+
   @IsDateString()
   @IsNotEmpty()
   fecha_turno: Date;
@@ -17,7 +21,7 @@ export class CreateTurnoDto {
   @IsEnum(TipoTurno)
   tipo: TipoTurno;
 
-  @IsOptional() 
+  @IsOptional()
   @IsEnum(EstadoTurno)
   estado?: EstadoTurno;
 
