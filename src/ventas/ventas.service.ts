@@ -135,7 +135,7 @@ export class VentasService {
         titulo: 'Nueva venta registrada',
         mensaje: `Se generó una venta por $${ventaGuardada.total} del cliente ${cliente.nombre}`,
         tipo_noti: TipoNotificacion.VENTA,
-        usuarioId: cliente.usuario.id,
+        usuario_id: cliente.usuario.id,
       });
 
       // 7️⃣ Crear pago inicial
