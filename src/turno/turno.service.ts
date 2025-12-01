@@ -11,35 +11,48 @@ import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Turno } from './entities/turno.entity';
+import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
+import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
 
 @Injectable()
 export class TurnoService {
   constructor(
     @InjectRepository(Turno)
     private readonly turnoRepository: Repository<Turno>,
+    private readonly notificacionesService: NotificacionesService,
   ) {}
   async create(createTurnoDto: CreateTurnoDto): Promise<Turno> {
     try {
       const turno = this.turnoRepository.create(createTurnoDto);
-      return await this.turnoRepository.save(turno);
+      const nuevoTurno = await this.turnoRepository.save(turno);
+
+      await this.notificacionesService.createNotificacion({
+        titulo: 'Nuevo turno registrado',
+        mensaje: `Se creó un turno para la fecha ${nuevoTurno.fecha_turno.toLocaleString()}`,
+        tipo_noti: TipoNotificacion.TURNO,
+        usuario_id: nuevoTurno.usuario?.id || null,
+      });
+
+      return nuevoTurno;
     } catch (error) {
       console.error('Error mientras se crea el turno', error);
+
       if (typeof error === 'object' && error !== null) {
         const err = error as { code?: string; errno?: number };
 
         if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
           throw new ConflictException(
-            'Ya existe el turno con datos duplicados',
+            'Ya existe un turno con datos duplicados',
           );
         }
         if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
           throw new BadRequestException('Datos referenciados no existen');
         }
       }
+
       throw new InternalServerErrorException('Error al crear turno');
     }
   }
-
   async findAll(): Promise<Turno[]> {
     return await this.turnoRepository.find();
   }
