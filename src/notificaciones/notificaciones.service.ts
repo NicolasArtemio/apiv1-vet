@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Notificacion } from './entities/notificacione.entity';
+import { Notificacion } from './entities/notificacion.entity';
 import { Repository } from 'typeorm';
 import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
 import { NotificacionesGateway } from './notificaciones.gateway';

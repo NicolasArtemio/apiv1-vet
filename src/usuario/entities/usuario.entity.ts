@@ -8,12 +8,12 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Mensaje } from '../../mensaje/entities/mensaje.entity';
-import { Notificacion } from '../../notificaciones/entities/notificacione.entity';
+import { Notificacion } from '../../notificaciones/entities/notificacion.entity';
 import { Empleado } from '../../empleado/entities/empleado.entity';
 import { Cliente } from '../../cliente/entities/cliente.entity';
 import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
-import { Rol } from 'src/enums/rol.enum';
-import { Turno } from 'src/turno/entities/turno.entity';
+import { Rol } from '../../enums/rol.enum';
+import { Turno } from '../../turno/entities/turno.entity';
 
 @Entity()
 export class Usuario {

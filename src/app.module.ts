@@ -20,13 +20,13 @@ import { AuthModule } from './auth/auth.module';
 import { MessageModule } from './message/message.module';
 import { CheckoutModule } from './checkout/checkout.module';
 import { MercadoPagoModule } from './mercadopago/mercadopago.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
+
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -38,9 +38,11 @@ import { MercadoPagoModule } from './mercadopago/mercadopago.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
-        synchronize: true, // ¡no usar en producción!
+        synchronize: true,
       }),
     }),
+
+    // SOLO UNA VEZ CADA MÓDULO
     VentasModule,
     PagoModule,
     DetalleVentaModule,
@@ -50,12 +52,6 @@ import { MercadoPagoModule } from './mercadopago/mercadopago.module';
     UsuarioModule,
     ClienteModule,
     EmpleadoModule,
-
-    VentasModule,
-    PagoModule,
-    DetalleVentaModule,
-    ProductosModule,
-    InventarioModule,
     MensajeModule,
     TurnoModule,
     NotificacionesModule,

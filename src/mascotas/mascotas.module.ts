@@ -1,24 +1,17 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { MascotasService } from './mascotas.service';
-import { MascotasController } from './mascotas.controller';
-import { Mascota } from './entities/mascota.entity';
-import { Turno } from '../turno/entities/turno.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TurnoService } from '../turno/turno.service';
-import { ClienteModule } from '../cliente/cliente.module';
-import { ClienteService } from '../cliente/cliente.service';
-import { Cliente } from '../cliente/entities/cliente.entity';
-import { UsuarioModule } from '../usuario/usuario.module';
-import { NotificacionesModule } from '../notificaciones/notificaciones.module';
-
+import { ClienteModule } from 'src/cliente/cliente.module';
+import { Mascota } from './entities/mascota.entity';
+import { MascotasController } from './mascotas.controller';
+import { MascotasService } from './mascotas.service';
+import { Cliente } from 'src/cliente/entities/cliente.entity';
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Mascota, Turno, Cliente]),
+    TypeOrmModule.forFeature([Mascota, Cliente]),
     forwardRef(() => ClienteModule),
-    UsuarioModule,
-    NotificacionesModule,
   ],
   controllers: [MascotasController],
-  providers: [MascotasService, TurnoService, ClienteService],
+  providers: [MascotasService],
+  exports: [MascotasService],
 })
 export class MascotasModule {}
