@@ -29,5 +29,5 @@ export class CreateNotificacioneDto {
 
   @IsInt()
   @IsPositive()
-  usuario_id: number; // <-- ESTE ES EL CORRECTO
+  usuario_id: number | null;
 }
