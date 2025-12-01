@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
@@ -13,6 +14,8 @@ import { Repository } from 'typeorm';
 import { Turno } from './entities/turno.entity';
 import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
 import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
+import { Mascota } from 'src/mascotas/entities/mascota.entity';
+import { EstadoTurno } from 'src/enums/estado-turno.enum';
 
 @Injectable()
 export class TurnoService {
@@ -20,10 +23,32 @@ export class TurnoService {
     @InjectRepository(Turno)
     private readonly turnoRepository: Repository<Turno>,
     private readonly notificacionesService: NotificacionesService,
+    @InjectRepository(Mascota)
+    private readonly mascotaRepository: Repository<Mascota>,
   ) {}
   async create(createTurnoDto: CreateTurnoDto): Promise<Turno> {
     try {
-      const turno = this.turnoRepository.create(createTurnoDto);
+      const { mascota_id, ...restoDatosTurno } = createTurnoDto;
+
+      const mascota = await this.mascotaRepository.findOne({
+        where: { id: mascota_id },
+
+        relations: ['cliente'],
+      });
+
+      if (!mascota) {
+        throw new NotFoundException(
+          `Mascota con ID ${mascota_id} no encontrada`,
+        );
+      }
+
+      const turno = this.turnoRepository.create({
+        ...restoDatosTurno,
+        mascota: mascota,
+        usuario: mascota.cliente,
+        estado: EstadoTurno.PENDIENTE,
+      });
+
       const nuevoTurno = await this.turnoRepository.save(turno);
 
       await this.notificacionesService.createNotificacion({
@@ -36,20 +61,7 @@ export class TurnoService {
       return nuevoTurno;
     } catch (error) {
       console.error('Error mientras se crea el turno', error);
-
-      if (typeof error === 'object' && error !== null) {
-        const err = error as { code?: string; errno?: number };
-
-        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException(
-            'Ya existe un turno con datos duplicados',
-          );
-        }
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
-        }
-      }
-
+      // ...
       throw new InternalServerErrorException('Error al crear turno');
     }
   }
@@ -118,6 +130,7 @@ export class TurnoService {
     } catch (error) {
       throw new InternalServerErrorException(
         `No se encontro el turno con el id ${id_turno}`,
+        { cause: error },
       );
     }
   }
