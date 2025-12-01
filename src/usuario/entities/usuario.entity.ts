@@ -13,6 +13,7 @@ import { Empleado } from '../../empleado/entities/empleado.entity';
 import { Cliente } from '../../cliente/entities/cliente.entity';
 import { EstadoUsuario } from 'src/enums/estado-usuario.enum';
 import { Rol } from 'src/enums/rol.enum';
+import { Turno } from 'src/turno/entities/turno.entity';
 
 @Entity()
 export class Usuario {
@@ -48,4 +49,7 @@ export class Usuario {
 
   @OneToOne(() => Cliente, (cliente) => cliente.usuario)
   cliente: Cliente;
+
+  @OneToMany(() => Turno, (turno) => turno.usuario)
+  turnos: Turno[];
 }

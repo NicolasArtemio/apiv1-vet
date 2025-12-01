@@ -3,10 +3,14 @@ import { TurnoService } from './turno.service';
 import { TurnoController } from './turno.controller';
 import { Turno } from './entities/turno.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
+import { NotificacionesGateway } from 'src/notificaciones/notificaciones.gateway';
+import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
 
 @Module({
-   imports: [TypeOrmModule.forFeature([Turno])],
+  imports: [TypeOrmModule.forFeature([Turno, Notificacion])],
   controllers: [TurnoController],
-  providers: [TurnoService],
+  providers: [TurnoService, NotificacionesService, NotificacionesGateway],
+  exports: [TurnoService],
 })
 export class TurnoModule {}
