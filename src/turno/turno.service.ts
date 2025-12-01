@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -66,7 +65,9 @@ export class TurnoService {
     }
   }
   async findAll(): Promise<Turno[]> {
-    return await this.turnoRepository.find();
+    return await this.turnoRepository.find({
+      relations: ['mascota', 'mascota.cliente'],
+    });
   }
 
   async findOne(id_turno: number): Promise<Turno> {
@@ -85,6 +86,7 @@ export class TurnoService {
     } catch (error) {
       throw new InternalServerErrorException(
         `No se encontro el turno con el id ${id_turno}`,
+        { cause: error },
       );
     }
   }
