@@ -27,14 +27,13 @@ export class TurnoService {
     createTurnoDto: CreateTurnoDto,
     usuarioId: number,
   ): Promise<Turno> {
-    // crear el objeto Turno con relación al usuario
     const turno = this.turnoRepository.create({
       ...createTurnoDto,
-      usuario: { id: usuarioId }, // relación
+      usuario: { id: usuarioId },
     });
 
     try {
-      const turnoCreado = await this.turnoRepository.save(turno); // devuelve un objeto Turno
+      const turnoCreado = await this.turnoRepository.save(turno);
 
       const notificacion = await this.notificacionesService.createNotificacion({
         usuario_id: usuarioId,
