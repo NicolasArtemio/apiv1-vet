@@ -11,6 +11,8 @@ import { Pago } from '../pago/entities/pago.entity';
 import { EmpleadoModule } from 'src/empleado/empleado.module';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { ClienteModule } from 'src/cliente/cliente.module';
+import { Notificacion } from 'src/notificaciones/entities/notificacione.entity';
+import { NotificacionesModule } from 'src/notificaciones/notificaciones.module';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -21,9 +23,11 @@ import { ClienteModule } from 'src/cliente/cliente.module';
       Producto,
       Pago,
       Usuario,
+      Notificacion,
     ]),
     EmpleadoModule,
     ClienteModule,
+    NotificacionesModule,
   ],
   controllers: [VentasController],
   providers: [VentasService],

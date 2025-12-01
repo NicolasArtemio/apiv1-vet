@@ -1,8 +1,9 @@
 import {
   IsDateString,
   IsEnum,
-  IsNotEmpty,
+  IsInt,
   IsOptional,
+  IsPositive,
   IsString,
 } from 'class-validator';
 import { EstadoLectura } from 'src/enums/estado-lectura.enum';
@@ -10,22 +11,23 @@ import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
 
 export class CreateNotificacioneDto {
   @IsString()
-  @IsNotEmpty()
   titulo: string;
 
   @IsString()
-  @IsNotEmpty()
   mensaje: string;
 
   @IsEnum(TipoNotificacion)
-  @IsNotEmpty()
   tipo_noti: TipoNotificacion;
 
-  @IsEnum(EstadoLectura)
   @IsOptional()
+  @IsEnum(EstadoLectura)
   leido?: EstadoLectura;
 
-  @IsDateString()
   @IsOptional()
+  @IsDateString()
   fecha_lectura?: Date;
+
+  @IsInt()
+  @IsPositive()
+  usuario_id: number; // <-- ESTE ES EL CORRECTO
 }

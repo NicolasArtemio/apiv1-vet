@@ -24,6 +24,8 @@ import { MPItem } from 'src/common/interfaces/mpitem.interface';
 import { Usuario } from 'src/usuario/entities/usuario.entity';
 import { ClienteService } from 'src/cliente/cliente.service';
 import { CreateDetalleVentaDto } from 'src/detalle_venta/dto/create-detalle_venta.dto';
+import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
+import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
 
 @Injectable()
 export class VentasService {
@@ -41,6 +43,7 @@ export class VentasService {
     @InjectRepository(Usuario)
     private usuarioRepository: Repository<Usuario>,
     private readonly clienteService: ClienteService,
+    private readonly notificacionesService: NotificacionesService,
   ) {}
 
   /**
@@ -127,6 +130,13 @@ export class VentasService {
 
       // 6️⃣ Guardar venta
       const ventaGuardada = await this.ventaRepository.save(venta);
+
+      await this.notificacionesService.createNotificacion({
+        titulo: 'Nueva venta registrada',
+        mensaje: `Se generó una venta por $${ventaGuardada.total} del cliente ${cliente.nombre}`,
+        tipo_noti: TipoNotificacion.VENTA,
+        usuarioId: cliente.usuario.id,
+      });
 
       // 7️⃣ Crear pago inicial
       const pago = this.pagoRepository.create({
