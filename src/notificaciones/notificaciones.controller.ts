@@ -13,7 +13,7 @@ import {
 import { NotificacionesService } from './notificaciones.service';
 import { CreateNotificacioneDto } from './dto/create-notificacione.dto';
 import { UpdateNotificacioneDto } from './dto/update-notificacione.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/guards/uth/auth.guard';
 
 @Controller('notificaciones')
 export class NotificacionesController {

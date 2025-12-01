@@ -13,7 +13,7 @@ import {
 import { PagoService } from './pago.service';
 import { CreatePagoDto } from './dto/create-pago.dto';
 import { UpdatePagoDto } from './dto/update-pago.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/guards/uth/auth.guard';
 
 @Controller('pago')
 export class PagoController {

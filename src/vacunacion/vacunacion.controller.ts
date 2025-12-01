@@ -13,7 +13,7 @@ import {
 import { VacunacionService } from './vacunacion.service';
 import { CreateVacunacionDto } from './dto/create-vacunacion.dto';
 import { UpdateVacunacionDto } from './dto/update-vacunacion.dto';
-import { AuthGuard } from '@nestjs/passport';
+import { AuthGuard } from 'src/guards/uth/auth.guard';
 
 @Controller('vacunacion')
 export class VacunacionController {
