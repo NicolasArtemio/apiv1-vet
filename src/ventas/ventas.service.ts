@@ -248,7 +248,7 @@ export class VentasService {
   async findOne(id: number): Promise<Venta> {
     const venta = await this.ventaRepository.findOne({
       where: { id_compra: id },
-      relations: ['cliente', 'empleado', 'detalles', 'pago'],
+      relations: ['cliente', 'empleado', 'detalles', 'detalles.producto' ,'pago'],
     });
 
     if (!venta) {
