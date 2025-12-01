@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Cliente } from './entities/cliente.entity';
 import { MascotasModule } from '../mascotas/mascotas.module';
 import { UsuarioModule } from '../usuario/usuario.module';
-import { EmpleadoModule } from 'src/empleado/empleado.module';
+import { EmpleadoModule } from '../empleado/empleado.module';
 
 @Module({
   imports: [

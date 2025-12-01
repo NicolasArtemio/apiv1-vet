@@ -9,7 +9,7 @@ import { ClienteModule } from '../cliente/cliente.module';
 import { ClienteService } from '../cliente/cliente.service';
 import { Cliente } from '../cliente/entities/cliente.entity';
 import { UsuarioModule } from '../usuario/usuario.module';
-import { NotificacionesModule } from 'src/notificaciones/notificaciones.module';
+import { NotificacionesModule } from '../notificaciones/notificaciones.module';
 
 @Module({
   imports: [

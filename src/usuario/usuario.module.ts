@@ -15,11 +15,7 @@ import { NotificacionesModule } from 'src/notificaciones/notificaciones.module';
     NotificacionesModule, // OK
   ],
   controllers: [UsuarioController],
-  providers: [
-    UsuarioService,
-    MensajeService,
-    // ❌ NotificacionesService removido
-  ],
+  providers: [UsuarioService, MensajeService],
   exports: [TypeOrmModule, UsuarioService],
 })
 export class UsuarioModule {}
