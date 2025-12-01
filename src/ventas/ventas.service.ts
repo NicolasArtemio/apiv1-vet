@@ -109,6 +109,9 @@ export class VentasService {
         detalles.push(detalle);
 
         // Opcional: actualizar stock
+
+        producto.stock -= d.cantidad;
+        await this.productoRepository.save(producto);
       }
 
       // 5️⃣ Crear la venta
