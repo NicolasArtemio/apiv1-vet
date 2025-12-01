@@ -8,11 +8,13 @@ import { MensajeService } from '../mensaje/mensaje.service';
 import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { Notificacion } from '../notificaciones/entities/notificacione.entity';
 import { EmpleadoModule } from '../empleado/empleado.module';
+import { NotificacionesModule } from 'src/notificaciones/notificaciones.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Usuario, Mensaje, Notificacion]),
     forwardRef(() => EmpleadoModule),
+    NotificacionesModule,
   ],
   controllers: [UsuarioController],
   providers: [UsuarioService, MensajeService, NotificacionesService],
