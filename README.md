@@ -37,14 +37,12 @@ Roles y permisos de usuarios (Admin, Empleado, Cliente).
 
 Clonar el repositorio:
 
-git clone [https://github.com/tu-usuario/veterinaria-backend.git](https://github.com/NicolasArtemio/apiv1-vet.git)
-
+git clone https://github.com/NicolasArtemio/apiv1-vet.git
 
 Instalar dependencias:
 
-cd veterinaria-backend
+cd apiv1-vet
 npm install
-
 
 Configurar variables de entorno creando un archivo .env en la raíz del proyecto:
 
@@ -55,13 +53,11 @@ DATABASE_PASSWORD=tu_contraseña
 DATABASE_NAME=veterinaria
 JWT_SECRET=tu_secreto
 MERCADO_PAGO_TOKEN=tu_token
-PORT=3000
-
+PORT=4000
 
 Ejecutar migraciones de la base de datos:
 
 npm run typeorm migration:run
-
 
 Iniciar el servidor en modo desarrollo:
 
