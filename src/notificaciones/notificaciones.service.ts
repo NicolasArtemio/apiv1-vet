@@ -22,7 +22,7 @@ export class NotificacionesService {
     titulo: string;
     mensaje: string;
     tipo_noti: TipoNotificacion;
-    usuarioId: number;
+    usuario_id: number; // <-- corregido
   }): Promise<Notificacion> {
     try {
       // 1) Crear la entidad
@@ -30,7 +30,7 @@ export class NotificacionesService {
         titulo: params.titulo,
         mensaje: params.mensaje,
         tipo_noti: params.tipo_noti,
-        usuario: { id: params.usuarioId },
+        usuario: { id: params.usuario_id }, // <-- correcto
       });
 
       // 2) Guardar
@@ -38,7 +38,7 @@ export class NotificacionesService {
 
       // 3) ENVIAR POR WEBSOCKET
       this.gateway.enviarNotificacionAUsuario(
-        params.usuarioId.toString(),
+        params.usuario_id.toString(),
         guardada,
       );
 
@@ -48,15 +48,15 @@ export class NotificacionesService {
       throw new InternalServerErrorException('Error al crear notificaciones');
     }
   }
-
   async crearNotificacionVenta(params: {
     titulo: string;
     mensaje: string;
     tipo_noti: TipoNotificacion;
-    usuarioId: number;
+    usuario_id: number;
   }) {
     return this.createNotificacion(params);
   }
+
   async findAll(): Promise<Notificacion[]> {
     return await this.notificacionesRepository.find();
   }
