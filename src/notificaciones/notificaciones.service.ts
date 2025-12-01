@@ -1,128 +1,101 @@
 import {
   BadRequestException,
-  ConflictException,
-  HttpException,
-  HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
-import { CreateNotificacioneDto } from './dto/create-notificacione.dto';
-import { UpdateNotificacioneDto } from './dto/update-notificacione.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Notificacion } from './entities/notificacione.entity';
 import { Repository } from 'typeorm';
+import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
+import { NotificacionesGateway } from './notificaciones.gateway';
 
 @Injectable()
 export class NotificacionesService {
   constructor(
     @InjectRepository(Notificacion)
     private readonly notificacionesRepository: Repository<Notificacion>,
+    private readonly gateway: NotificacionesGateway,
   ) {}
-  async createNotificacion(
-    createNotificacioneDto: CreateNotificacioneDto,
-  ): Promise<Notificacion> {
-    try {
-      const notificacion = this.notificacionesRepository.create(
-        createNotificacioneDto,
-      );
-      return await this.notificacionesRepository.save(notificacion);
-    } catch (error) {
-      console.error('Error mientras se crea la notificacion', error);
-      if (typeof error === 'object' && error !== null) {
-        const err = error as { code?: string; errno?: number };
 
-        if (err.code === 'ER_DUP_ENTRY' || err.errno === 1062) {
-          throw new ConflictException(
-            'Ya existe un notificacion con datos duplicados',
-          );
-        }
-        if (err.code === 'ER_NO_REFERENCED_ROW_2' || err.errno === 1452) {
-          throw new BadRequestException('Datos referenciados no existen');
-        }
+  async createNotificacion(params: {
+    titulo: string;
+    mensaje: string;
+    tipo_noti: TipoNotificacion;
+    usuario_id: number | null;
+  }): Promise<Notificacion> {
+    try {
+      const usuarioRelacion = params.usuario_id
+        ? { id: params.usuario_id }
+        : null;
+
+      // 2) Crear la entidad
+      const notificacion = this.notificacionesRepository.create({
+        titulo: params.titulo,
+        mensaje: params.mensaje,
+        tipo_noti: params.tipo_noti,
+        usuario: usuarioRelacion,
+      });
+
+      // 3) Guardar
+      const guardada = await this.notificacionesRepository.save(notificacion);
+
+      if (params.usuario_id) {
+        this.gateway.enviarNotificacionAUsuario(
+          String(params.usuario_id),
+          guardada,
+        );
       }
+
+      return guardada;
+    } catch (error) {
+      console.error('Error mientras se crea la notificación', error);
       throw new InternalServerErrorException('Error al crear notificaciones');
     }
+  }
+
+  async crearNotificacionVenta(params: {
+    titulo: string;
+    mensaje: string;
+    tipo_noti: TipoNotificacion;
+    usuario_id: number | null;
+  }) {
+    return this.createNotificacion(params);
   }
 
   async findAll(): Promise<Notificacion[]> {
     return await this.notificacionesRepository.find();
   }
 
-  async findOne(id_notificaciones: number): Promise<Notificacion> {
-    if (id_notificaciones <= 0) {
+  async findOne(id: number): Promise<Notificacion> {
+    if (id <= 0) {
       throw new BadRequestException('El ID debe ser un número positivo');
     }
-    try {
-      const notificacion = await this.notificacionesRepository.findOneBy({
-        id_notificaciones,
-      });
-      if (!notificacion) {
-        throw new HttpException(
-          'La notificacion no fue encontrado',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return notificacion;
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `No se encontro el notificacion con el id ${id_notificaciones}`,
-        { cause: error },
-      );
+
+    const notificacion = await this.notificacionesRepository.findOneBy({
+      id_notificaciones: id,
+    });
+
+    if (!notificacion) {
+      throw new NotFoundException('Notificación no encontrada');
     }
+
+    return notificacion;
   }
 
-  // async update(
-  //   id_notificaciones: number,
-  //   updateNotificacioneDto: UpdateNotificacioneDto,
-  // ): Promise<Notificacion> {
-  //   if (id_notificaciones <= 0) {
-  //     throw new BadRequestException('El ID debe ser un número positivo');
-  //   }
-  //   try {
-  //     const notificacion = await this.notificacionesRepository.findOneBy({
-  //       id_notificaciones,
-  //     });
-  //     if (!notificacion) {
-  //       throw new HttpException(
-  //         'notificacion no fue encontrado',
-  //         HttpStatus.BAD_REQUEST,
-  //       );
-  //     }
-  //     const updateNotificacion = Object.assign(
-  //       notificacion,
-  //       UpdateNotificacioneDto,
-  //     );
-  //     return this.notificacionesRepository.save(updateNotificacion);
-  //   } catch (error) {
-  //     console.error('Error al buscar el notificacion', error);
-  //     throw new InternalServerErrorException(
-  //       `No se encontro el notificacion con el id ${id_notificaciones}`,
-  //     );
-  //   }
-  // }
+  async remove(id: number): Promise<Notificacion | null> {
+    if (id <= 0) {
+      throw new BadRequestException('El ID debe ser positivo');
+    }
 
-  async remove(id_notificaciones: number): Promise<Notificacion | null> {
-    if (id_notificaciones <= 0) {
-      throw new BadRequestException('El ID debe ser un número positivo');
+    const notificacion = await this.notificacionesRepository.findOneBy({
+      id_notificaciones: id,
+    });
+
+    if (!notificacion) {
+      throw new NotFoundException('Notificación no encontrada');
     }
-    try {
-      const notificacion = await this.notificacionesRepository.findOneBy({
-        id_notificaciones,
-      });
-      if (!notificacion) {
-        throw new HttpException(
-          'Notificacion no encontrada',
-          HttpStatus.BAD_REQUEST,
-        );
-      }
-      return this.notificacionesRepository.remove(notificacion);
-    } catch (error) {
-      throw new InternalServerErrorException(
-        `No se encontro el cliente con el id ${id_notificaciones}`,
-        {
-          cause: error,
-        },
-      );
-    }
+
+    return this.notificacionesRepository.remove(notificacion);
   }
 }
