@@ -75,6 +75,8 @@ npm run start:dev
 
 /api/v1/productos - Gestión de productos.
 
+/api/v1/mascotas - Gestión de mascotas.
+
 /api/v1/notificaciones - Enviar y recibir notificaciones.
 
 /api/v1/pagos - Integración con Mercado Pago.
