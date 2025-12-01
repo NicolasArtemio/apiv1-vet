@@ -3,4 +3,5 @@ export enum TipoNotificacion {
   ALERTA = 'alerta',
   RECORDATORIO = 'recordatorio',
   VENTA = 'venta',
+  TURNO = 'turno',
 }

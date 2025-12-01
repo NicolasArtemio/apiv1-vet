@@ -11,7 +11,7 @@ import { TipoTurno } from 'src/enums/tipo-turno.enum';
 
 export class CreateTurnoDto {
   @IsNumber()
-  @IsOptional() // opcional porque lo vas a agregar desde el token
+  @IsOptional()
   id_usuario?: number;
 
   @IsDateString()

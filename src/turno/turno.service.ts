@@ -12,6 +12,7 @@ import { Repository } from 'typeorm';
 import { Turno } from './entities/turno.entity';
 import { NotificacionesGateway } from 'src/notificaciones/notificaciones.gateway';
 import { NotificacionesService } from 'src/notificaciones/notificaciones.service';
+import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
 
 @Injectable()
 export class TurnoService {
@@ -22,40 +23,37 @@ export class TurnoService {
     private readonly notificacionesGateway: NotificacionesGateway,
   ) {}
 
-async create(
-  createTurnoDto: CreateTurnoDto,
-  usuarioId: number,
-): Promise<Turno> {
-
-  // 1. Crear turno con relación al usuario
-  const turno = this.turnoRepository.create({
-    ...createTurnoDto,
-    usuario: { id: usuarioId },
-  });
-
-  try {
-    // 2. Guardar el turno
-    const turnoCreado = await this.turnoRepository.save(turno);
-
-    // 3. Crear la notificación
-    const notificacion = await this.notificacionesService.crearNotificacion({
-      usuarioId: usuarioId,
-      titulo: 'Nuevo turno creado',
-      mensaje: `Se creó un turno para el día ${turnoCreado.fecha_turno}`,
+  async create(
+    createTurnoDto: CreateTurnoDto,
+    usuarioId: number,
+  ): Promise<Turno> {
+    // crear el objeto Turno con relación al usuario
+    const turno = this.turnoRepository.create({
+      ...createTurnoDto,
+      usuario: { id: usuarioId }, // relación
     });
 
-    // 4. Enviar notificación por websockets
-    this.notificacionesGateway.enviarNotificacionAUsuario(
-      usuarioId.toString(),
-      notificacion,
-    );
+    try {
+      const turnoCreado = await this.turnoRepository.save(turno); // devuelve un objeto Turno
 
-    return turnoCreado;
-  } catch (error) {
-    console.error('Error al crear el turno', error);
-    throw new InternalServerErrorException('Error al crear el turno.');
+      const notificacion = await this.notificacionesService.createNotificacion({
+        usuario_id: usuarioId,
+        titulo: 'Nuevo turno creado',
+        mensaje: `Se creó un turno para el día ${turnoCreado.fecha_turno.toISOString().split('T')[0]}`,
+        tipo_noti: TipoNotificacion.TURNO,
+      });
+
+      this.notificacionesGateway.enviarNotificacionAUsuario(
+        String(usuarioId),
+        notificacion,
+      );
+
+      return turnoCreado;
+    } catch (error) {
+      console.error('Error al crear el turno', error);
+      throw new InternalServerErrorException('Error al crear el turno.');
+    }
   }
-}
 
   async findAll(): Promise<Turno[]> {
     return await this.turnoRepository.find();

@@ -7,16 +7,19 @@ import {
   Param,
   Delete,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { TurnoService } from './turno.service';
 import { CreateTurnoDto } from './dto/create-turno.dto';
 import { UpdateTurnoDto } from './dto/update-turno.dto';
 import { AuthResponse } from 'src/common/interfaces/authResponse.interface';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('turno')
 export class TurnoController {
   constructor(private readonly turnoService: TurnoService) {}
   @Post()
+  @UseGuards(AuthGuard)
   create(@Body() createTurnoDto: CreateTurnoDto, @Req() req: AuthResponse) {
     const usuarioId = req.user.id;
     return this.turnoService.create(createTurnoDto, usuarioId);
