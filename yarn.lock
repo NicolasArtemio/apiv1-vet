@@ -882,81 +882,6 @@
   resolved "https://registry.npmjs.org/@lukeed/csprng/-/csprng-1.1.0.tgz"
   integrity sha512-Z7C/xXCiGWsg0KuKsHTKJxbWhpI3Vs5GwLfOean7MGyVFGqdRgBbAjOCh6u4bbjPc/8MJ2pZmK/0DLdCbivLDA==
 
-"@napi-rs/nice-android-arm-eabi@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-android-arm-eabi/-/nice-android-arm-eabi-1.0.4.tgz"
-  integrity sha512-OZFMYUkih4g6HCKTjqJHhMUlgvPiDuSLZPbPBWHLjKmFTv74COzRlq/gwHtmEVaR39mJQ6ZyttDl2HNMUbLVoA==
-
-"@napi-rs/nice-android-arm64@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-android-arm64/-/nice-android-arm64-1.0.4.tgz"
-  integrity sha512-k8u7cjeA64vQWXZcRrPbmwjH8K09CBnNaPnI9L1D5N6iMPL3XYQzLcN6WwQonfcqCDv5OCY3IqX89goPTV4KMw==
-
-"@napi-rs/nice-darwin-arm64@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-darwin-arm64/-/nice-darwin-arm64-1.0.4.tgz"
-  integrity sha512-GsLdQvUcuVzoyzmtjsThnpaVEizAqH5yPHgnsBmq3JdVoVZHELFo7PuJEdfOH1DOHi2mPwB9sCJEstAYf3XCJA==
-
-"@napi-rs/nice-darwin-x64@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-darwin-x64/-/nice-darwin-x64-1.0.4.tgz"
-  integrity sha512-1y3gyT3e5zUY5SxRl3QDtJiWVsbkmhtUHIYwdWWIQ3Ia+byd/IHIEpqAxOGW1nhhnIKfTCuxBadHQb+yZASVoA==
-
-"@napi-rs/nice-freebsd-x64@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-freebsd-x64/-/nice-freebsd-x64-1.0.4.tgz"
-  integrity sha512-06oXzESPRdXUuzS8n2hGwhM2HACnDfl3bfUaSqLGImM8TA33pzDXgGL0e3If8CcFWT98aHows5Lk7xnqYNGFeA==
-
-"@napi-rs/nice-linux-arm-gnueabihf@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-arm-gnueabihf/-/nice-linux-arm-gnueabihf-1.0.4.tgz"
-  integrity sha512-CgklZ6g8WL4+EgVVkxkEvvsi2DSLf9QIloxWO0fvQyQBp6VguUSX3eHLeRpqwW8cRm2Hv/Q1+PduNk7VK37VZw==
-
-"@napi-rs/nice-linux-arm64-gnu@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-arm64-gnu/-/nice-linux-arm64-gnu-1.0.4.tgz"
-  integrity sha512-wdAJ7lgjhAlsANUCv0zi6msRwq+D4KDgU+GCCHssSxWmAERZa2KZXO0H2xdmoJ/0i03i6YfK/sWaZgUAyuW2oQ==
-
-"@napi-rs/nice-linux-arm64-musl@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-arm64-musl/-/nice-linux-arm64-musl-1.0.4.tgz"
-  integrity sha512-4b1KYG+sriufhFrpUS9uNOEYYJqSfcbnwGx6uGX7JjrH8tELG90cOpCawz5THNIwlS3DhLgnCOcn0+4p6z26QA==
-
-"@napi-rs/nice-linux-ppc64-gnu@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-ppc64-gnu/-/nice-linux-ppc64-gnu-1.0.4.tgz"
-  integrity sha512-iaf3vMRgr23oe1PUaKpxaH3DS0IMN0+N9iEiWVwYPm/U15vZFYdqVegGfN2PzrZLUl5lc8ZxbmEKDfuqslhAMA==
-
-"@napi-rs/nice-linux-riscv64-gnu@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-riscv64-gnu/-/nice-linux-riscv64-gnu-1.0.4.tgz"
-  integrity sha512-UXoREY6Yw6rHrGuTwQgBxpfjK34t6mTjibE9/cXbefL9AuUCJ9gEgwNKZiONuR5QGswChqo9cnthjdKkYyAdDg==
-
-"@napi-rs/nice-linux-s390x-gnu@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-s390x-gnu/-/nice-linux-s390x-gnu-1.0.4.tgz"
-  integrity sha512-eFbgYCRPmsqbYPAlLYU5hYTNbogmIDUvknilehHsFhCH1+0/kN87lP+XaLT0Yeq4V/rpwChSd9vlz4muzFArtw==
-
-"@napi-rs/nice-linux-x64-gnu@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-x64-gnu/-/nice-linux-x64-gnu-1.0.4.tgz"
-  integrity sha512-4T3E6uTCwWT6IPnwuPcWVz3oHxvEp/qbrCxZhsgzwTUBEwu78EGNXGdHfKJQt3soth89MLqZJw+Zzvnhrsg1mQ==
-
-"@napi-rs/nice-linux-x64-musl@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-linux-x64-musl/-/nice-linux-x64-musl-1.0.4.tgz"
-  integrity sha512-NtbBkAeyBPLvCBkWtwkKXkNSn677eaT0cX3tygq+2qVv71TmHgX4gkX6o9BXjlPzdgPGwrUudavCYPT9tzkEqQ==
-
-"@napi-rs/nice-win32-arm64-msvc@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-win32-arm64-msvc/-/nice-win32-arm64-msvc-1.0.4.tgz"
-  integrity sha512-vubOe3i+YtSJGEk/++73y+TIxbuVHi+W8ZzrRm2eETCjCRwNlgbfToQZ85dSA+4iBB/NJRGNp+O4hfdbbttZWA==
-
-"@napi-rs/nice-win32-ia32-msvc@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@napi-rs/nice-win32-ia32-msvc/-/nice-win32-ia32-msvc-1.0.4.tgz"
-  integrity sha512-BMOVrUDZeg1RNRKVlh4eyLv5djAAVLiSddfpuuQ47EFjBcklg0NUeKMFKNrKQR4UnSn4HAiACLD7YK7koskwmg==
-
 "@napi-rs/nice-win32-x64-msvc@1.0.4":
   version "1.0.4"
   resolved "https://registry.npmjs.org/@napi-rs/nice-win32-x64-msvc/-/nice-win32-x64-msvc-1.0.4.tgz"
@@ -1195,51 +1120,6 @@
     semver "^7.3.8"
     slash "3.0.0"
     source-map "^0.7.3"
-
-"@swc/core-darwin-arm64@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-darwin-arm64/-/core-darwin-arm64-1.12.14.tgz"
-  integrity sha512-HNukQoOKgMsHSETj8vgGGKK3SEcH7Cz6k4bpntCxBKNkO3sH7RcBTDulWGGHJfZaDNix7Rw2ExUVWtLZlzkzXg==
-
-"@swc/core-darwin-x64@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-darwin-x64/-/core-darwin-x64-1.12.14.tgz"
-  integrity sha512-4Ttf3Obtk3MvFrR0e04qr6HfXh4L1Z+K3dRej63TAFuYpo+cPXeOZdPUddAW73lSUGkj+61IHnGPoXD3OQYy4Q==
-
-"@swc/core-linux-arm-gnueabihf@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-linux-arm-gnueabihf/-/core-linux-arm-gnueabihf-1.12.14.tgz"
-  integrity sha512-zhJOH2KWjtQpzJ27Xjw/RKLVOa1aiEJC2b70xbCwEX6ZTVAl8tKbhkZ3GMphhfVmLJ9gf/2UQR58oxVnsXqX5Q==
-
-"@swc/core-linux-arm64-gnu@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-linux-arm64-gnu/-/core-linux-arm64-gnu-1.12.14.tgz"
-  integrity sha512-akUAe1YrBqZf1EDdUxahQ8QZnJi8Ts6Ya0jf6GBIMvnXL4Y6QIuvKTRwfNxy7rJ+x9zpzP1Vlh14ZZkSKZ1EGA==
-
-"@swc/core-linux-arm64-musl@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-linux-arm64-musl/-/core-linux-arm64-musl-1.12.14.tgz"
-  integrity sha512-ZkOOIpSMXuPAjfOXEIAEQcrPOgLi6CaXvA5W+GYnpIpFG21Nd0qb0WbwFRv4K8BRtl993Q21v0gPpOaFHU+wdA==
-
-"@swc/core-linux-x64-gnu@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-linux-x64-gnu/-/core-linux-x64-gnu-1.12.14.tgz"
-  integrity sha512-71EPPccwJiJUxd2aMwNlTfom2mqWEWYGdbeTju01tzSHsEuD7E6ePlgC3P3ngBqB3urj41qKs87z7zPOswT5Iw==
-
-"@swc/core-linux-x64-musl@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-linux-x64-musl/-/core-linux-x64-musl-1.12.14.tgz"
-  integrity sha512-nImF1hZJqKTcl0WWjHqlelOhvuB9rU9kHIw/CmISBUZXogjLIvGyop1TtJNz0ULcz2Oxr3Q2YpwfrzsgvgbGkA==
-
-"@swc/core-win32-arm64-msvc@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-win32-arm64-msvc/-/core-win32-arm64-msvc-1.12.14.tgz"
-  integrity sha512-sABFQFxSuStFoxvEWZUHWYldtB1B4A9eDNFd4Ty50q7cemxp7uoscFoaCqfXSGNBwwBwpS5EiPB6YN4y6hqmLQ==
-
-"@swc/core-win32-ia32-msvc@1.12.14":
-  version "1.12.14"
-  resolved "https://registry.npmjs.org/@swc/core-win32-ia32-msvc/-/core-win32-ia32-msvc-1.12.14.tgz"
-  integrity sha512-KBznRB02NASkpepRdWIK4f1AvmaJCDipKWdW1M1xV9QL2tE4aySJFojVuG1+t0tVDkjRfwcZjycQfRoJ4RjD7Q==
 
 "@swc/core-win32-x64-msvc@1.12.14":
   version "1.12.14"
@@ -3468,11 +3348,6 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmjs.org/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
-fsevents@^2.3.2:
-  version "2.3.3"
-  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.3.tgz"
-  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
-
 function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmjs.org/function-bind/-/function-bind-1.1.2.tgz"
@@ -4644,10 +4519,10 @@ memfs@^3.4.1:
   dependencies:
     fs-monkey "^1.0.4"
 
-mercadopago@^2.10.0:
-  version "2.10.0"
-  resolved "https://registry.npmjs.org/mercadopago/-/mercadopago-2.10.0.tgz"
-  integrity sha512-G5wW+sxrteLwk2zipMUF9UOmJuFABI3W5KiDkb7xVt74IcHxPxHjI/81QjLMYFIYQZm7pO5L3/ieAsVvyLbmwg==
+mercadopago@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.npmjs.org/mercadopago/-/mercadopago-2.11.0.tgz"
+  integrity sha512-Etv7sBwQp8ZW179W5wAGc7JFmfFOeJttQSeN1HuDrwU38YOIi+nYdKN+2KTgR9/F1S8oOGMlkVPthyIwOF5BXQ==
   dependencies:
     node-fetch "^2.7.0"
     uuid "^9.0.0"
@@ -6442,6 +6317,11 @@ yargs@^17.3.1, yargs@^17.7.2:
     string-width "^4.2.3"
     y18n "^5.0.5"
     yargs-parser "^21.1.1"
+
+yarn@^1.22.22:
+  version "1.22.22"
+  resolved "https://registry.npmjs.org/yarn/-/yarn-1.22.22.tgz"
+  integrity sha512-prL3kGtyG7o9Z9Sv8IPfBNrWTDmXB4Qbes8A9rEzt6wkJV8mUvoirjU0Mp3GGAU06Y0XQyA3/2/RQFVuK7MTfg==
 
 yauzl@^3.1.2:
   version "3.2.0"
