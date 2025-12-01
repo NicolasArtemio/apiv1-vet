@@ -15,6 +15,7 @@ import { NotificacionesService } from 'src/notificaciones/notificaciones.service
 import { TipoNotificacion } from 'src/enums/tipo-notificacion.enum';
 import { Mascota } from 'src/mascotas/entities/mascota.entity';
 import { EstadoTurno } from 'src/enums/estado-turno.enum';
+import { SchedulingService } from 'src/scheduling/scheduling.service';
 
 @Injectable()
 export class TurnoService {
@@ -24,6 +25,7 @@ export class TurnoService {
     private readonly notificacionesService: NotificacionesService,
     @InjectRepository(Mascota)
     private readonly mascotaRepository: Repository<Mascota>,
+    private readonly schedulingService: SchedulingService,
   ) {}
   async create(createTurnoDto: CreateTurnoDto): Promise<Turno> {
     try {
@@ -31,7 +33,6 @@ export class TurnoService {
 
       const mascota = await this.mascotaRepository.findOne({
         where: { id: mascota_id },
-
         relations: ['cliente'],
       });
 
@@ -49,18 +50,51 @@ export class TurnoService {
       });
 
       const nuevoTurno = await this.turnoRepository.save(turno);
+      const usuarioId = nuevoTurno.usuario?.id || null;
 
+      // ===================================
+      // 1. Notificación INMEDIATA (Creación)
+      // (Guarda en BD y envía WebSocket, gracias a tu createNotificacion)
+      // ===================================
       await this.notificacionesService.createNotificacion({
         titulo: 'Nuevo turno registrado',
-        mensaje: `Se creó un turno para la fecha ${nuevoTurno.fecha_turno.toLocaleString()}`,
+        mensaje: `Se creó un turno para la mascota ${mascota.nombre} el ${nuevoTurno.fecha_turno.toLocaleString()}`,
         tipo_noti: TipoNotificacion.TURNO,
-        usuario_id: nuevoTurno.usuario?.id || null,
+        usuario_id: usuarioId,
       });
+
+      // ===================================
+      // 2. ⏳ Programación del RECORDATORIO (24h antes)
+      // ===================================
+      const fechaTurno = nuevoTurno.fecha_turno;
+      const MILLISECONDS_IN_24_HOURS = 24 * 60 * 60 * 1000;
+      const fechaRecordatorio = new Date(
+        fechaTurno.getTime() - MILLISECONDS_IN_24_HOURS,
+      );
+
+      // Solo programa si el ID del usuario es válido y la fecha del recordatorio es en el futuro
+      if (usuarioId && fechaRecordatorio.getTime() > Date.now()) {
+        this.schedulingService.scheduleTask(
+          `recordatorio-turno-${nuevoTurno.id_turno}`, // ID único para la tarea
+          fechaRecordatorio,
+          async () => {
+            // 👈 ESTA FUNCIÓN SE EJECUTA 24 HORAS ANTES
+            await this.notificacionesService.createNotificacion({
+              titulo: '⏰ ¡Recordatorio de Turno!',
+              mensaje: `¡Hola! Te recordamos tu turno para ${mascota.nombre} mañana a las ${fechaTurno.toLocaleTimeString()}.`,
+              tipo_noti: TipoNotificacion.RECORDATORIO,
+              usuario_id: usuarioId, // Guarda en BD y envía por WebSocket
+            });
+          },
+        );
+      }
 
       return nuevoTurno;
     } catch (error) {
       console.error('Error mientras se crea el turno', error);
-      // ...
+
+      // ... (Tu lógica de manejo de errores de BD/excepciones)
+
       throw new InternalServerErrorException('Error al crear turno');
     }
   }

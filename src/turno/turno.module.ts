@@ -5,6 +5,7 @@ import { Turno } from './entities/turno.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { NotificacionesModule } from 'src/notificaciones/notificaciones.module';
 import { Mascota } from 'src/mascotas/entities/mascota.entity';
+import { SchedulingService } from 'src/scheduling/scheduling.service';
 
 @Module({
   imports: [
@@ -12,6 +13,6 @@ import { Mascota } from 'src/mascotas/entities/mascota.entity';
     forwardRef(() => NotificacionesModule),
   ],
   controllers: [TurnoController],
-  providers: [TurnoService],
+  providers: [TurnoService, SchedulingService],
 })
 export class TurnoModule {}
